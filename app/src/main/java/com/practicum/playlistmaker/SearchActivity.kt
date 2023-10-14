@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -15,7 +14,7 @@ import androidx.appcompat.widget.Toolbar
 class SearchActivity : AppCompatActivity() {
 
     companion object {
-        const val SEARCH_REQUEST = "SEARCH_REQUEST"
+        private const val SEARCH_REQUEST = "SEARCH_REQUEST"
     }
 
     private lateinit var searchRequest: String
@@ -27,8 +26,7 @@ class SearchActivity : AppCompatActivity() {
 
         val toolbar = findViewById<Toolbar>(R.id.search_toolbar)
         toolbar.setNavigationOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
+            onBackPressed()
         }
 
         val inputEditText = findViewById<EditText>(R.id.search_input)
@@ -59,17 +57,17 @@ class SearchActivity : AppCompatActivity() {
         }
         inputEditText.addTextChangedListener(textWatcher)
     }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(SEARCH_REQUEST, searchRequest)
     }
-}
 
-private fun clearButtonVisibility(s: CharSequence?): Int {
-    return if (s.isNullOrEmpty()) {
-        View.GONE
-    } else {
-        View.VISIBLE
+    private fun clearButtonVisibility(s: CharSequence?): Int {
+        return if (s.isNullOrEmpty()) {
+            View.GONE
+        } else {
+            View.VISIBLE
+        }
     }
 }
-

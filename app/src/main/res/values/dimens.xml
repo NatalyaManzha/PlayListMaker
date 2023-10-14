@@ -9,7 +9,8 @@
     <dimen name="radius_8dp">8dp</dimen>
     <dimen name="radius_16dp">16dp</dimen>
 
-    <dimen name="menu_item_height">61dp</dimen>
+    <dimen name="heading_height">56dp</dimen>
+    <dimen name="menu_item_height">60dp</dimen>
 
     <dimen name="spacing_4">4dp</dimen>
     <dimen name="spacing_8">8dp</dimen>
