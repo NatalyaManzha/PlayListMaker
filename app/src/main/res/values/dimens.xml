@@ -1,23 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="text_size_smallest">11sp</dimen>
     <dimen name="text_size_small">16sp</dimen>
     <dimen name="text_size_normal">22sp</dimen>
     <dimen name="edit_text_height">52dp</dimen>
 
     <dimen name="icon_size_normal">24dp</dimen>
+    <dimen name="track_icon_size_normal">44dp</dimen>
 
+    <dimen name="radius_2dp">2dp</dimen>
     <dimen name="radius_8dp">8dp</dimen>
     <dimen name="radius_16dp">16dp</dimen>
 
+    <dimen name="textview_width_54dp">54dp</dimen>
     <dimen name="heading_height">56dp</dimen>
     <dimen name="menu_item_height">60dp</dimen>
 
     <dimen name="spacing_4">4dp</dimen>
+    <dimen name="spacing_6">6dp</dimen>
     <dimen name="spacing_8">8dp</dimen>
     <dimen name="spacing_12">12dp</dimen>
     <dimen name="spacing_14">14dp</dimen>
     <dimen name="spacing_16">16dp</dimen>
     <dimen name="spacing_24">24dp</dimen>
-
 
 </resources>

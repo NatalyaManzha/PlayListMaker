@@ -35,7 +35,7 @@
             android:singleLine="true"
             android:textColor="@color/black"
             android:textColorHint="?attr/colorOnSurface"
-            android:textSize="16sp" />
+            android:textSize="@dimen/text_size_small" />
 
         <ImageView
             android:id="@+id/clearButton"
@@ -43,10 +43,17 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/baseline_clear_24"
-            android:visibility="gone" />
-
+            android:visibility="gone" />  
 
     </LinearLayout>
+    
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/tracklist_rv"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="@dimen/spacing_16"/>
+
 </LinearLayout>
 
 

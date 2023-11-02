@@ -10,6 +10,8 @@ import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 class SearchActivity : AppCompatActivity() {
 
@@ -18,11 +20,24 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private lateinit var searchRequest: String
+    private lateinit var adapter: TrackListAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+
+
+        val playlistMakerApp = getApplicationContext() as PlaylistMakerApp
+        (playlistMakerApp).trackData = TrackData()
+        (playlistMakerApp).trackData.init()
+        val trackList = (playlistMakerApp).trackData.getTrackList()
+
+        val tracklistRecyclerView = findViewById<RecyclerView>(R.id.tracklist_rv)
+        tracklistRecyclerView.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        adapter = TrackListAdapter(trackList)
+        tracklistRecyclerView.adapter = adapter
 
         val toolbar = findViewById<Toolbar>(R.id.search_toolbar)
         toolbar.setNavigationOnClickListener {
