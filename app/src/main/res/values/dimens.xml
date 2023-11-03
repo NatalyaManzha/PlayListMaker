@@ -12,7 +12,7 @@
     <dimen name="radius_8dp">8dp</dimen>
     <dimen name="radius_16dp">16dp</dimen>
 
-    <dimen name="textview_width_54dp">54dp</dimen>
+    <dimen name="textview_width_100dp">100dp</dimen>
     <dimen name="heading_height">56dp</dimen>
     <dimen name="menu_item_height">60dp</dimen>
 
@@ -23,5 +23,6 @@
     <dimen name="spacing_14">14dp</dimen>
     <dimen name="spacing_16">16dp</dimen>
     <dimen name="spacing_24">24dp</dimen>
+    <dimen name="spacing_120">120dp</dimen>
 
 </resources>

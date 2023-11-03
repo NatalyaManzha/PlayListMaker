@@ -12,7 +12,7 @@
         android:layout_width="@dimen/track_icon_size_normal"
         android:layout_height="@dimen/track_icon_size_normal"
         android:layout_marginVertical="@dimen/spacing_8"
-        android:layout_marginEnd="@dimen/spacing_6"
+        android:layout_marginEnd="@dimen/spacing_8"
         tools:src="@drawable/placeholder" />
 
     <LinearLayout
@@ -39,15 +39,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingEnd="@dimen/spacing_120">
 
             <TextView
                 android:id="@+id/track_musician"
-                android:layout_width="@dimen/textview_width_54dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:maxWidth="@dimen/textview_width_54dp"
                 android:maxLines="1"
+                android:maxWidth="120dp"
                 android:textColor="?attr/colorButtonNormal"
                 android:textSize="@dimen/text_size_smallest"
                 tools:text="Банда рэпперов Бременские музыканты" />

@@ -15,23 +15,17 @@ import androidx.recyclerview.widget.RecyclerView
 
 class SearchActivity : AppCompatActivity() {
 
+    private lateinit var searchRequest: String
+    private lateinit var adapter: TrackListAdapter
     companion object {
         private const val SEARCH_REQUEST = "SEARCH_REQUEST"
     }
-
-    private lateinit var searchRequest: String
-    private lateinit var adapter: TrackListAdapter
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-
-        val playlistMakerApp = getApplicationContext() as PlaylistMakerApp
-        (playlistMakerApp).trackData = TrackData()
-        (playlistMakerApp).trackData.init()
-        val trackList = (playlistMakerApp).trackData.getTrackList()
+        val trackList = getTrackList()
 
         val tracklistRecyclerView = findViewById<RecyclerView>(R.id.tracklist_rv)
         tracklistRecyclerView.layoutManager =
