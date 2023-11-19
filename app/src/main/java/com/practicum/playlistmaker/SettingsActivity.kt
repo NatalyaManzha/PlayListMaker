@@ -1,23 +1,39 @@
 package com.practicum.playlistmaker
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.widget.ImageView
+import android.widget.Switch
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
 import androidx.appcompat.widget.Toolbar
 
+
 class SettingsActivity : AppCompatActivity() {
+
+    private lateinit var toolbar: Toolbar
+    private lateinit var switcher: SwitchCompat
+    private lateinit var shareButton: ImageView
+    private lateinit var supportButton: ImageView
+    private lateinit var userAgreementButton: ImageView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        val toolbar = findViewById<Toolbar>(R.id.settings_toolbar)
+        toolbar = findViewById<Toolbar>(R.id.settings_toolbar)
+        switcher = findViewById<SwitchCompat>(R.id.switcher)
+        shareButton = findViewById<ImageView>(R.id.shareButton)
+        supportButton = findViewById<ImageView>(R.id.support_button)
+        userAgreementButton = findViewById<ImageView>(R.id.user_agreement)
+
+        turnSwitcher()
+
         toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
 
-        val shareButton = findViewById<ImageView>(R.id.shareButton)
         shareButton.setOnClickListener {
             Intent().apply {
                 action = Intent.ACTION_SEND
@@ -27,7 +43,6 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
-        val supportButton = findViewById<ImageView>(R.id.support_button)
         supportButton.setOnClickListener {
             val subject = getString(R.string.support_message_subject)
             val message = getString(R.string.thanks)
@@ -41,12 +56,23 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
-        val userAgreementButton = findViewById<ImageView>(R.id.user_agreement)
         userAgreementButton.setOnClickListener {
             Intent().apply {
                 action = Intent.ACTION_VIEW
                 data = Uri.parse(getString(R.string.offer_link))
                 startActivity(this)
+            }
+        }
+    }
+
+    fun turnSwitcher() {
+        val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        when (currentNightMode) {
+            Configuration.UI_MODE_NIGHT_YES -> {
+                switcher.isChecked = true
+            }
+            Configuration.UI_MODE_NIGHT_NO -> {
+                switcher.isChecked = false
             }
         }
     }

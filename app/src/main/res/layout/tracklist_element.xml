@@ -71,7 +71,6 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/tracklist_button"
         style="@style/SettingsMenuItemIconStyle"
         android:layout_height="@dimen/icon_size_normal"
         android:layout_marginStart="@dimen/spacing_8"
