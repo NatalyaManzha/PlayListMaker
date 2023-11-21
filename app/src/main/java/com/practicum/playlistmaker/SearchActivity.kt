@@ -131,7 +131,7 @@ class SearchActivity : AppCompatActivity() {
                             tracklistRecyclerView.visibility = View.VISIBLE
                         }
                         if (trackList.isEmpty()) {
-                            showZeroResult()
+                            showEmptyResult()
                         }
                     } else {
                         showOnFailure()
@@ -154,7 +154,7 @@ class SearchActivity : AppCompatActivity() {
         updateButton.visibility = View.VISIBLE
     }
 
-    private fun showZeroResult() {
+    private fun showEmptyResult() {
         tracklistRecyclerView.visibility = View.GONE
         placeholderImage.visibility = View.VISIBLE
         placeholderImage.setImageResource(R.drawable.search_failed)
