@@ -8,7 +8,8 @@
         <item name="colorSurface">@color/grey_light</item>
         <item name="colorOnSurface">@color/grey</item>
         <item name="android:statusBarColor">@color/brilliant_blue</item>
-
+        <item name="colorOnTertiary">@color/black_2</item>
+        <item name="colorOnSurfaceInverse">@color/white</item>
     </style>
 
     <style name="Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker">
