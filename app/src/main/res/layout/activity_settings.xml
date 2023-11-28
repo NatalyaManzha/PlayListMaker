@@ -27,7 +27,7 @@
                 style="@style/SettingsMenuItemTextStyle"
                 android:text="@string/dark_theme" />
 
-            <androidx.appcompat.widget.SwitchCompat
+            <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switcher"
                 style="@style/DayNightSwitchStyle" />
 
