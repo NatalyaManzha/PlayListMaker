@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -259,7 +258,6 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun searchHistoryVisibility (hasFocus : Boolean, s: CharSequence?) : Int {
-        Log.d("Видимость", "Размер памяти ${searchHistoryAdapter.trackList.size}")
         return if (hasFocus && s?.isEmpty() == true && searchHistoryAdapter.trackList.size>0) {
             View.VISIBLE
         } else {
