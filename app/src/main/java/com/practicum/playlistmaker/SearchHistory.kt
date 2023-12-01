@@ -1,54 +1,58 @@
 package com.practicum.playlistmaker
 
-import android.content.SharedPreferences
+import android.content.Context
+import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
-import java.util.Arrays
 
-class SearchHistory(var sharedPreferences: SharedPreferences) {
-    companion object {
-        const val SEARCH_HISTORY = "search_history"
-    }
+class SearchHistory(context: Context) {
 
+    val sharedPreferences =
+        context.getSharedPreferences(PREFERENCES, AppCompatActivity.MODE_PRIVATE)
 
-    fun getSearchList(): ArrayList<Track> {
+    fun getSearchList(): List<Track> {
         val json = sharedPreferences.getString(SEARCH_HISTORY, null)
-        return if (json != null) ArrayList(Arrays.asList(*createTrackListFromJson(json))) else ArrayList<Track>()
+        return if (json != null) createTrackListFromJson(json) else emptyList<Track>()
     }
 
-    fun addTrack(track: Track) {
+    fun addTrack(track: Track, adapter: TrackListAdapter) {
+        if (adapter.trackList.contains(track)) {
+            val x = adapter.trackList.indexOf(track)
+            adapter.trackList.remove(track)
+            adapter.notifyItemRemoved(x)
+            adapter.notifyItemRangeChanged(x, adapter.trackList.size - 1)
+        }
+
+        adapter.trackList.add(0, track)
+        adapter.notifyItemInserted(0)
+        if (adapter.trackList.size == MAX_LIST_SIZE + 1) {
+            adapter.trackList.remove(adapter.trackList[MAX_LIST_SIZE])
+            adapter.notifyItemRemoved(10)
+        }
+    }
+
+    fun saveSearchHistory(searchList: List<Track>) {
         sharedPreferences.edit()
-            .putString(SEARCH_HISTORY_UPDATE, createJsonFromTrack(track))
+            .putString(SEARCH_HISTORY, createJsonFromTrackList(searchList))
             .apply()
     }
 
-
-    fun saveSearchHistory(searchList: ArrayList<Track>) {
-        sharedPreferences.edit()
-            .putString(SEARCH_HISTORY, createJsonFromTrackList(searchList.toTypedArray()))
-            .apply()
-    }
-
-    fun clearSearchHistory(searchList: ArrayList<Track>) {
+    fun clearSearchHistory(searchList: MutableList<Track>) {
         searchList.clear()
         sharedPreferences.edit()
             .remove(SEARCH_HISTORY)
             .apply()
     }
 
-    private fun createTrackListFromJson(json: String): Array<Track> {
-        return Gson().fromJson(json, Array<Track>::class.java)
+    private fun createTrackListFromJson(json: String): List<Track> {
+        return Gson().fromJson(json, Array<Track>::class.java).asList()
+
     }
 
-    private fun createJsonFromTrackList(tracks: Array<Track>): String {
+    private fun createJsonFromTrackList(tracks: List<Track>): String {
         return Gson().toJson(tracks)
     }
 
-    private fun createJsonFromTrack(track: Track): String {
-        return Gson().toJson(track)
+    companion object {
+        const val SEARCH_HISTORY = "search_history"
     }
-
-    private fun createTrackFromJson(json: String): Track {
-        return Gson().fromJson(json, Track::class.java)
-    }
-
 }

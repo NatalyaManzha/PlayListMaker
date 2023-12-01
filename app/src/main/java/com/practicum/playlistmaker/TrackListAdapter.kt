@@ -4,10 +4,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
-open class TrackListAdapter(
+class TrackListAdapter() : RecyclerView.Adapter<TrackListViewHolder>() {
 
-) : RecyclerView.Adapter<TrackListViewHolder>() {
-    open var trackList = ArrayList<Track>()
+    lateinit var trackList: MutableList<Track>
+    var onItemClickListener: ((Track) -> Unit)? = null
+
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackListViewHolder {
         return TrackListViewHolder(
             LayoutInflater.from(parent.context)
@@ -17,21 +19,10 @@ open class TrackListAdapter(
 
     override fun onBindViewHolder(holder: TrackListViewHolder, position: Int) {
         holder.bind(trackList[position])
+        if (onItemClickListener != null) holder.itemView.setOnClickListener { _ ->
+            onItemClickListener?.let { it -> it(trackList[holder.adapterPosition]) }
+        }
     }
 
     override fun getItemCount() = trackList.size
-}
-
-class ResultTrackListAdapter(
-    private val onItemClickListener: OnItemClickListener
-) : TrackListAdapter() {
-    override fun onBindViewHolder(holder: TrackListViewHolder, position: Int) {
-        super.onBindViewHolder(holder, position)
-        holder.itemView.setOnClickListener { onItemClickListener.onItemClick(trackList[holder.adapterPosition]) }
-    }
-}
-
-
-interface OnItemClickListener {
-    fun onItemClick(track: Track)
 }

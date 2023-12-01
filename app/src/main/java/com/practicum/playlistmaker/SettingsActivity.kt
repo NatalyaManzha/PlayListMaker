@@ -32,17 +32,10 @@ class SettingsActivity : AppCompatActivity() {
         }
         turnSwitcher()
         switcher.setOnCheckedChangeListener { _, checked ->
-            val sharedPrefs = getSharedPreferences(PREFERENCES, MODE_PRIVATE)
             if (checked) {
                 (applicationContext as PlaylistMakerApp).switchTheme(darkThemeEnabled = true)
-                sharedPrefs.edit()
-                    .putString(NIGHT_THEME_ENABLED, "true")
-                    .apply()
             } else {
                 (applicationContext as PlaylistMakerApp).switchTheme(darkThemeEnabled = false)
-                sharedPrefs.edit()
-                    .putString(NIGHT_THEME_ENABLED, "false")
-                    .apply()
             }
         }
 
@@ -78,15 +71,6 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     fun turnSwitcher() {
-        val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        when (currentNightMode) {
-            Configuration.UI_MODE_NIGHT_YES -> {
-                switcher.isChecked = true
-            }
-
-            Configuration.UI_MODE_NIGHT_NO -> {
-                switcher.isChecked = false
-            }
-        }
+        switcher.isChecked = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==Configuration.UI_MODE_NIGHT_YES)
     }
 }
