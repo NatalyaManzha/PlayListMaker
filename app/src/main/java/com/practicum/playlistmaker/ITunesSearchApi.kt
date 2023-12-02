@@ -4,12 +4,6 @@ import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-data class Track (
-    val trackName: String,
-    val artistName: String,
-    val trackTimeMillis: Long,
-    val artworkUrl100: String
-)
 
 class TrackResponse (
     val resultCount: Int,
