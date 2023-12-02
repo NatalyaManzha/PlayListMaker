@@ -16,10 +16,10 @@ class SearchHistory(context: Context) {
 
     fun addTrack(track: Track, adapter: TrackListAdapter) {
         if (adapter.trackList.contains(track)) {
-            val x = adapter.trackList.indexOf(track)
+            val index = adapter.trackList.indexOf(track)
             adapter.trackList.remove(track)
-            adapter.notifyItemRemoved(x)
-            adapter.notifyItemRangeChanged(x, adapter.trackList.size - 1)
+            adapter.notifyItemRemoved(index)
+            adapter.notifyItemRangeChanged(index, adapter.trackList.size - 1)
         }
 
         adapter.trackList.add(0, track)

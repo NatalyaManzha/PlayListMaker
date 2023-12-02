@@ -23,17 +23,13 @@ class PlaylistMakerApp : Application() {
     fun switchTheme(darkThemeEnabled: Boolean) {
         AppCompatDelegate.setDefaultNightMode(
             if (darkThemeEnabled) {
-                sharedPrefs.edit()
-                    .putBoolean(NIGHT_THEME_ENABLED, true)
-                    .apply()
                 AppCompatDelegate.MODE_NIGHT_YES
-
             } else {
-                sharedPrefs.edit()
-                    .putBoolean(NIGHT_THEME_ENABLED, false)
-                    .apply()
                 AppCompatDelegate.MODE_NIGHT_NO
             }
         )
+        sharedPrefs.edit()
+            .putBoolean(NIGHT_THEME_ENABLED, darkThemeEnabled)
+            .apply()
     }
 }

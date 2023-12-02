@@ -20,7 +20,7 @@ class TrackListAdapter() : RecyclerView.Adapter<TrackListViewHolder>() {
     override fun onBindViewHolder(holder: TrackListViewHolder, position: Int) {
         holder.bind(trackList[position])
         if (onItemClickListener != null) holder.itemView.setOnClickListener { _ ->
-            onItemClickListener?.let { it -> it(trackList[holder.adapterPosition]) }
+            onItemClickListener?.invoke(trackList[holder.adapterPosition])
         }
     }
 

@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
@@ -17,6 +16,11 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchActivity : AppCompatActivity() {
 
@@ -33,10 +37,14 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var searchHistoryLayout: LinearLayout
     private lateinit var searchHistory: SearchHistory
     private lateinit var trackListAdapter: TrackListAdapter
-    private lateinit var search: Search
     private var searchRequest = ""
     private var searchHistoryAdapter = TrackListAdapter()
     private var trackList = mutableListOf<Track>()
+    private val retrofit = Retrofit.Builder()
+        .baseUrl(ITUNES_BASE_URL)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+    private val iTunesService = retrofit.create(ITunesSearchApi::class.java)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,14 +69,6 @@ class SearchActivity : AppCompatActivity() {
             onBackPressed()
         }
 
-        search = Search(
-            inputEditText,
-            trackList,
-            tracklistRV,
-            placeholderImage,
-            placeholderMessage,
-            updateButton
-        )
         searchHistory = SearchHistory(this)
 
         /**
@@ -87,7 +87,7 @@ class SearchActivity : AppCompatActivity() {
          */
         trackListAdapter = TrackListAdapter()
         trackListAdapter.trackList = trackList
-        trackListAdapter.onItemClickListener =  { track ->
+        trackListAdapter.onItemClickListener = { track ->
             searchHistory.addTrack(track, searchHistoryAdapter)
         }
         tracklistRV.layoutManager =
@@ -105,7 +105,7 @@ class SearchActivity : AppCompatActivity() {
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 hideAllViews()
-                search.startSearch()
+                startSearch()
                 true
             }
             false
@@ -133,7 +133,7 @@ class SearchActivity : AppCompatActivity() {
 
         updateButton.setOnClickListener {
             hideAllViews()
-            search.startSearch()
+            startSearch()
         }
 
         clearButton.setOnClickListener {
@@ -148,6 +148,51 @@ class SearchActivity : AppCompatActivity() {
             searchHistoryAdapter.notifyDataSetChanged()
             searchHistoryLayout.isVisible = false
         }
+    }
+
+    fun startSearch() {
+        if (inputEditText.text.isNotEmpty()) {
+            iTunesService.search(inputEditText.text.toString()).enqueue(object :
+                Callback<TrackResponse> {
+                override fun onResponse(
+                    call: Call<TrackResponse>,
+                    response: Response<TrackResponse>
+                ) {
+                    if (response.code() == 200) {
+                        trackList.clear()
+                        if (response.body()?.results?.isNotEmpty() == true) {
+                            trackList.addAll(response.body()?.results!!)
+                            tracklistRV.adapter?.notifyDataSetChanged()
+                            tracklistRV.isVisible = true
+                        }
+                        if (trackList.isEmpty()) showEmptyResult()
+                    } else {
+                        showOnFailure()
+                    }
+                }
+
+                override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
+                    showOnFailure()
+                }
+            })
+        }
+    }
+
+    private fun showEmptyResult() {
+        tracklistRV.isVisible = false
+        placeholderImage.isVisible = true
+        placeholderImage.setImageResource(R.drawable.search_failed)
+        placeholderMessage.isVisible = true
+        placeholderMessage.setText(R.string.search_failed)
+    }
+
+    private fun showOnFailure() {
+        tracklistRV.isVisible = false
+        placeholderImage.isVisible = true
+        placeholderImage.setImageResource(R.drawable.no_internet)
+        placeholderMessage.isVisible = true
+        placeholderMessage.setText(R.string.no_internet)
+        updateButton.isVisible = true
     }
 
     override fun onStop() {
@@ -168,11 +213,11 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun clearButtonVisibility(s: CharSequence?): Boolean {
-        return if (s.isNullOrEmpty()) false else true
+        return !s.isNullOrEmpty()
     }
 
     private fun searchHistoryVisibility(hasFocus: Boolean, s: CharSequence?): Boolean {
-        return if (hasFocus && s?.isEmpty() == true && searchHistoryAdapter.trackList.size > 0) true else false
+        return (hasFocus && s?.isEmpty() == true && searchHistoryAdapter.trackList.size > 0)
     }
 
     private fun hideKeyboard(editText: EditText) {
@@ -183,6 +228,7 @@ class SearchActivity : AppCompatActivity() {
 
     companion object {
         private const val SEARCH_REQUEST = "SEARCH_REQUEST"
+        private const val ITUNES_BASE_URL = "https://itunes.apple.com"
     }
 }
 
