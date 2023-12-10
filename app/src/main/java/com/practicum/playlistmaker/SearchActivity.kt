@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -37,8 +38,8 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var searchHistoryLayout: LinearLayout
     private lateinit var searchHistory: SearchHistory
     private lateinit var trackListAdapter: TrackListAdapter
+    private lateinit var searchHistoryAdapter: TrackListAdapter
     private var searchRequest = ""
-    private var searchHistoryAdapter = TrackListAdapter()
     private var trackList = mutableListOf<Track>()
     private val retrofit = Retrofit.Builder()
         .baseUrl(ITUNES_BASE_URL)
@@ -51,7 +52,7 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        toolbar = findViewById<Toolbar>(R.id.search_toolbar)
+        toolbar = findViewById<Toolbar>(R.id.toolbar)
         placeholderImage = findViewById(R.id.search_status_icon)
         placeholderMessage = findViewById(R.id.search_failed_message)
         updateButton = findViewById<Button>(R.id.update_button)
@@ -73,8 +74,13 @@ class SearchActivity : AppCompatActivity() {
 
         /**
          * Получение данных и параметры отображения истории поиска
+         * Реализация отклика на нажатие элемента списка истории поиска
          */
+        searchHistoryAdapter = TrackListAdapter()
         searchHistoryAdapter.trackList = searchHistory.getSearchList().toMutableList()
+        searchHistoryAdapter.onItemClickListener = { track ->
+            goToPlayer(track)
+        }
         searchHistoryRV.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         searchHistoryRV.adapter = searchHistoryAdapter
@@ -89,6 +95,7 @@ class SearchActivity : AppCompatActivity() {
         trackListAdapter.trackList = trackList
         trackListAdapter.onItemClickListener = { track ->
             searchHistory.addTrack(track, searchHistoryAdapter)
+            goToPlayer(track)
         }
         tracklistRV.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -148,6 +155,12 @@ class SearchActivity : AppCompatActivity() {
             searchHistoryAdapter.notifyDataSetChanged()
             searchHistoryLayout.isVisible = false
         }
+    }
+
+    private fun goToPlayer(track: Track) {
+        val intent = Intent(this, PlayerActivity::class.java)
+        startActivity(intent)
+        searchHistory.setTrackToPlay(track)
     }
 
     fun startSearch() {
