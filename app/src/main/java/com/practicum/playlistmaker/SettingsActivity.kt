@@ -7,31 +7,24 @@ import android.os.Bundle
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 
 class SettingsActivity : AppCompatActivity() {
 
-    private lateinit var toolbar: Toolbar
-    private lateinit var switcher: SwitchMaterial
-    private lateinit var shareButton: ImageView
-    private lateinit var supportButton: ImageView
-    private lateinit var userAgreementButton: ImageView
+    private lateinit var binding: ActivitySettingsBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        toolbar = findViewById<Toolbar>(R.id.settings_toolbar)
-        switcher = findViewById<SwitchMaterial>(R.id.switcher)
-        shareButton = findViewById<ImageView>(R.id.shareButton)
-        supportButton = findViewById<ImageView>(R.id.support_button)
-        userAgreementButton = findViewById<ImageView>(R.id.user_agreement)
-
-        toolbar.setNavigationOnClickListener {
+        binding.settingsToolbar.setNavigationOnClickListener {
             onBackPressed()
         }
         turnSwitcher()
-        switcher.setOnCheckedChangeListener { _, checked ->
+        binding.switcher.setOnCheckedChangeListener { _, checked ->
             if (checked) {
                 (applicationContext as PlaylistMakerApp).switchTheme(darkThemeEnabled = true)
             } else {
@@ -39,7 +32,7 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
-        shareButton.setOnClickListener {
+        binding.shareButton.setOnClickListener {
             Intent().apply {
                 action = Intent.ACTION_SEND
                 putExtra(Intent.EXTRA_TEXT, getString(R.string.android_developer_course_link))
@@ -48,7 +41,7 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
-        supportButton.setOnClickListener {
+        binding.supportButton.setOnClickListener {
             val subject = getString(R.string.support_message_subject)
             val message = getString(R.string.thanks)
             Intent().apply {
@@ -61,7 +54,7 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
-        userAgreementButton.setOnClickListener {
+        binding.userAgreementButton.setOnClickListener {
             Intent().apply {
                 action = Intent.ACTION_VIEW
                 data = Uri.parse(getString(R.string.offer_link))
@@ -71,6 +64,6 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     fun turnSwitcher() {
-        switcher.isChecked = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==Configuration.UI_MODE_NIGHT_YES)
+        binding.switcher.isChecked = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==Configuration.UI_MODE_NIGHT_YES)
     }
 }

@@ -76,14 +76,16 @@ class SearchActivity : AppCompatActivity() {
          * Получение данных и параметры отображения истории поиска
          * Реализация отклика на нажатие элемента списка истории поиска
          */
-        searchHistoryAdapter = TrackListAdapter()
-        searchHistoryAdapter.trackList = searchHistory.getSearchList().toMutableList()
-        searchHistoryAdapter.onItemClickListener = { track ->
-            goToPlayer(track)
+        searchHistoryAdapter = TrackListAdapter().apply {
+            trackList = searchHistory.getSearchList().toMutableList()
+            onItemClickListener = { track ->
+                goToPlayer(track)
+            }
         }
-        searchHistoryRV.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        searchHistoryRV.adapter = searchHistoryAdapter
+        searchHistoryRV.apply {
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            adapter = searchHistoryAdapter
+        }
 
 
         /**
@@ -91,31 +93,35 @@ class SearchActivity : AppCompatActivity() {
          * Реализация отклика на нажатие элемента списка результатов поиска
          * и обновлениение истории поиска
          */
-        trackListAdapter = TrackListAdapter()
-        trackListAdapter.trackList = trackList
-        trackListAdapter.onItemClickListener = { track ->
-            searchHistory.addTrack(track, searchHistoryAdapter)
-            goToPlayer(track)
+        trackListAdapter = TrackListAdapter().apply {
+            trackList = this@SearchActivity.trackList
+            onItemClickListener = { track ->
+                searchHistory.addTrack(track, searchHistoryAdapter)
+                goToPlayer(track)
+            }
         }
-        tracklistRV.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        tracklistRV.adapter = trackListAdapter
-
+        tracklistRV.apply {
+            layoutManager =
+                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            adapter = trackListAdapter
+        }
         /**
          * Реализация взаимодействия с полем ввода запроса поиска
          * Вызов отображения истории поиска
          */
-        inputEditText.setOnFocusChangeListener { _, hasFocus ->
-            searchHistoryLayout.isVisible = searchHistoryVisibility(hasFocus, inputEditText.text)
-        }
-
-        inputEditText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                hideAllViews()
-                startSearch()
-                true
+        inputEditText.run {
+            setOnFocusChangeListener { _, hasFocus ->
+                searchHistoryLayout.isVisible =
+                    searchHistoryVisibility(hasFocus, inputEditText.text)
             }
-            false
+            setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    hideAllViews()
+                    startSearch()
+                    true
+                }
+                false
+            }
         }
 
         val textWatcher = object : TextWatcher {
@@ -158,12 +164,13 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun goToPlayer(track: Track) {
-        val intent = Intent(this, PlayerActivity::class.java)
+        val intent = Intent(this, PlayerActivity::class.java).apply{
+            putExtra(TRACK_TO_PLAY, track)
+        }
         startActivity(intent)
-        searchHistory.setTrackToPlay(track)
     }
 
-    fun startSearch() {
+    private fun startSearch() {
         if (inputEditText.text.isNotEmpty()) {
             iTunesService.search(inputEditText.text.toString()).enqueue(object :
                 Callback<TrackResponse> {
