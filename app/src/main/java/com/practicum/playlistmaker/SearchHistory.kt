@@ -9,6 +9,13 @@ class SearchHistory(context: Context) {
     val sharedPreferences =
         context.getSharedPreferences(PREFERENCES, AppCompatActivity.MODE_PRIVATE)
 
+    fun setTrackToPlay(track: Track) {
+        sharedPreferences.edit()
+            .putString(TRACK_TO_PLAY, Gson().toJson(track))
+            .apply()
+    }
+
+
     fun getSearchList(): List<Track> {
         val json = sharedPreferences.getString(SEARCH_HISTORY, null)
         return if (json != null) createTrackListFromJson(json) else emptyList<Track>()

@@ -9,14 +9,14 @@
     tools:context=".SearchActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/search_toolbar"
+        android:id="@+id/toolbar"
         style="@style/ToolbarStyle"
         app:title="@string/search"
         app:titleTextAppearance="@style/ToolbarTextStyle" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/item_height_36"
+        android:layout_height="@dimen/item_size_36"
         android:layout_marginHorizontal="@dimen/spacing_16"
         android:layout_marginVertical="@dimen/spacing_8"
         android:background="@drawable/shape"
@@ -28,7 +28,7 @@
         <EditText
             android:id="@+id/search_input"
             android:layout_width="0dp"
-            android:layout_height="@dimen/item_height_32"
+            android:layout_height="@dimen/item_size_32"
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:cursorVisible="true"
@@ -102,8 +102,8 @@
         <Button
             android:id="@+id/update_button"
             style="@style/UpdateButtonStyle"
-            android:layout_width="@dimen/item_width_90"
-            android:layout_height="@dimen/item_height_36"
+            android:layout_width="@dimen/item_size_90"
+            android:layout_height="@dimen/item_size_36"
             android:layout_below="@+id/search_status_icon"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="@dimen/spacing_134"
@@ -150,7 +150,7 @@
                     android:id="@+id/clear_history_button"
                     style="@style/UpdateButtonStyle"
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/item_height_36"
+                    android:layout_height="@dimen/item_size_36"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginVertical="@dimen/spacing_24"
                     android:includeFontPadding="false"

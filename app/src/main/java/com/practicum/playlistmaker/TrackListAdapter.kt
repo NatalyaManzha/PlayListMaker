@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
-class TrackListAdapter() : RecyclerView.Adapter<TrackListViewHolder>() {
+class TrackListAdapter : RecyclerView.Adapter<TrackListViewHolder>() {
 
     lateinit var trackList: MutableList<Track>
     var onItemClickListener: ((Track) -> Unit)? = null
