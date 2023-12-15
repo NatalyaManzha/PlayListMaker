@@ -4,11 +4,8 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
-import com.google.android.material.switchmaterial.SwitchMaterial
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -64,6 +61,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     fun turnSwitcher() {
-        binding.switcher.isChecked = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==Configuration.UI_MODE_NIGHT_YES)
+        binding.switcher.isChecked =
+            (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES)
     }
 }

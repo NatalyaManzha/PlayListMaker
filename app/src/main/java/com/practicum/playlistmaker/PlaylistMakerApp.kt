@@ -1,4 +1,5 @@
 package com.practicum.playlistmaker
+
 import android.app.Application
 import android.content.SharedPreferences
 import android.content.res.Configuration
@@ -16,7 +17,8 @@ class PlaylistMakerApp : Application() {
     }
 
     private fun checkoutTheme() {
-        var defaultStateOfDarkTheme = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+        var defaultStateOfDarkTheme =
+            resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
         darkTheme = sharedPrefs.getBoolean(NIGHT_THEME_ENABLED, defaultStateOfDarkTheme)
     }
 

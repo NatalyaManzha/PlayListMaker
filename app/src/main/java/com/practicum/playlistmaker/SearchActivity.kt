@@ -164,7 +164,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun goToPlayer(track: Track) {
-        val intent = Intent(this, PlayerActivity::class.java).apply{
+        val intent = Intent(this, PlayerActivity::class.java).apply {
             putExtra(TRACK_TO_PLAY, track)
         }
         startActivity(intent)
