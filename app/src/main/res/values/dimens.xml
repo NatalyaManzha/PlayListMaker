@@ -10,6 +10,7 @@
     <dimen name="item_size_20">20dp</dimen>
     <dimen name="item_size_32">32dp</dimen>
     <dimen name="item_size_36">36dp</dimen>
+    <dimen name="item_size_44">44dp</dimen>
     <dimen name="item_size_48">48dp</dimen>
     <dimen name="item_size_52">52dp</dimen>
     <dimen name="item_size_90">90dp</dimen>
@@ -41,6 +42,7 @@
     <dimen name="spacing_32">32dp</dimen>
     <dimen name="spacing_78">78dp</dimen>
     <dimen name="spacing_120">120dp</dimen>
+    <dimen name="spacing_124">124dp</dimen>
     <dimen name="spacing_134">134dp</dimen>
 
 </resources>
