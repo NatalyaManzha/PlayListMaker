@@ -94,7 +94,6 @@ class SearchActivity : AppCompatActivity() {
             adapter = searchHistoryAdapter
         }
 
-
         /**
          * Параметры отображения результатов поиска
          * Реализация отклика на нажатие элемента списка результатов поиска
@@ -114,9 +113,11 @@ class SearchActivity : AppCompatActivity() {
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             adapter = trackListAdapter
         }
+
         /**
          * Реализация взаимодействия с полем ввода запроса поиска
          * Вызов отображения истории поиска
+         * Автоматическая активация поиска
          */
         inputEditText.run {
             setOnFocusChangeListener { _, hasFocus ->
@@ -131,28 +132,30 @@ class SearchActivity : AppCompatActivity() {
                 }
                 false
             }
+            addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                    // empty
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    clearButton.isVisible = clearButtonVisibility(s)
+                    searchHistoryLayout.isVisible =
+                        searchHistoryVisibility(inputEditText.hasFocus(), s)
+                    searchHistoryRV.smoothScrollToPosition(0)
+                    tracklistRV.isVisible = false
+                    searchDebounce()
+                }
+
+                override fun afterTextChanged(s: Editable?) {
+                    searchRequest = s.toString()
+                }
+            })
         }
-
-        val textWatcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // empty
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                clearButton.isVisible = clearButtonVisibility(s)
-                searchHistoryLayout.isVisible = searchHistoryVisibility(inputEditText.hasFocus(), s)
-                searchHistoryRV.smoothScrollToPosition(0)
-                tracklistRV.isVisible = false
-                searchDebounce()
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                searchRequest = s.toString()
-            }
-        }
-
-        inputEditText.addTextChangedListener(textWatcher)
-
 
         updateButton.setOnClickListener {
             hideAllViews()
@@ -192,8 +195,9 @@ class SearchActivity : AppCompatActivity() {
                     progressBar.isVisible = false
                     if (response.code() == 200) {
                         trackList.clear()
-                        if (response.body()?.results?.isNotEmpty() == true) {
-                            trackList.addAll(response.body()?.results!!)
+                        val resultList = response.body()?.results
+                        if (resultList != null && resultList.isNotEmpty() == true) {
+                            trackList.addAll(resultList)
                             tracklistRV.adapter?.notifyDataSetChanged()
                             tracklistRV.isVisible = true
                         }
@@ -204,6 +208,7 @@ class SearchActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
+                    progressBar.isVisible = false
                     showOnFailure()
                 }
             })
@@ -249,12 +254,12 @@ class SearchActivity : AppCompatActivity() {
         outState.putString(SEARCH_REQUEST, searchRequest)
     }
 
-    private fun clearButtonVisibility(s: CharSequence?): Boolean {
-        return !s.isNullOrEmpty()
-    }
+    private fun clearButtonVisibility(s: CharSequence?): Boolean = !s.isNullOrEmpty()
 
     private fun searchHistoryVisibility(hasFocus: Boolean, s: CharSequence?): Boolean {
-        return (hasFocus && s?.isEmpty() == true && searchHistoryAdapter.trackList.size > 0)
+        val visibility = (hasFocus && s?.isEmpty() == true && searchHistoryAdapter.trackList.size > 0)
+        if (visibility) hideAllViews()
+        return visibility
     }
 
     private fun hideKeyboard(editText: EditText) {
@@ -263,7 +268,7 @@ class SearchActivity : AppCompatActivity() {
         inputMethodManager?.hideSoftInputFromWindow(editText.windowToken, 0)
     }
 
-    private fun clickDebounce() : Boolean {
+    private fun clickDebounce(): Boolean {
         val current = isClickAllowed
         if (isClickAllowed) {
             isClickAllowed = false
