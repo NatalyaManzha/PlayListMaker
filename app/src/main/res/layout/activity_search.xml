@@ -63,6 +63,18 @@
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/spacing_16">
 
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="@dimen/item_size_44"
+            android:layout_height="@dimen/item_size_44"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="center"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/spacing_124"
+            android:indeterminateTint="@color/brilliant_blue"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/tracklist_rv"
             android:layout_width="match_parent"
@@ -119,7 +131,7 @@
             android:layout_marginTop="34dp"
             android:orientation="vertical"
             android:visibility="gone"
-            tools:visibility="visible">
+            tools:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"
