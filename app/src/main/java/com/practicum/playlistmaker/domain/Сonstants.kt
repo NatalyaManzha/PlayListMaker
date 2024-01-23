@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.domain
 
 const val PREFERENCES = "preferences"
 const val NIGHT_THEME_ENABLED = "night_theme_enabled"

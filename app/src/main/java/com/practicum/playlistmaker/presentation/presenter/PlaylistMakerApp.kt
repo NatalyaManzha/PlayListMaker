@@ -1,9 +1,11 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.presenter
 
 import android.app.Application
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
+import com.practicum.playlistmaker.domain.NIGHT_THEME_ENABLED
+import com.practicum.playlistmaker.domain.PREFERENCES
 
 class PlaylistMakerApp : Application() {
     private var darkTheme = false
@@ -34,4 +36,5 @@ class PlaylistMakerApp : Application() {
             .putBoolean(NIGHT_THEME_ENABLED, darkThemeEnabled)
             .apply()
     }
+
 }

@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.ui
 
 import android.content.Context
 import android.content.Intent
@@ -20,6 +20,13 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.practicum.playlistmaker.Creator
+import com.practicum.playlistmaker.data.network.ITunesSearchApi
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.data.dto.TrackResponse
+import com.practicum.playlistmaker.domain.MAX_LIST_SIZE
+import com.practicum.playlistmaker.domain.TRACK_TO_PLAY
+import com.practicum.playlistmaker.domain.models.Track
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -40,7 +47,6 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var updateButton: Button
     private lateinit var clearHistoryButton: Button
     private lateinit var searchHistoryLayout: LinearLayout
-    private lateinit var searchHistory: SearchHistory
     private lateinit var trackListAdapter: TrackListAdapter
     private lateinit var searchHistoryAdapter: TrackListAdapter
     private var searchRequest = ""
@@ -53,6 +59,9 @@ class SearchActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private val searchRunnable = Runnable { startSearch() }
     private var isClickAllowed = true
+    private val getSearchHistoryListUseCase by lazy { Creator.provideGetSearchHistoryListUseCase(this)}
+    private val saveSearchHistoryUseCase by lazy { Creator.provideSaveSearchHistoryUseCase(this)}
+    private val clearSearchHistoryUseCase by lazy { Creator.provideClearSearchHistoryUseCase(this)}
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,8 +87,6 @@ class SearchActivity : AppCompatActivity() {
             onBackPressed()
         }
 
-        searchHistory = SearchHistory(this)
-
         /**
          * Получение данных и параметры отображения истории поиска
          * Реализация отклика на нажатие элемента списка истории поиска
@@ -87,7 +94,7 @@ class SearchActivity : AppCompatActivity() {
         searchHistoryAdapter = TrackListAdapter { track ->
             if (clickDebounce()) goToPlayer(track)
         }.apply {
-            trackList = searchHistory.getSearchList().toMutableList()
+            trackList = getSearchHistoryListUseCase.execute().toMutableList()
         }
         searchHistoryRV.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -101,7 +108,7 @@ class SearchActivity : AppCompatActivity() {
          */
         trackListAdapter = TrackListAdapter { track ->
             if (clickDebounce()) {
-                searchHistory.addTrack(track, searchHistoryAdapter)
+                addTrack(track, searchHistoryAdapter)
                 goToPlayer(track)
             }
         }.apply {
@@ -170,9 +177,26 @@ class SearchActivity : AppCompatActivity() {
         }
 
         clearHistoryButton.setOnClickListener {
-            searchHistory.clearSearchHistory(searchHistoryAdapter.trackList)
+            clearSearchHistoryUseCase.execute()
+            searchHistoryAdapter.trackList.clear()
             searchHistoryAdapter.notifyDataSetChanged()
             searchHistoryLayout.isVisible = false
+        }
+    }
+
+    private fun addTrack(track: Track, adapter: TrackListAdapter) {
+        if (adapter.trackList.contains(track)) {
+            val index = adapter.trackList.indexOf(track)
+            adapter.trackList.remove(track)
+            adapter.notifyItemRemoved(index)
+            adapter.notifyItemRangeChanged(index, adapter.trackList.size - 1)
+        }
+
+        adapter.trackList.add(0, track)
+        adapter.notifyItemInserted(0)
+        if (adapter.trackList.size == MAX_LIST_SIZE + 1) {
+            adapter.trackList.remove(adapter.trackList[MAX_LIST_SIZE])
+            adapter.notifyItemRemoved(10)
         }
     }
 
@@ -238,8 +262,8 @@ class SearchActivity : AppCompatActivity() {
     }
 
     override fun onStop() {
+        saveSearchHistoryUseCase.execute(searchHistoryAdapter.trackList)
         super.onStop()
-        searchHistory.saveSearchHistory(searchHistoryAdapter.trackList)
     }
 
     private fun hideAllViews() {
