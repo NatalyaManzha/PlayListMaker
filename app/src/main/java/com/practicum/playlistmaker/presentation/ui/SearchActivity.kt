@@ -59,9 +59,9 @@ class SearchActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private val searchRunnable = Runnable { startSearch() }
     private var isClickAllowed = true
-    private val getSearchHistoryListUseCase by lazy { Creator.provideGetSearchHistoryListUseCase(this)}
-    private val saveSearchHistoryUseCase by lazy { Creator.provideSaveSearchHistoryUseCase(this)}
-    private val clearSearchHistoryUseCase by lazy { Creator.provideClearSearchHistoryUseCase(this)}
+    private val getSearchHistoryListUseCase by lazy { Creator.provideGetSearchHistoryListUseCase()}
+    private val saveSearchHistoryUseCase by lazy { Creator.provideSaveSearchHistoryUseCase()}
+    private val clearSearchHistoryUseCase by lazy { Creator.provideClearSearchHistoryUseCase()}
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.domain.useCase
+package com.practicum.playlistmaker.domain.useCase.search_history
 
 import com.practicum.playlistmaker.domain.api.SearchHistoryRepository
 import com.practicum.playlistmaker.domain.models.Track

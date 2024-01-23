@@ -1,16 +1,16 @@
-package com.practicum.playlistmaker.data
+package com.practicum.playlistmaker.data.impl
 
-import android.app.Application
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import com.practicum.playlistmaker.domain.PREFERENCES
 import com.practicum.playlistmaker.domain.api.SearchHistoryRepository
 import com.practicum.playlistmaker.domain.models.Track
-import com.practicum.playlistmaker.presentation.presenter.PlaylistMakerApp
 
-class SearchHistoryRepositoryImpl(context:Context):SearchHistoryRepository {
-    val sharedPreferences = context.getSharedPreferences(PREFERENCES, AppCompatActivity.MODE_PRIVATE)
+class SearchHistoryRepositoryImpl(context: Context) : SearchHistoryRepository {
+    val sharedPreferences =
+        context.getSharedPreferences(PREFERENCES, AppCompatActivity.MODE_PRIVATE)
+
     override fun getSearchHistoryList(): List<Track> {
         val json = sharedPreferences.getString(SEARCH_HISTORY, null)
         return if (json != null) createTrackListFromJson(json) else emptyList<Track>()
@@ -27,6 +27,7 @@ class SearchHistoryRepositoryImpl(context:Context):SearchHistoryRepository {
             .remove(SEARCH_HISTORY)
             .apply()
     }
+
     private fun createTrackListFromJson(json: String): List<Track> {
         return Gson().fromJson(json, Array<Track>::class.java).asList()
 
