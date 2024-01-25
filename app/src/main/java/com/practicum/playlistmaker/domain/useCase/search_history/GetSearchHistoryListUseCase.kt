@@ -7,7 +7,7 @@ import com.practicum.playlistmaker.domain.models.Track
 class GetSearchHistoryListUseCase(
     private val searchHistoryRepository: SearchHistoryRepository
 ) {
-    fun execute () : List<Track> =
+    fun execute(): List<Track> =
         searchHistoryRepository.getSearchHistoryList()
 }
 

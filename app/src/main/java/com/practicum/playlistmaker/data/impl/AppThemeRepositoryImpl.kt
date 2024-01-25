@@ -5,10 +5,11 @@ import androidx.appcompat.app.AppCompatActivity
 import com.practicum.playlistmaker.domain.PREFERENCES
 import com.practicum.playlistmaker.domain.api.AppThemeRepository
 
-class AppThemeRepositoryImpl(context: Context): AppThemeRepository {
-    val sharedPreferences =
+class AppThemeRepositoryImpl(context: Context) : AppThemeRepository {
+    private val sharedPreferences =
         context.getSharedPreferences(PREFERENCES, AppCompatActivity.MODE_PRIVATE)
-    override fun checkoutSavedTheme(defaultStateOfDarkTheme:Boolean) : Boolean {
+
+    override fun checkoutSavedTheme(defaultStateOfDarkTheme: Boolean): Boolean {
         return sharedPreferences.getBoolean(NIGHT_THEME_ENABLED, defaultStateOfDarkTheme)
     }
 

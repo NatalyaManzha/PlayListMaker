@@ -6,9 +6,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.domain.models.Track
 
-class TrackListAdapter (
+class TrackListAdapter(
     var onItemClickListener: ((Track) -> Unit)
-): RecyclerView.Adapter<TrackListViewHolder>() {
+) : RecyclerView.Adapter<TrackListViewHolder>() {
 
     lateinit var trackList: MutableList<Track>
 

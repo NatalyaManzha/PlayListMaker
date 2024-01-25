@@ -21,9 +21,9 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.Creator
-import com.practicum.playlistmaker.data.network.ITunesSearchApi
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.data.dto.TrackResponse
+import com.practicum.playlistmaker.data.network.ITunesSearchApi
 import com.practicum.playlistmaker.domain.MAX_LIST_SIZE
 import com.practicum.playlistmaker.domain.TRACK_TO_PLAY
 import com.practicum.playlistmaker.domain.models.Track
@@ -59,9 +59,9 @@ class SearchActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private val searchRunnable = Runnable { startSearch() }
     private var isClickAllowed = true
-    private val getSearchHistoryListUseCase by lazy { Creator.provideGetSearchHistoryListUseCase()}
-    private val saveSearchHistoryUseCase by lazy { Creator.provideSaveSearchHistoryUseCase()}
-    private val clearSearchHistoryUseCase by lazy { Creator.provideClearSearchHistoryUseCase()}
+    private val getSearchHistoryListUseCase by lazy { Creator.provideGetSearchHistoryListUseCase() }
+    private val saveSearchHistoryUseCase by lazy { Creator.provideSaveSearchHistoryUseCase() }
+    private val clearSearchHistoryUseCase by lazy { Creator.provideClearSearchHistoryUseCase() }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -281,7 +281,8 @@ class SearchActivity : AppCompatActivity() {
     private fun clearButtonVisibility(s: CharSequence?): Boolean = !s.isNullOrEmpty()
 
     private fun searchHistoryVisibility(hasFocus: Boolean, s: CharSequence?): Boolean {
-        val visibility = (hasFocus && s?.isEmpty() == true && searchHistoryAdapter.trackList.size > 0)
+        val visibility =
+            (hasFocus && s?.isEmpty() == true && searchHistoryAdapter.trackList.size > 0)
         if (visibility) hideAllViews()
         return visibility
     }

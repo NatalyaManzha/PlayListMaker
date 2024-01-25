@@ -5,9 +5,9 @@ import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.practicum.playlistmaker.presentation.presenter.PlaylistMakerApp
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
+import com.practicum.playlistmaker.presentation.presenter.PlaylistMakerApp
 
 
 class SettingsActivity : AppCompatActivity() {

@@ -8,7 +8,7 @@ import com.practicum.playlistmaker.domain.api.SearchHistoryRepository
 import com.practicum.playlistmaker.domain.models.Track
 
 class SearchHistoryRepositoryImpl(context: Context) : SearchHistoryRepository {
-    val sharedPreferences =
+    private val sharedPreferences =
         context.getSharedPreferences(PREFERENCES, AppCompatActivity.MODE_PRIVATE)
 
     override fun getSearchHistoryList(): List<Track> {
