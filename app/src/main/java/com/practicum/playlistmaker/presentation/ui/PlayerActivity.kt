@@ -8,8 +8,8 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityAudioPlayerBinding
 import com.practicum.playlistmaker.domain.TRACK_TO_PLAY
-import com.practicum.playlistmaker.domain.api.PlayerUiUpdater
 import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.presentation.api.PlayerUiUpdater
 import com.practicum.playlistmaker.presentation.presenter.PlayerUiInteractor
 import java.util.Locale
 

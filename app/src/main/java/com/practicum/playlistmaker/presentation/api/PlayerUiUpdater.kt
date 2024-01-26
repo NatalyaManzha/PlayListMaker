@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.domain.api
+package com.practicum.playlistmaker.presentation.api
 
 interface PlayerUiUpdater {
     fun onPlayerStatePrepared()
@@ -6,5 +6,5 @@ interface PlayerUiUpdater {
     fun onPlayerStatePlaying()
     fun onPlayerStatePaused()
     fun onCurrentPositionChange(currentPosition: Int)
-    fun getPlayerActivityUiState():Boolean
+    fun getPlayerActivityUiState(): Boolean
 }

@@ -3,84 +3,83 @@ package com.practicum.playlistmaker.presentation.presenter
 import android.os.Handler
 import android.os.Looper
 import com.practicum.playlistmaker.Creator
-import com.practicum.playlistmaker.domain.COMMAND_GET_CURRENT_POSITION
-import com.practicum.playlistmaker.domain.COMMAND_GET_STATE
-import com.practicum.playlistmaker.domain.COMMAND_PAUSE
-import com.practicum.playlistmaker.domain.COMMAND_PREPARE
-import com.practicum.playlistmaker.domain.COMMAND_RELEASE
-import com.practicum.playlistmaker.domain.COMMAND_START
-import com.practicum.playlistmaker.domain.STATE_PAUSED
-import com.practicum.playlistmaker.domain.STATE_PLAYBACK_COMPLETE
-import com.practicum.playlistmaker.domain.STATE_PLAYING
-import com.practicum.playlistmaker.domain.STATE_PREPARED
 import com.practicum.playlistmaker.domain.api.MediaPlayerInfoConsumer
-import com.practicum.playlistmaker.domain.api.PlayerUiUpdater
+import com.practicum.playlistmaker.domain.models.MediaPlayerCommand
 import com.practicum.playlistmaker.domain.models.MediaPlayerControllerCommand
 import com.practicum.playlistmaker.domain.models.MediaPlayerFeedbackData
+import com.practicum.playlistmaker.domain.models.MediaPlayerState
 import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.presentation.api.PlayerUiUpdater
 
-class PlayerUiInteractor(val testPlayerUiUpdater: PlayerUiUpdater) {
+class PlayerUiInteractor(val playerUiUpdater: PlayerUiUpdater) {
     private val mediaPlayerControler by lazy { Creator.provideControlMediaPlayerUseCase() }
     private val handler = Handler(Looper.getMainLooper())
     private var runnable = Runnable { updatePlayerData() }
-    val updaterUi = object : MediaPlayerInfoConsumer {
+    private val updaterUi = object : MediaPlayerInfoConsumer {
         override fun consume(info: MediaPlayerFeedbackData) {
             when (info) {
                 is MediaPlayerFeedbackData.State -> onPlayerStateChange(info.state)
-                is MediaPlayerFeedbackData.CurrentPosition -> testPlayerUiUpdater.onCurrentPositionChange(info.currentPosition)
+                is MediaPlayerFeedbackData.CurrentPosition -> playerUiUpdater.onCurrentPositionChange(
+                    info.currentPosition
+                )
             }
         }
     }
 
-    fun onPlayerActivityDestroy(){
-        sendCommandToMediaPlayer(COMMAND_RELEASE)
+    fun onPlayerActivityDestroy() {
+        sendCommandToMediaPlayer(MediaPlayerCommand.RELEASE)
     }
-    fun onPlayerActivityPause(){
-        sendCommandToMediaPlayer(COMMAND_PAUSE)
+
+    fun onPlayerActivityPause() {
+        sendCommandToMediaPlayer(MediaPlayerCommand.PAUSE)
         handler.removeCallbacksAndMessages(0)
     }
-    fun prepareUiInteractor(track:Track) {
+
+    fun prepareUiInteractor(track: Track) {
         prepareMediaPlayer(track)
     }
 
-    private fun sendCommandToMediaPlayer(command: Int) {
+    private fun sendCommandToMediaPlayer(command: MediaPlayerCommand) {
         mediaPlayerControler.execute(MediaPlayerControllerCommand(command, null), updaterUi)
     }
-    private fun onPlayerStateChange(state: Int) {
-        with(testPlayerUiUpdater) {
+
+    private fun onPlayerStateChange(state: MediaPlayerState) {
+        with(playerUiUpdater) {
             when (state) {
-                STATE_PREPARED -> onPlayerStatePrepared()
-                STATE_PLAYBACK_COMPLETE -> onPlayerStatePlaybackComplete()
-                STATE_PLAYING -> onPlayerStatePlaying()
-                STATE_PAUSED -> onPlayerStatePaused()
+                MediaPlayerState.PREPARED -> onPlayerStatePrepared()
+                MediaPlayerState.PLAYBACK_COMPLETE -> onPlayerStatePlaybackComplete()
+                MediaPlayerState.PLAYING -> onPlayerStatePlaying()
+                MediaPlayerState.PAUSED -> onPlayerStatePaused()
+                else -> {}
             }
         }
     }
-    private fun prepareMediaPlayer(track:Track) {
+
+    private fun prepareMediaPlayer(track: Track) {
         mediaPlayerControler.execute(
             MediaPlayerControllerCommand(
-                COMMAND_PREPARE,
+                MediaPlayerCommand.PREPARE,
                 track.previewUrl
             ), updaterUi
         )
     }
+
     private fun updatePlayerData() {
-        sendCommandToMediaPlayer(COMMAND_GET_CURRENT_POSITION)
-        sendCommandToMediaPlayer(COMMAND_GET_STATE)
-        if (testPlayerUiUpdater.getPlayerActivityUiState()) handler.postDelayed(runnable, DELAY)
+        sendCommandToMediaPlayer(MediaPlayerCommand.GET_CURRENT_POSITION)
+        sendCommandToMediaPlayer(MediaPlayerCommand.GET_STATE)
+        if (playerUiUpdater.getPlayerActivityUiState()) handler.postDelayed(runnable, DELAY_MILLIS)
     }
 
-    fun playbackControl(uiStateOnPlaying:Boolean) {
+    fun playbackControl(uiStateOnPlaying: Boolean) {
         if (uiStateOnPlaying) {
-            sendCommandToMediaPlayer(COMMAND_PAUSE)
+            sendCommandToMediaPlayer(MediaPlayerCommand.PAUSE)
         } else {
-            sendCommandToMediaPlayer(COMMAND_START)
+            sendCommandToMediaPlayer(MediaPlayerCommand.START)
             handler.post(runnable)
         }
     }
 
     companion object {
-        private const val DELAY = 300L
+        private const val DELAY_MILLIS = 300L
     }
-
 }

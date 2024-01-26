@@ -8,12 +8,18 @@ import com.practicum.playlistmaker.data.impl.SearchHistoryRepositoryImpl
 import com.practicum.playlistmaker.domain.api.AppThemeRepository
 import com.practicum.playlistmaker.domain.api.MediaPlayerControl
 import com.practicum.playlistmaker.domain.api.SearchHistoryRepository
-import com.practicum.playlistmaker.domain.useCase.app_theme.CheckoutSavedAppThemeUseCase
-import com.practicum.playlistmaker.domain.useCase.app_theme.SaveThemeUseCase
-import com.practicum.playlistmaker.domain.useCase.media_player.ControlMediaPlayerUseCase
-import com.practicum.playlistmaker.domain.useCase.search_history.ClearSearchHistoryUseCase
-import com.practicum.playlistmaker.domain.useCase.search_history.GetSearchHistoryListUseCase
-import com.practicum.playlistmaker.domain.useCase.search_history.SaveSearchHistoryUseCase
+import com.practicum.playlistmaker.domain.api.useCase.CheckoutSavedAppTheme
+import com.practicum.playlistmaker.domain.api.useCase.ClearSearchHistory
+import com.practicum.playlistmaker.domain.api.useCase.ControlMediaPlayer
+import com.practicum.playlistmaker.domain.api.useCase.GetSearchHistoryList
+import com.practicum.playlistmaker.domain.api.useCase.SaveSearchHistory
+import com.practicum.playlistmaker.domain.api.useCase.SaveTheme
+import com.practicum.playlistmaker.domain.impl.useCase.app_theme.CheckoutSavedAppThemeUseCase
+import com.practicum.playlistmaker.domain.impl.useCase.app_theme.SaveThemeUseCase
+import com.practicum.playlistmaker.domain.impl.useCase.media_player.ControlMediaPlayerUseCase
+import com.practicum.playlistmaker.domain.impl.useCase.search_history.ClearSearchHistoryUseCase
+import com.practicum.playlistmaker.domain.impl.useCase.search_history.GetSearchHistoryListUseCase
+import com.practicum.playlistmaker.domain.impl.useCase.search_history.SaveSearchHistoryUseCase
 
 object Creator {
 
@@ -24,27 +30,27 @@ object Creator {
         this.application = application
     }
 
-    fun provideControlMediaPlayerUseCase(): ControlMediaPlayerUseCase {
+    fun provideControlMediaPlayerUseCase(): ControlMediaPlayer {
         return ControlMediaPlayerUseCase(provideMediaPlayerControl())
     }
 
-    fun provideSaveThemeUseCase(): SaveThemeUseCase {
+    fun provideSaveThemeUseCase(): SaveTheme {
         return SaveThemeUseCase(provideAppThemeRepository())
     }
 
-    fun provideCheckoutSavedAppThemeUseCase(): CheckoutSavedAppThemeUseCase {
+    fun provideCheckoutSavedAppThemeUseCase(): CheckoutSavedAppTheme {
         return CheckoutSavedAppThemeUseCase(provideAppThemeRepository())
     }
 
-    fun provideGetSearchHistoryListUseCase(): GetSearchHistoryListUseCase {
+    fun provideGetSearchHistoryListUseCase(): GetSearchHistoryList {
         return GetSearchHistoryListUseCase(provideSearchHistiryRepository())
     }
 
-    fun provideSaveSearchHistoryUseCase(): SaveSearchHistoryUseCase {
+    fun provideSaveSearchHistoryUseCase(): SaveSearchHistory {
         return SaveSearchHistoryUseCase(provideSearchHistiryRepository())
     }
 
-    fun provideClearSearchHistoryUseCase(): ClearSearchHistoryUseCase {
+    fun provideClearSearchHistoryUseCase(): ClearSearchHistory {
         return ClearSearchHistoryUseCase(provideSearchHistiryRepository())
     }
 

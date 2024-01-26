@@ -1,19 +1,15 @@
 package com.practicum.playlistmaker.data.impl
 
 import android.media.MediaPlayer
-import com.practicum.playlistmaker.domain.STATE_DEFAULT
-import com.practicum.playlistmaker.domain.STATE_PAUSED
-import com.practicum.playlistmaker.domain.STATE_PLAYBACK_COMPLETE
-import com.practicum.playlistmaker.domain.STATE_PLAYING
-import com.practicum.playlistmaker.domain.STATE_PREPARED
 import com.practicum.playlistmaker.domain.api.MediaPlayerControl
 import com.practicum.playlistmaker.domain.models.MediaPlayerFeedbackData
+import com.practicum.playlistmaker.domain.models.MediaPlayerState
 
 class MediaPlayerControlImpl : MediaPlayerControl {
 
     private lateinit var url: String
     private val mediaPlayer = MediaPlayer()
-    private var state = STATE_DEFAULT
+    private var state = MediaPlayerState.DEFAULT
 
 
     override fun getMediaPlayerState(): MediaPlayerFeedbackData.State {
@@ -30,10 +26,10 @@ class MediaPlayerControlImpl : MediaPlayerControl {
             setDataSource(url)
             prepareAsync()
             setOnPreparedListener {
-                state = STATE_PREPARED
+                state = MediaPlayerState.PREPARED
             }
             setOnCompletionListener {
-                state = STATE_PLAYBACK_COMPLETE
+                state = MediaPlayerState.PLAYBACK_COMPLETE
             }
         }
         return MediaPlayerFeedbackData.State(state)
@@ -41,19 +37,19 @@ class MediaPlayerControlImpl : MediaPlayerControl {
 
     override fun start(): MediaPlayerFeedbackData.State {
         mediaPlayer.start()
-        state = STATE_PLAYING
+        state = MediaPlayerState.PLAYING
         return MediaPlayerFeedbackData.State(state)
     }
 
     override fun pause(): MediaPlayerFeedbackData.State {
         mediaPlayer.pause()
-        state = STATE_PAUSED
+        state = MediaPlayerState.PAUSED
         return MediaPlayerFeedbackData.State(state)
     }
 
     override fun release(): MediaPlayerFeedbackData.State {
         mediaPlayer.release()
-        state = STATE_DEFAULT
+        state = MediaPlayerState.DEFAULT
         return MediaPlayerFeedbackData.State(state)
     }
 

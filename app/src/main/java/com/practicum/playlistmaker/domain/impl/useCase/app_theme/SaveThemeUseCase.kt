@@ -1,11 +1,12 @@
-package com.practicum.playlistmaker.domain.useCase.app_theme
+package com.practicum.playlistmaker.domain.impl.useCase.app_theme
 
 import com.practicum.playlistmaker.domain.api.AppThemeRepository
+import com.practicum.playlistmaker.domain.api.useCase.SaveTheme
 
 class SaveThemeUseCase(
     private val appThemeRepository: AppThemeRepository
-) {
-    fun execute(darkThemeEnabled: Boolean) {
+) : SaveTheme {
+    override fun execute(darkThemeEnabled: Boolean) {
         appThemeRepository.saveTheme(darkThemeEnabled)
     }
 }
