@@ -1,12 +1,14 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.domain.models.Track
 
-class TrackListAdapter (
+class TrackListAdapter(
     var onItemClickListener: ((Track) -> Unit)
-): RecyclerView.Adapter<TrackListViewHolder>() {
+) : RecyclerView.Adapter<TrackListViewHolder>() {
 
     lateinit var trackList: MutableList<Track>
 
