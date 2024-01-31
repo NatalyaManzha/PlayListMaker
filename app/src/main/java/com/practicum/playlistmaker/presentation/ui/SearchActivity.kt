@@ -15,15 +15,14 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.data.dto.TrackResponse
-import com.practicum.playlistmaker.data.network.ITunesSearchApi
+import com.practicum.playlistmaker.data.network.api.ITunesSearchApi
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.domain.MAX_LIST_SIZE
 import com.practicum.playlistmaker.domain.TRACK_TO_PLAY
+import com.practicum.playlistmaker.domain.api.SearchTracksResultConsumer
+import com.practicum.playlistmaker.domain.models.ConvertedResponse
+import com.practicum.playlistmaker.domain.models.SearchState
 import com.practicum.playlistmaker.domain.models.Track
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -34,11 +33,11 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var searchHistoryAdapter: TrackListAdapter
     private var searchRequest = ""
     private var trackList = mutableListOf<Track>()
-    private val retrofit = Retrofit.Builder()
+/*    private val retrofit = Retrofit.Builder()
         .baseUrl(ITUNES_BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    private val iTunesService = retrofit.create(ITunesSearchApi::class.java)
+        .build()*/
+ /*   private val iTunesService = retrofit.create(ITunesSearchApi::class.java)*/
     private val handler = Handler(Looper.getMainLooper())
     private val searchRunnable = Runnable { startSearch() }
     private var isClickAllowed = true
@@ -66,7 +65,7 @@ class SearchActivity : AppCompatActivity() {
         searchHistoryAdapter = TrackListAdapter { track ->
             if (clickDebounce()) goToPlayer(track)
         }.apply {
-            trackList = getSearchHistoryListUseCase.execute().toMutableList()
+            trackList = getSearchHistoryListUseCase.execute()
         }
         binding.searchHistoryRV.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -185,34 +184,32 @@ class SearchActivity : AppCompatActivity() {
         with(binding) {
             if (inputEditText.text.isNotEmpty()) {
                 progressBar.isVisible = true
-                iTunesService.search(inputEditText.text.toString()).enqueue(object :
-                    Callback<TrackResponse> {
-                    override fun onResponse(
-                        call: Call<TrackResponse>,
-                        response: Response<TrackResponse>
-                    ) {
-                        progressBar.isVisible = false
-                        if (response.code() == 200) {
-                            trackList.clear()
-                            val resultList = response.body()?.results
-                            if (resultList != null && resultList.isNotEmpty() == true) {
-                                trackList.addAll(resultList)
-                                tracklistRV.adapter?.notifyDataSetChanged()
-                                tracklistRV.isVisible = true
-                            }
-                            if (trackList.isEmpty()) showEmptyResult()
-                        } else {
-                            showOnFailure()
-                        }
-                    }
+                Creator.provudeSearchTracksUseCase()
+                    .execute(inputEditText.text.toString(), object : SearchTracksResultConsumer {
+                        override fun consume(result: ConvertedResponse) {
 
-                    override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
-                        progressBar.isVisible = false
-                        showOnFailure()
-                    }
-                })
+                            trackList.clear()
+
+                            val runnable = {
+                                progressBar.isVisible = false
+                                when (result.state) {
+                                SearchState.FAILURE -> showOnFailure()
+                                SearchState.EMPTY -> showEmptyResult()
+                                SearchState.SUCCESS -> showSearchResult(result)
+                            }
+
+                        }
+                            Handler(Looper.getMainLooper()).post(runnable)
+                        }
+                    })
             }
         }
+    }
+
+    private fun ActivitySearchBinding.showSearchResult(result: ConvertedResponse) {
+        trackList.addAll(result.results!!)
+        tracklistRV.adapter?.notifyDataSetChanged()
+        tracklistRV.isVisible = true
     }
 
     private fun showEmptyResult() {

@@ -1,11 +1,11 @@
 package com.practicum.playlistmaker.domain.impl.useCase.search_history
 
 import com.practicum.playlistmaker.domain.api.SearchHistoryRepository
-import com.practicum.playlistmaker.domain.api.useCase.ClearSearchHistory
+import com.practicum.playlistmaker.domain.api.useCase.ClearSearchHistoryUseCase
 
-class ClearSearchHistoryUseCase(
+class ClearSearchHistoryUseCaseImpl(
     private val searchHistoryRepository: SearchHistoryRepository
-) : ClearSearchHistory {
+) : ClearSearchHistoryUseCase {
     override fun execute() {
         searchHistoryRepository.clearSearchHistory()
     }

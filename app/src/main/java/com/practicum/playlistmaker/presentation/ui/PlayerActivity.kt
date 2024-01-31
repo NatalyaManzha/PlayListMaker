@@ -68,9 +68,9 @@ class PlayerActivity : AppCompatActivity() {
             trackNameTV.text = track.trackName
             artistNameTV.text = track.artistName
             trackPlaytimeTV.text = dateFormat.format(0)
-            durationTV.text = track.getFormatedTime()
+            durationTV.text = track.trackTimeMinSec
             albumTV.text = track.collectionName
-            yearTV.text = track.getReleaseYear()
+            yearTV.text = track.releaseYear
             genreTV.text = track.primaryGenreName
             countryTV.text = track.country
             playControlButton.setOnClickListener {
@@ -79,7 +79,7 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         Glide.with(this)
-            .load(track.getCoverArtwork())
+            .load(track.artworkUrl512)
             .placeholder(R.drawable.placeholder)
             .fitCenter()
             .transform(RoundedCorners(applicationContext.resources.getDimensionPixelSize(R.dimen.radius_8dp)))
