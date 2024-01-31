@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.presentation.presenter
 
+import android.icu.text.SimpleDateFormat
 import android.os.Handler
 import android.os.Looper
 import com.practicum.playlistmaker.Creator
@@ -10,17 +11,19 @@ import com.practicum.playlistmaker.domain.models.MediaPlayerFeedbackData
 import com.practicum.playlistmaker.domain.models.MediaPlayerState
 import com.practicum.playlistmaker.domain.models.Track
 import com.practicum.playlistmaker.presentation.api.PlayerUiUpdater
+import java.util.Locale
 
 class PlayerUiInteractor(val playerUiUpdater: PlayerUiUpdater) {
     private val mediaPlayerControler by lazy { Creator.provideControlMediaPlayerUseCase() }
     private val handler = Handler(Looper.getMainLooper())
+    private val dateFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
     private var runnable = Runnable { updatePlayerData() }
     private val updaterUi = object : MediaPlayerInfoConsumer {
         override fun consume(info: MediaPlayerFeedbackData) {
             when (info) {
                 is MediaPlayerFeedbackData.State -> onPlayerStateChange(info.state)
                 is MediaPlayerFeedbackData.CurrentPosition -> playerUiUpdater.onCurrentPositionChange(
-                    info.currentPosition
+                    dateFormat.format(info.currentPosition)
                 )
             }
         }

@@ -5,7 +5,8 @@ import com.practicum.playlistmaker.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class TrackDtoToTrackConverter {
+object TrackDtoToTrackConverter {
+    private val NUMBER_OF_CHARS_IN_YEAR = 4
     fun convert(item: TrackDto): Track {
         return with(item) {
             Track(
@@ -33,9 +34,5 @@ class TrackDtoToTrackConverter {
     private fun getReleaseYear(releaseDate: String): String {
         return if (releaseDate.length < NUMBER_OF_CHARS_IN_YEAR) ""
         else releaseDate.substring(0, NUMBER_OF_CHARS_IN_YEAR)
-    }
-
-    companion object {
-        private const val NUMBER_OF_CHARS_IN_YEAR = 4
     }
 }

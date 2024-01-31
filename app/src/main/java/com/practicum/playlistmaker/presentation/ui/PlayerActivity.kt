@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.presentation.ui
 
-import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
@@ -11,13 +10,11 @@ import com.practicum.playlistmaker.domain.TRACK_TO_PLAY
 import com.practicum.playlistmaker.domain.models.Track
 import com.practicum.playlistmaker.presentation.api.PlayerUiUpdater
 import com.practicum.playlistmaker.presentation.presenter.PlayerUiInteractor
-import java.util.Locale
 
 class PlayerActivity : AppCompatActivity() {
 
     private lateinit var track: Track
     private lateinit var binding: ActivityAudioPlayerBinding
-    private val dateFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
     private var uiStateOnPlaying = false
     private lateinit var playerUiInteractor: PlayerUiInteractor
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +31,7 @@ class PlayerActivity : AppCompatActivity() {
 
                 override fun onPlayerStatePlaybackComplete() {
                     playControlButton.setImageResource(R.drawable.button_play)
-                    trackPlaytimeTV.text = dateFormat.format(0)
+                    trackPlaytimeTV.text = PLAYER_START_TIME
                     uiStateOnPlaying = false
                 }
 
@@ -48,8 +45,8 @@ class PlayerActivity : AppCompatActivity() {
                     uiStateOnPlaying = false
                 }
 
-                override fun onCurrentPositionChange(currentPosition: Int) {
-                    binding.trackPlaytimeTV.text = dateFormat.format(currentPosition)
+                override fun onCurrentPositionChange(currentPosition: String) {
+                    binding.trackPlaytimeTV.text = currentPosition
                 }
 
                 override fun getPlayerActivityUiState(): Boolean {
@@ -67,7 +64,7 @@ class PlayerActivity : AppCompatActivity() {
             }
             trackNameTV.text = track.trackName
             artistNameTV.text = track.artistName
-            trackPlaytimeTV.text = dateFormat.format(0)
+            trackPlaytimeTV.text = PLAYER_START_TIME
             durationTV.text = track.trackTimeMinSec
             albumTV.text = track.collectionName
             yearTV.text = track.releaseYear
@@ -96,5 +93,9 @@ class PlayerActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         playerUiInteractor.onPlayerActivityDestroy()
+    }
+
+    companion object {
+        private const val PLAYER_START_TIME = "00:00"
     }
 }
