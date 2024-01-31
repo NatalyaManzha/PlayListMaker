@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.presentation.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -74,13 +75,15 @@ class PlayerActivity : AppCompatActivity() {
                 playerUiInteractor.playbackControl(uiStateOnPlaying)
             }
         }
-
+        val startTime = System.currentTimeMillis()
         Glide.with(this)
             .load(track.artworkUrl512)
             .placeholder(R.drawable.placeholder)
             .fitCenter()
             .transform(RoundedCorners(applicationContext.resources.getDimensionPixelSize(R.dimen.radius_8dp)))
             .into(binding.coverArtwork)
+        val endTime = System.currentTimeMillis()
+        Log.d("QQQ", "Картинка загружалась ${endTime-startTime} миллисек")
 
         playerUiInteractor.prepareUiInteractor(track)
     }

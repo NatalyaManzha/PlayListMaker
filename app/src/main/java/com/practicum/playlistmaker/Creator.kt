@@ -24,6 +24,7 @@ import com.practicum.playlistmaker.domain.impl.useCase.app_theme.SaveThemeUseCas
 import com.practicum.playlistmaker.domain.impl.useCase.media_player.ControlMediaPlayerUseCaseImpl
 import com.practicum.playlistmaker.domain.impl.useCase.search_history.ClearSearchHistoryUseCaseImpl
 import com.practicum.playlistmaker.domain.impl.useCase.search_history.GetSearchHistoryListUseCaseImpl
+import com.practicum.playlistmaker.domain.impl.useCase.search_history.SaveSearchHistoryUseCaseImpl
 import com.practicum.playlistmaker.domain.impl.useCase.search_tracks.SearchTracksUseCaseImpl
 
 object Creator {
@@ -55,7 +56,7 @@ object Creator {
     }
 
     fun provideSaveSearchHistoryUseCase(): com.practicum.playlistmaker.domain.api.useCase.SaveSearchHistoryUseCase {
-        return SaveSearchHistoryUseCase(provideSearchHistiryRepository())
+        return SaveSearchHistoryUseCaseImpl(provideSearchHistiryRepository())
     }
 
     fun provideClearSearchHistoryUseCase(): ClearSearchHistoryUseCase {
