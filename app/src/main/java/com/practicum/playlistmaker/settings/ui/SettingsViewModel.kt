@@ -3,9 +3,9 @@ package com.practicum.playlistmaker.settings.ui
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.practicum.playlistmaker.Creator
+import com.practicum.playlistmaker.utils.Creator
 import com.practicum.playlistmaker.PlaylistMakerApp
-import com.practicum.playlistmaker.ResourceProvider
+import com.practicum.playlistmaker.utils.ResourceProvider
 
 class SettingsViewModel : ViewModel() {
 

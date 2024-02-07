@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.utils
 
 import android.app.Application
 import android.content.res.Configuration
@@ -8,7 +8,7 @@ object ResourceProvider {
 
 
     fun setApplication(application: Application) {
-        this.application = application
+        ResourceProvider.application = application
     }
 
     fun getString(resId: Int): String {

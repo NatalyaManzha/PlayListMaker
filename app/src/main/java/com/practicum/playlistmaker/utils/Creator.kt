@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.utils
 
 
 import android.app.Application
@@ -50,7 +50,7 @@ object Creator {
 
 
     fun setApplication(application: Application) {
-        this.application = application
+        Creator.application = application
     }
     fun provideShareLinkUseCase(): ShareLinkUseCase {
         return ShareLinkUseCaseImpl(getExternalNavigator())

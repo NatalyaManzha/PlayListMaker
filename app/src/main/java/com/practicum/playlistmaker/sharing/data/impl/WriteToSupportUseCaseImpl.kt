@@ -1,7 +1,7 @@
 package com.practicum.playlistmaker.sharing.data.impl
 
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.ResourceProvider
+import com.practicum.playlistmaker.utils.ResourceProvider
 import com.practicum.playlistmaker.sharing.domain.api.ExternalNavigator
 import com.practicum.playlistmaker.sharing.domain.api.WriteToSupportUseCase
 

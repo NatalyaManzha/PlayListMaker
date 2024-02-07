@@ -5,7 +5,7 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.practicum.playlistmaker.Creator
+import com.practicum.playlistmaker.utils.Creator
 import com.practicum.playlistmaker.player.domain.api.MediaPlayerController
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerCommand
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerControllerCommand

@@ -14,14 +14,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.player.domain.models.Track
 import com.practicum.playlistmaker.player.ui.PlayerActivity
-import com.practicum.playlistmaker.search.domain.api.SearchTracksResultConsumer
-import com.practicum.playlistmaker.search.domain.models.ConvertedResponse
-import com.practicum.playlistmaker.search.domain.models.SearchState
 import com.practicum.playlistmaker.search.ui.models.UiState
 
 class SearchActivity : AppCompatActivity() {
@@ -44,11 +40,10 @@ class SearchActivity : AppCompatActivity() {
                 is UiState.Default -> hideAllViews()
                 is UiState.SearchHistory -> showSearchhistory(it.tracklist)
                 is UiState.ClearSearchHistory -> onClearedSearchHistory()
-                is UiState.EdittingText -> {}
-                is UiState.Loading -> showLoading(binding.inputEditText)
-                is UiState.SearchResult -> {}
+                is UiState.Loading -> showLoading()
+                is UiState.SearchResult -> showSearchResult(it.tracklist)
                 is UiState.EmptyResult -> showEmptyResult()
-                is UiState.Error -> {}
+                is UiState.Error -> showOnFailure()
             }
         }
         viewModel.observeClearTextEnabled().observe(this) {
@@ -57,7 +52,6 @@ class SearchActivity : AppCompatActivity() {
         viewModel.observeClearText().observe(this) {
             renderClear()
         }
-
         binding.toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
@@ -113,7 +107,13 @@ class SearchActivity : AppCompatActivity() {
                 false
             }
             addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     with(binding) {
@@ -144,38 +144,13 @@ class SearchActivity : AppCompatActivity() {
         PlayerActivity.show(this, track)
     }
 
-    /*private fun startSearch() {
-        with(binding) {
-            if (inputEditText.text.isNotEmpty()) {
-                showLoading(inputEditText)
-                Creator.provideSearchTracksUseCase()
-                    .execute(inputEditText.text.toString(), object : SearchTracksResultConsumer {
-                        override fun consume(result: ConvertedResponse) {
-
-                            trackList.clear()
-
-                            val runnable = {
-                                progressBar.isVisible = false
-                                when (result.state) {
-                                    SearchState.FAILURE -> showOnFailure()
-                                    SearchState.EMPTY -> showEmptyResult()
-                                    SearchState.SUCCESS -> showSearchResult(result)
-                                }
-
-                            }
-                            Handler(Looper.getMainLooper()).post(runnable)
-                        }
-                    })
-            }
-        }
-    }*/
-
     private fun showSearchResult(trackList: List<Track>) {
         with(binding) {
             trackListAdapter.trackList = trackList
             tracklistRV.adapter?.notifyDataSetChanged()
             tracklistRV.isVisible = true
             progressBar.isVisible = false
+            inputEditText.clearFocus()
         }
     }
 
@@ -186,6 +161,8 @@ class SearchActivity : AppCompatActivity() {
             placeholderMessage.isVisible = true
             placeholderMessage.setText(R.string.search_failed)
             progressBar.isVisible = false
+            inputEditText.clearFocus()
+            updateButton.isVisible = true
         }
     }
 
@@ -198,6 +175,7 @@ class SearchActivity : AppCompatActivity() {
             placeholderMessage.setText(R.string.no_internet)
             updateButton.isVisible = true
             progressBar.isVisible = false
+            inputEditText.clearFocus()
         }
     }
 
@@ -215,7 +193,7 @@ class SearchActivity : AppCompatActivity() {
         binding.clearButton.isVisible = enabled
     }
 
-    private fun renderClear(){
+    private fun renderClear() {
         binding.inputEditText.setText(EDIT_TEXT_DEFAULT)
         binding.inputEditText.clearFocus()
         hideAllViews()
@@ -223,9 +201,11 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun showSearchhistory(trackList: List<Track>) {
+        hideAllViews()
         searchHistoryAdapter.trackList = trackList
         binding.searchHistoryRV.adapter?.notifyDataSetChanged()
         binding.searchHistoryLayout.isVisible = true
+        binding.searchHistoryRV.smoothScrollToPosition(0)
     }
 
 
@@ -238,10 +218,10 @@ class SearchActivity : AppCompatActivity() {
         return current
     }
 
-    private fun showLoading(editText: EditText) {
+    private fun showLoading() {
         hideAllViews()
         binding.progressBar.isVisible = true
-        hideKeyboard(editText)
+        hideKeyboard(binding.inputEditText)
     }
 
     private fun onClearedSearchHistory() {
