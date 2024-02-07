@@ -1,5 +1,5 @@
 package com.practicum.playlistmaker.domain.api.useCase
 
-interface CheckoutSavedAppTheme {
+interface CheckoutSavedAppThemeUseCase {
     fun execute(defaultStateOfDarkTheme: Boolean): Boolean
 }

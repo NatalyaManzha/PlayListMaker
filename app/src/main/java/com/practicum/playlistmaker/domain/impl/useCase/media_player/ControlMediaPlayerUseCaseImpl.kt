@@ -2,14 +2,14 @@ package com.practicum.playlistmaker.domain.impl.useCase.media_player
 
 import com.practicum.playlistmaker.domain.api.MediaPlayerControl
 import com.practicum.playlistmaker.domain.api.MediaPlayerInfoConsumer
-import com.practicum.playlistmaker.domain.api.useCase.ControlMediaPlayer
+import com.practicum.playlistmaker.domain.api.useCase.ControlMediaPlayerUseCase
 import com.practicum.playlistmaker.domain.models.MediaPlayerCommand
 import com.practicum.playlistmaker.domain.models.MediaPlayerControllerCommand
 import com.practicum.playlistmaker.domain.models.MediaPlayerFeedbackData
 
-class ControlMediaPlayerUseCase(
+class ControlMediaPlayerUseCaseImpl(
     private val mediaPlayerControl: MediaPlayerControl
-) : ControlMediaPlayer {
+) : ControlMediaPlayerUseCase {
     override fun execute(
         controllerCommand: MediaPlayerControllerCommand,
         consumer: MediaPlayerInfoConsumer

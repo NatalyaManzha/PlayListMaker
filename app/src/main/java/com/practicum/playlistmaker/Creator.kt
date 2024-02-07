@@ -2,24 +2,30 @@ package com.practicum.playlistmaker
 
 
 import android.app.Application
-import com.practicum.playlistmaker.data.impl.AppThemeRepositoryImpl
-import com.practicum.playlistmaker.data.impl.MediaPlayerControlImpl
-import com.practicum.playlistmaker.data.impl.SearchHistoryRepositoryImpl
+import com.practicum.playlistmaker.data.shared_preferenses.AppThemeRepositoryImpl
+import com.practicum.playlistmaker.data.media_player.MediaPlayerControlImpl
+import com.practicum.playlistmaker.data.network.api.NetworkClient
+import com.practicum.playlistmaker.data.network.impl.NetworkClientImpl
+import com.practicum.playlistmaker.data.shared_preferenses.SearchHistoryRepositoryImpl
+import com.practicum.playlistmaker.data.network.impl.TrackRepositoryImpl
 import com.practicum.playlistmaker.domain.api.AppThemeRepository
 import com.practicum.playlistmaker.domain.api.MediaPlayerControl
 import com.practicum.playlistmaker.domain.api.SearchHistoryRepository
-import com.practicum.playlistmaker.domain.api.useCase.CheckoutSavedAppTheme
-import com.practicum.playlistmaker.domain.api.useCase.ClearSearchHistory
-import com.practicum.playlistmaker.domain.api.useCase.ControlMediaPlayer
-import com.practicum.playlistmaker.domain.api.useCase.GetSearchHistoryList
-import com.practicum.playlistmaker.domain.api.useCase.SaveSearchHistory
-import com.practicum.playlistmaker.domain.api.useCase.SaveTheme
-import com.practicum.playlistmaker.domain.impl.useCase.app_theme.CheckoutSavedAppThemeUseCase
-import com.practicum.playlistmaker.domain.impl.useCase.app_theme.SaveThemeUseCase
-import com.practicum.playlistmaker.domain.impl.useCase.media_player.ControlMediaPlayerUseCase
-import com.practicum.playlistmaker.domain.impl.useCase.search_history.ClearSearchHistoryUseCase
-import com.practicum.playlistmaker.domain.impl.useCase.search_history.GetSearchHistoryListUseCase
-import com.practicum.playlistmaker.domain.impl.useCase.search_history.SaveSearchHistoryUseCase
+import com.practicum.playlistmaker.domain.api.TrackRepository
+import com.practicum.playlistmaker.domain.api.useCase.CheckoutSavedAppThemeUseCase
+import com.practicum.playlistmaker.domain.api.useCase.ClearSearchHistoryUseCase
+import com.practicum.playlistmaker.domain.api.useCase.ControlMediaPlayerUseCase
+import com.practicum.playlistmaker.domain.api.useCase.GetSearchHistoryListUseCase
+import com.practicum.playlistmaker.domain.api.useCase.SaveSearchHistoryUseCase
+import com.practicum.playlistmaker.domain.api.useCase.SaveThemeUseCase
+import com.practicum.playlistmaker.domain.api.useCase.SearchTracksUseCase
+import com.practicum.playlistmaker.domain.impl.useCase.app_theme.CheckoutSavedAppThemeUseCaseImpl
+import com.practicum.playlistmaker.domain.impl.useCase.app_theme.SaveThemeUseCaseImpl
+import com.practicum.playlistmaker.domain.impl.useCase.media_player.ControlMediaPlayerUseCaseImpl
+import com.practicum.playlistmaker.domain.impl.useCase.search_history.ClearSearchHistoryUseCaseImpl
+import com.practicum.playlistmaker.domain.impl.useCase.search_history.GetSearchHistoryListUseCaseImpl
+import com.practicum.playlistmaker.domain.impl.useCase.search_history.SaveSearchHistoryUseCaseImpl
+import com.practicum.playlistmaker.domain.impl.useCase.search_tracks.SearchTracksUseCaseImpl
 
 object Creator {
 
@@ -30,28 +36,39 @@ object Creator {
         this.application = application
     }
 
-    fun provideControlMediaPlayerUseCase(): ControlMediaPlayer {
-        return ControlMediaPlayerUseCase(provideMediaPlayerControl())
+    fun provudeSearchTracksUseCase(): SearchTracksUseCase {
+        return SearchTracksUseCaseImpl(provideTrackRepository())
+    }
+    fun provideControlMediaPlayerUseCase(): ControlMediaPlayerUseCase {
+        return ControlMediaPlayerUseCaseImpl(provideMediaPlayerControl())
     }
 
-    fun provideSaveThemeUseCase(): SaveTheme {
-        return SaveThemeUseCase(provideAppThemeRepository())
+    fun provideSaveThemeUseCase(): SaveThemeUseCase {
+        return SaveThemeUseCaseImpl(provideAppThemeRepository())
     }
 
-    fun provideCheckoutSavedAppThemeUseCase(): CheckoutSavedAppTheme {
-        return CheckoutSavedAppThemeUseCase(provideAppThemeRepository())
+    fun provideCheckoutSavedAppThemeUseCase(): CheckoutSavedAppThemeUseCase {
+        return CheckoutSavedAppThemeUseCaseImpl(provideAppThemeRepository())
     }
 
-    fun provideGetSearchHistoryListUseCase(): GetSearchHistoryList {
-        return GetSearchHistoryListUseCase(provideSearchHistiryRepository())
+    fun provideGetSearchHistoryListUseCase(): GetSearchHistoryListUseCase {
+        return GetSearchHistoryListUseCaseImpl(provideSearchHistiryRepository())
     }
 
-    fun provideSaveSearchHistoryUseCase(): SaveSearchHistory {
-        return SaveSearchHistoryUseCase(provideSearchHistiryRepository())
+    fun provideSaveSearchHistoryUseCase(): com.practicum.playlistmaker.domain.api.useCase.SaveSearchHistoryUseCase {
+        return SaveSearchHistoryUseCaseImpl(provideSearchHistiryRepository())
     }
 
-    fun provideClearSearchHistoryUseCase(): ClearSearchHistory {
-        return ClearSearchHistoryUseCase(provideSearchHistiryRepository())
+    fun provideClearSearchHistoryUseCase(): ClearSearchHistoryUseCase {
+        return ClearSearchHistoryUseCaseImpl(provideSearchHistiryRepository())
+    }
+
+    private fun provideTrackRepository(): TrackRepository{
+        return TrackRepositoryImpl(provideNetworcClient())
+    }
+
+    private fun provideNetworcClient(): NetworkClient {
+        return NetworkClientImpl()
     }
 
     private fun provideSearchHistiryRepository(): SearchHistoryRepository {

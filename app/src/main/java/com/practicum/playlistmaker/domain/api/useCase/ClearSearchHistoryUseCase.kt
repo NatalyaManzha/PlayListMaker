@@ -1,5 +1,5 @@
 package com.practicum.playlistmaker.domain.api.useCase
 
-interface ClearSearchHistory {
+interface ClearSearchHistoryUseCase {
     fun execute()
 }

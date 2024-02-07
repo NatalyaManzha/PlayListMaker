@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.data.impl
+package com.practicum.playlistmaker.data.media_player
 
 import android.media.MediaPlayer
 import com.practicum.playlistmaker.domain.api.MediaPlayerControl

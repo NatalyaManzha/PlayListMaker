@@ -5,6 +5,6 @@ interface PlayerUiUpdater {
     fun onPlayerStatePlaybackComplete()
     fun onPlayerStatePlaying()
     fun onPlayerStatePaused()
-    fun onCurrentPositionChange(currentPosition: Int)
+    fun onCurrentPositionChange(currentPosition: String)
     fun getPlayerActivityUiState(): Boolean
 }
