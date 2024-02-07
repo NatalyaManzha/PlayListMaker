@@ -118,11 +118,11 @@
         android:layout_height="@dimen/item_size_52"
         android:layout_marginEnd="@dimen/spacing_8"
         android:background="#00FFFFFF"
-        android:src="@drawable/add_to_favorites"
         app:layout_constraintBottom_toBottomOf="@id/playControlButton"
         app:layout_constraintEnd_toStartOf="@id/rightBorder"
         app:layout_constraintStart_toEndOf="@id/playControlButton"
-        app:layout_constraintTop_toTopOf="@id/playControlButton" />
+        app:layout_constraintTop_toTopOf="@id/playControlButton"
+        tools:src="@drawable/add_to_favorites" />
 
     <TextView
         android:id="@+id/trackPlaytimeTV"

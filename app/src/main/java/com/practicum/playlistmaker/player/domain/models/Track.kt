@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.domain.models
+package com.practicum.playlistmaker.player.domain.models
 
 import java.io.Serializable
 import java.text.SimpleDateFormat
@@ -15,5 +15,6 @@ data class Track(
     val releaseYear: String,
     val trackId: Int,
     val trackName: String,
-    val trackTimeMinSec: String
+    val trackTimeMinSec: String,
+    val inFavorite: Boolean
 ) : Serializable

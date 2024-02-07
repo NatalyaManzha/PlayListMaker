@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.presentation.api
+package com.practicum.playlistmaker.player.ui
 
 interface PlayerUiUpdater {
     fun onPlayerStatePrepared()
@@ -7,4 +7,5 @@ interface PlayerUiUpdater {
     fun onPlayerStatePaused()
     fun onCurrentPositionChange(currentPosition: String)
     fun getPlayerActivityUiState(): Boolean
+    fun setResourseToFavoritesButton(isInFavorites: Boolean)
 }

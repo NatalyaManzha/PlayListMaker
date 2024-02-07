@@ -1,11 +1,11 @@
-package com.practicum.playlistmaker.data.media_player
+package com.practicum.playlistmaker.player.data
 
 import android.media.MediaPlayer
-import com.practicum.playlistmaker.domain.api.MediaPlayerControl
-import com.practicum.playlistmaker.domain.models.MediaPlayerFeedbackData
-import com.practicum.playlistmaker.domain.models.MediaPlayerState
+import com.practicum.playlistmaker.player.domain.api.MediaPlayerController
+import com.practicum.playlistmaker.player.domain.models.MediaPlayerFeedbackData
+import com.practicum.playlistmaker.player.domain.models.MediaPlayerState
 
-class MediaPlayerControlImpl : MediaPlayerControl {
+class MediaPlayerControllerImpl : MediaPlayerController {
 
     private lateinit var url: String
     private val mediaPlayer = MediaPlayer()

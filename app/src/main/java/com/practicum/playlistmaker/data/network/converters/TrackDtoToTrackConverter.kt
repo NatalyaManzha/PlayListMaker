@@ -1,7 +1,7 @@
 package com.practicum.playlistmaker.data.network.converters
 
 import com.practicum.playlistmaker.data.network.dto.TrackDto
-import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.player.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -20,7 +20,8 @@ object TrackDtoToTrackConverter {
                 releaseYear = getReleaseYear(releaseDate),
                 trackId = trackId,
                 trackName = trackName,
-                trackTimeMinSec = getFormatedTime(trackTimeMillis)
+                trackTimeMinSec = getFormatedTime(trackTimeMillis),
+                inFavorite = false
             )
         }
     }

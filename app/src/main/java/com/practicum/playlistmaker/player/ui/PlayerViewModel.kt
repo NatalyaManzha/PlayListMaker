@@ -1,19 +1,19 @@
-package com.practicum.playlistmaker.presentation.presenter
+package com.practicum.playlistmaker.player.ui
 
 import android.icu.text.SimpleDateFormat
 import android.os.Handler
 import android.os.Looper
 import com.practicum.playlistmaker.Creator
-import com.practicum.playlistmaker.domain.api.MediaPlayerInfoConsumer
-import com.practicum.playlistmaker.domain.models.MediaPlayerCommand
-import com.practicum.playlistmaker.domain.models.MediaPlayerControllerCommand
-import com.practicum.playlistmaker.domain.models.MediaPlayerFeedbackData
-import com.practicum.playlistmaker.domain.models.MediaPlayerState
-import com.practicum.playlistmaker.domain.models.Track
-import com.practicum.playlistmaker.presentation.api.PlayerUiUpdater
+import com.practicum.playlistmaker.player.domain.api.MediaPlayerInfoConsumer
+import com.practicum.playlistmaker.player.domain.models.MediaPlayerCommand
+import com.practicum.playlistmaker.player.domain.models.MediaPlayerControllerCommand
+import com.practicum.playlistmaker.player.domain.models.MediaPlayerFeedbackData
+import com.practicum.playlistmaker.player.domain.models.MediaPlayerState
 import java.util.Locale
 
-class PlayerUiInteractor(val playerUiUpdater: PlayerUiUpdater) {
+class PlayerViewModel(val playerUiUpdater: PlayerUiUpdater) {
+    private val likeChecker by lazy { Creator.provideCheckFavoriteTracksUseCase() }
+    private val favorites by lazy { Creator.provideChangeFavoriteTracksUseCase() }
     private val mediaPlayerControler by lazy { Creator.provideControlMediaPlayerUseCase() }
     private val handler = Handler(Looper.getMainLooper())
     private val dateFormat by lazy { SimpleDateFormat("mm:ss", Locale.getDefault()) }
@@ -29,6 +29,7 @@ class PlayerUiInteractor(val playerUiUpdater: PlayerUiUpdater) {
         }
     }
 
+    private var isInFavorites = false
     fun onPlayerActivityDestroy() {
         sendCommandToMediaPlayer(MediaPlayerCommand.RELEASE)
     }
@@ -36,10 +37,6 @@ class PlayerUiInteractor(val playerUiUpdater: PlayerUiUpdater) {
     fun onPlayerActivityPause() {
         sendCommandToMediaPlayer(MediaPlayerCommand.PAUSE)
         handler.removeCallbacksAndMessages(0)
-    }
-
-    fun prepareUiInteractor(track: Track) {
-        prepareMediaPlayer(track)
     }
 
     private fun sendCommandToMediaPlayer(command: MediaPlayerCommand) {
@@ -58,11 +55,11 @@ class PlayerUiInteractor(val playerUiUpdater: PlayerUiUpdater) {
         }
     }
 
-    private fun prepareMediaPlayer(track: Track) {
+    fun prepareMediaPlayer(previewUrl: String) {
         mediaPlayerControler.execute(
             MediaPlayerControllerCommand(
                 MediaPlayerCommand.PREPARE,
-                track.previewUrl
+                previewUrl
             ), updaterUi
         )
     }
@@ -81,6 +78,26 @@ class PlayerUiInteractor(val playerUiUpdater: PlayerUiUpdater) {
             handler.post(runnable)
         }
     }
+
+    fun checkFavorites(trackId: Int) {
+        val isInFavorites = likeChecker.isInFavorites(trackId.toString())
+        playerUiUpdater.setResourseToFavoritesButton(isInFavorites)
+        this.isInFavorites = isInFavorites
+    }
+
+    fun toggleFavorite(trackId: Int) {
+        val id = trackId.toString()
+        if (isInFavorites) {
+            favorites.removeFromFavorites(id)
+            isInFavorites = false
+            playerUiUpdater.setResourseToFavoritesButton(isInFavorites)
+        } else {
+            favorites.addToFavorites(id)
+            isInFavorites = true
+            playerUiUpdater.setResourseToFavoritesButton(isInFavorites)
+        }
+    }
+
 
     companion object {
         private const val DELAY_MILLIS = 300L

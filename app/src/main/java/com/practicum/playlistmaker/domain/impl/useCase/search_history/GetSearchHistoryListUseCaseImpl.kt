@@ -3,7 +3,7 @@ package com.practicum.playlistmaker.domain.impl.useCase.search_history
 
 import com.practicum.playlistmaker.domain.api.SearchHistoryRepository
 import com.practicum.playlistmaker.domain.api.useCase.GetSearchHistoryListUseCase
-import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.player.domain.models.Track
 
 class GetSearchHistoryListUseCaseImpl(
     private val searchHistoryRepository: SearchHistoryRepository

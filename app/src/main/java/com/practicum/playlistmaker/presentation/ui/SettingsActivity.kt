@@ -5,13 +5,14 @@ import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
-import com.practicum.playlistmaker.presentation.presenter.PlaylistMakerApp
+import com.practicum.playlistmaker.PlaylistMakerApp
 
 
 class SettingsActivity : AppCompatActivity() {
-
+    private val saveThemeUseCase by lazy { Creator.provideSaveThemeUseCase() }
     private lateinit var binding: ActivitySettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,11 +25,9 @@ class SettingsActivity : AppCompatActivity() {
         }
         turnSwitcher()
         binding.switcher.setOnCheckedChangeListener { _, checked ->
-            if (checked) {
-                (applicationContext as PlaylistMakerApp).switchTheme(darkThemeEnabled = true)
-            } else {
-                (applicationContext as PlaylistMakerApp).switchTheme(darkThemeEnabled = false)
-            }
+            val darkThemeEnabled = if (checked) true else false
+            (applicationContext as PlaylistMakerApp).switchTheme(darkThemeEnabled)
+            saveThemeUseCase.execute(darkThemeEnabled)
         }
 
         binding.shareButton.setOnClickListener {

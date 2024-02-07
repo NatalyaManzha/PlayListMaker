@@ -1,35 +1,44 @@
 package com.practicum.playlistmaker
 
 
+
 import android.app.Application
+import android.content.SharedPreferences
+import androidx.appcompat.app.AppCompatActivity
 import com.practicum.playlistmaker.data.shared_preferenses.AppThemeRepositoryImpl
-import com.practicum.playlistmaker.data.media_player.MediaPlayerControlImpl
+import com.practicum.playlistmaker.player.data.MediaPlayerControllerImpl
 import com.practicum.playlistmaker.data.network.api.NetworkClient
 import com.practicum.playlistmaker.data.network.impl.NetworkClientImpl
 import com.practicum.playlistmaker.data.shared_preferenses.SearchHistoryRepositoryImpl
-import com.practicum.playlistmaker.data.network.impl.TrackRepositoryImpl
+import com.practicum.playlistmaker.data.network.impl.SearchTrackRepositoryImpl
 import com.practicum.playlistmaker.domain.api.AppThemeRepository
-import com.practicum.playlistmaker.domain.api.MediaPlayerControl
+import com.practicum.playlistmaker.player.domain.api.MediaPlayerController
 import com.practicum.playlistmaker.domain.api.SearchHistoryRepository
-import com.practicum.playlistmaker.domain.api.TrackRepository
+import com.practicum.playlistmaker.domain.api.SearchTrackRepository
 import com.practicum.playlistmaker.domain.api.useCase.CheckoutSavedAppThemeUseCase
 import com.practicum.playlistmaker.domain.api.useCase.ClearSearchHistoryUseCase
-import com.practicum.playlistmaker.domain.api.useCase.ControlMediaPlayerUseCase
+import com.practicum.playlistmaker.player.domain.api.ControlMediaPlayerUseCase
 import com.practicum.playlistmaker.domain.api.useCase.GetSearchHistoryListUseCase
-import com.practicum.playlistmaker.domain.api.useCase.SaveSearchHistoryUseCase
 import com.practicum.playlistmaker.domain.api.useCase.SaveThemeUseCase
 import com.practicum.playlistmaker.domain.api.useCase.SearchTracksUseCase
 import com.practicum.playlistmaker.domain.impl.useCase.app_theme.CheckoutSavedAppThemeUseCaseImpl
 import com.practicum.playlistmaker.domain.impl.useCase.app_theme.SaveThemeUseCaseImpl
-import com.practicum.playlistmaker.domain.impl.useCase.media_player.ControlMediaPlayerUseCaseImpl
+import com.practicum.playlistmaker.player.domain.impl.ControlMediaPlayerUseCaseImpl
 import com.practicum.playlistmaker.domain.impl.useCase.search_history.ClearSearchHistoryUseCaseImpl
 import com.practicum.playlistmaker.domain.impl.useCase.search_history.GetSearchHistoryListUseCaseImpl
 import com.practicum.playlistmaker.domain.impl.useCase.search_history.SaveSearchHistoryUseCaseImpl
 import com.practicum.playlistmaker.domain.impl.useCase.search_tracks.SearchTracksUseCaseImpl
+import com.practicum.playlistmaker.player.data.FavoriteTracksRepositoryImpl
+import com.practicum.playlistmaker.player.domain.api.ChangeFavoriteTracksUseCase
+import com.practicum.playlistmaker.player.domain.api.CheckFavoriteTracksUseCase
+import com.practicum.playlistmaker.player.domain.api.FavoriteTracksRepository
+import com.practicum.playlistmaker.player.domain.impl.ChangeFavoriteTracksUseCaseImpl
+import com.practicum.playlistmaker.player.domain.impl.CheckFavoriteTracksUseCaseImpl
 
 object Creator {
 
     private lateinit var application: Application
+    private const val PREFERENCES = "preferences"
 
 
     fun setApplication(application: Application) {
@@ -37,49 +46,66 @@ object Creator {
     }
 
     fun provudeSearchTracksUseCase(): SearchTracksUseCase {
-        return SearchTracksUseCaseImpl(provideTrackRepository())
+        return SearchTracksUseCaseImpl(getTrackRepository())
     }
+
     fun provideControlMediaPlayerUseCase(): ControlMediaPlayerUseCase {
-        return ControlMediaPlayerUseCaseImpl(provideMediaPlayerControl())
+        return ControlMediaPlayerUseCaseImpl(getMediaPlayerControl())
+    }
+
+    fun provideChangeFavoriteTracksUseCase(): ChangeFavoriteTracksUseCase {
+        return ChangeFavoriteTracksUseCaseImpl(getFavoriteTracksRepository())
+    }
+
+    fun provideCheckFavoriteTracksUseCase() : CheckFavoriteTracksUseCase {
+        return CheckFavoriteTracksUseCaseImpl(getFavoriteTracksRepository())
     }
 
     fun provideSaveThemeUseCase(): SaveThemeUseCase {
-        return SaveThemeUseCaseImpl(provideAppThemeRepository())
+        return SaveThemeUseCaseImpl(getAppThemeRepository())
     }
 
     fun provideCheckoutSavedAppThemeUseCase(): CheckoutSavedAppThemeUseCase {
-        return CheckoutSavedAppThemeUseCaseImpl(provideAppThemeRepository())
+        return CheckoutSavedAppThemeUseCaseImpl(getAppThemeRepository())
     }
 
     fun provideGetSearchHistoryListUseCase(): GetSearchHistoryListUseCase {
-        return GetSearchHistoryListUseCaseImpl(provideSearchHistiryRepository())
+        return GetSearchHistoryListUseCaseImpl(getSearchHistoryRepository())
     }
 
     fun provideSaveSearchHistoryUseCase(): com.practicum.playlistmaker.domain.api.useCase.SaveSearchHistoryUseCase {
-        return SaveSearchHistoryUseCaseImpl(provideSearchHistiryRepository())
+        return SaveSearchHistoryUseCaseImpl(getSearchHistoryRepository())
     }
 
     fun provideClearSearchHistoryUseCase(): ClearSearchHistoryUseCase {
-        return ClearSearchHistoryUseCaseImpl(provideSearchHistiryRepository())
+        return ClearSearchHistoryUseCaseImpl(getSearchHistoryRepository())
     }
 
-    private fun provideTrackRepository(): TrackRepository{
-        return TrackRepositoryImpl(provideNetworcClient())
+    private fun getTrackRepository(): SearchTrackRepository {
+        return SearchTrackRepositoryImpl(getNetworcClient())
     }
 
-    private fun provideNetworcClient(): NetworkClient {
+    private fun getNetworcClient(): NetworkClient {
         return NetworkClientImpl()
     }
 
-    private fun provideSearchHistiryRepository(): SearchHistoryRepository {
-        return SearchHistoryRepositoryImpl(application)
+    private fun getSearchHistoryRepository(): SearchHistoryRepository {
+        return SearchHistoryRepositoryImpl(getSharedPreferences())
     }
 
-    private fun provideAppThemeRepository(): AppThemeRepository {
-        return AppThemeRepositoryImpl(application)
+    private fun getAppThemeRepository(): AppThemeRepository {
+        return AppThemeRepositoryImpl(getSharedPreferences())
     }
 
-    private fun provideMediaPlayerControl(): MediaPlayerControl {
-        return MediaPlayerControlImpl()
+    private fun getMediaPlayerControl(): MediaPlayerController {
+        return MediaPlayerControllerImpl()
+    }
+
+    private fun getSharedPreferences(): SharedPreferences {
+        return application.getSharedPreferences(PREFERENCES, AppCompatActivity.MODE_PRIVATE)
+    }
+
+    private fun getFavoriteTracksRepository(): FavoriteTracksRepository {
+        return FavoriteTracksRepositoryImpl(getSharedPreferences())
     }
 }

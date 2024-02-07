@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".presentation.presenter.PlaylistMakerApp"
+        android:name=".PlaylistMakerApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -36,7 +36,7 @@
             android:name=".presentation.ui.SettingsActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.ui.PlayerActivity"
+            android:name=".player.ui.PlayerActivity"
             android:exported="false" />
 
     </application>

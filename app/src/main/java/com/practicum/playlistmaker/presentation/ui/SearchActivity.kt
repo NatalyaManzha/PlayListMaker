@@ -15,16 +15,13 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.data.network.api.ITunesSearchApi
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
-import com.practicum.playlistmaker.domain.MAX_LIST_SIZE
 import com.practicum.playlistmaker.domain.TRACK_TO_PLAY
 import com.practicum.playlistmaker.domain.api.SearchTracksResultConsumer
 import com.practicum.playlistmaker.domain.models.ConvertedResponse
 import com.practicum.playlistmaker.domain.models.SearchState
-import com.practicum.playlistmaker.domain.models.Track
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.practicum.playlistmaker.player.domain.models.Track
+import com.practicum.playlistmaker.player.ui.PlayerActivity
 
 class SearchActivity : AppCompatActivity() {
 
@@ -288,9 +285,9 @@ class SearchActivity : AppCompatActivity() {
 
     companion object {
         private const val SEARCH_REQUEST = "SEARCH_REQUEST"
-        private const val ITUNES_BASE_URL = "https://itunes.apple.com"
         private const val CLICK_DEBOUNCE_DELAY_MILLIS = 1000L
         private const val SEARCH_DEBOUNCE_DELAY_MILLIS = 2000L
+        const val MAX_LIST_SIZE = 10
     }
 }
 

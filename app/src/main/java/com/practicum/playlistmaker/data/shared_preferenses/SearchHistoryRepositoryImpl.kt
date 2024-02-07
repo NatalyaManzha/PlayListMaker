@@ -1,15 +1,12 @@
 package com.practicum.playlistmaker.data.shared_preferenses
 
-import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
+import android.content.SharedPreferences
 import com.google.gson.Gson
-import com.practicum.playlistmaker.domain.PREFERENCES
 import com.practicum.playlistmaker.domain.api.SearchHistoryRepository
-import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.player.domain.models.Track
 
-class SearchHistoryRepositoryImpl(context: Context) : SearchHistoryRepository {
-    private val sharedPreferences =
-        context.getSharedPreferences(PREFERENCES, AppCompatActivity.MODE_PRIVATE)
+class SearchHistoryRepositoryImpl(private val sharedPreferences: SharedPreferences) :
+    SearchHistoryRepository {
 
     override fun getSearchHistoryList(): List<Track> {
         val json = sharedPreferences.getString(SEARCH_HISTORY, null)

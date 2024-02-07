@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.domain.models
+package com.practicum.playlistmaker.player.domain.models
 
 enum class MediaPlayerCommand {
     PREPARE,

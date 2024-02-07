@@ -1,26 +1,23 @@
-package com.practicum.playlistmaker.presentation.ui
+package com.practicum.playlistmaker.player.ui
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivityAudioPlayerBinding
+import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
 import com.practicum.playlistmaker.domain.TRACK_TO_PLAY
-import com.practicum.playlistmaker.domain.models.Track
-import com.practicum.playlistmaker.presentation.api.PlayerUiUpdater
-import com.practicum.playlistmaker.presentation.presenter.PlayerUiInteractor
+import com.practicum.playlistmaker.player.domain.models.Track
 
 class PlayerActivity : AppCompatActivity() {
 
     private lateinit var track: Track
-    private lateinit var binding: ActivityAudioPlayerBinding
+    private lateinit var binding: ActivityPlayerBinding
     private var uiStateOnPlaying = false
-    private lateinit var playerUiInteractor: PlayerUiInteractor
+    private lateinit var viewModel: PlayerViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityAudioPlayerBinding.inflate(layoutInflater)
+        binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val playerUiUpdater = with(binding) {
@@ -53,11 +50,18 @@ class PlayerActivity : AppCompatActivity() {
                 override fun getPlayerActivityUiState(): Boolean {
                     return uiStateOnPlaying
                 }
+
+                override fun setResourseToFavoritesButton(isInFavorites: Boolean) {
+                    val resourse =
+                        if (isInFavorites) R.drawable.remove_from_favorites else R.drawable.add_to_favorites
+                    binding.addToFavoritesButton.setImageResource(resourse)
+                }
             }
         }
-        playerUiInteractor = PlayerUiInteractor(playerUiUpdater)
-
         track = intent.getSerializableExtra(TRACK_TO_PLAY) as Track
+        viewModel = PlayerViewModel(playerUiUpdater)
+        viewModel.checkFavorites(track.trackId)
+
 
         with(binding) {
             backButton.setOnClickListener {
@@ -72,7 +76,10 @@ class PlayerActivity : AppCompatActivity() {
             genreTV.text = track.primaryGenreName
             countryTV.text = track.country
             playControlButton.setOnClickListener {
-                playerUiInteractor.playbackControl(uiStateOnPlaying)
+                viewModel.playbackControl(uiStateOnPlaying)
+            }
+            addToFavoritesButton.setOnClickListener {
+                viewModel.toggleFavorite(track.trackId)
             }
         }
 
@@ -83,18 +90,22 @@ class PlayerActivity : AppCompatActivity() {
             .transform(RoundedCorners(applicationContext.resources.getDimensionPixelSize(R.dimen.radius_8dp)))
             .into(binding.coverArtwork)
 
-        playerUiInteractor.prepareUiInteractor(track)
+        viewModel.prepareMediaPlayer(track.previewUrl)
     }
 
     override fun onPause() {
         super.onPause()
-        playerUiInteractor.onPlayerActivityPause()
+        viewModel.onPlayerActivityPause()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        playerUiInteractor.onPlayerActivityDestroy()
+        viewModel.onPlayerActivityDestroy()
     }
+
+    /* private fun chooseResourseToFavoritesButton(isInFavorites: Boolean): Int {
+         return if (isInFavorites) R.drawable.add_to_favorites else R.drawable.remove_from_favorites
+     }*/
 
     companion object {
         private const val PLAYER_START_TIME = "00:00"
