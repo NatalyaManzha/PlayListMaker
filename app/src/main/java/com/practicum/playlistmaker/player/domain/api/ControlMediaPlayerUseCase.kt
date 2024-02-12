@@ -5,6 +5,7 @@ import com.practicum.playlistmaker.player.domain.models.MediaPlayerControllerCom
 interface ControlMediaPlayerUseCase {
     fun execute(
         controllerCommand: MediaPlayerControllerCommand,
-        consumer: MediaPlayerInfoConsumer
+        consumer: MediaPlayerController.Consumer
     )
+
 }

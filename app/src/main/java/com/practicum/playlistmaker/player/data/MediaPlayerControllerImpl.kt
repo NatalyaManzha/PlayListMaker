@@ -17,7 +17,7 @@ class MediaPlayerControllerImpl : MediaPlayerController {
     }
 
     override fun getCurrentPosition(): MediaPlayerFeedbackData.CurrentPosition {
-        val currentPosition = mediaPlayer.currentPosition
+        val currentPosition = TimeFormatter.format(mediaPlayer.currentPosition)
         return MediaPlayerFeedbackData.CurrentPosition(currentPosition)
     }
 
@@ -51,6 +51,7 @@ class MediaPlayerControllerImpl : MediaPlayerController {
         mediaPlayer.release()
         state = MediaPlayerState.DEFAULT
         return MediaPlayerFeedbackData.State(state)
+
     }
 
 

@@ -1,39 +1,47 @@
 package com.practicum.playlistmaker
 
 
-
 import android.app.Application
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
-import com.practicum.playlistmaker.data.shared_preferenses.AppThemeRepositoryImpl
-import com.practicum.playlistmaker.player.data.MediaPlayerControllerImpl
-import com.practicum.playlistmaker.data.network.api.NetworkClient
-import com.practicum.playlistmaker.data.network.impl.NetworkClientImpl
-import com.practicum.playlistmaker.data.shared_preferenses.SearchHistoryRepositoryImpl
-import com.practicum.playlistmaker.data.network.impl.SearchTrackRepositoryImpl
-import com.practicum.playlistmaker.domain.api.AppThemeRepository
-import com.practicum.playlistmaker.player.domain.api.MediaPlayerController
-import com.practicum.playlistmaker.domain.api.SearchHistoryRepository
-import com.practicum.playlistmaker.domain.api.SearchTrackRepository
-import com.practicum.playlistmaker.domain.api.useCase.CheckoutSavedAppThemeUseCase
-import com.practicum.playlistmaker.domain.api.useCase.ClearSearchHistoryUseCase
-import com.practicum.playlistmaker.player.domain.api.ControlMediaPlayerUseCase
-import com.practicum.playlistmaker.domain.api.useCase.GetSearchHistoryListUseCase
-import com.practicum.playlistmaker.domain.api.useCase.SaveThemeUseCase
-import com.practicum.playlistmaker.domain.api.useCase.SearchTracksUseCase
-import com.practicum.playlistmaker.domain.impl.useCase.app_theme.CheckoutSavedAppThemeUseCaseImpl
-import com.practicum.playlistmaker.domain.impl.useCase.app_theme.SaveThemeUseCaseImpl
-import com.practicum.playlistmaker.player.domain.impl.ControlMediaPlayerUseCaseImpl
-import com.practicum.playlistmaker.domain.impl.useCase.search_history.ClearSearchHistoryUseCaseImpl
-import com.practicum.playlistmaker.domain.impl.useCase.search_history.GetSearchHistoryListUseCaseImpl
-import com.practicum.playlistmaker.domain.impl.useCase.search_history.SaveSearchHistoryUseCaseImpl
-import com.practicum.playlistmaker.domain.impl.useCase.search_tracks.SearchTracksUseCaseImpl
+import com.practicum.playlistmaker.search.data.network.api.NetworkClient
+import com.practicum.playlistmaker.search.data.network.impl.NetworkClientImpl
+import com.practicum.playlistmaker.search.data.network.impl.SearchTrackRepositoryImpl
+import com.practicum.playlistmaker.settings.data.impl.AppThemeRepositoryImpl
+import com.practicum.playlistmaker.search.data.local.impl.SearchHistoryRepositoryImpl
+import com.practicum.playlistmaker.settings.domain.api.AppThemeRepository
+import com.practicum.playlistmaker.search.domain.api.SearchHistoryRepository
+import com.practicum.playlistmaker.search.domain.api.SearchTrackRepository
+import com.practicum.playlistmaker.settings.domain.api.CheckoutSavedAppThemeUseCase
+import com.practicum.playlistmaker.search.domain.api.ClearSearchHistoryUseCase
+import com.practicum.playlistmaker.search.domain.api.GetSearchHistoryListUseCase
+import com.practicum.playlistmaker.search.domain.api.SaveSearchHistoryUseCase
+import com.practicum.playlistmaker.settings.domain.api.SaveThemeUseCase
+import com.practicum.playlistmaker.search.domain.api.SearchTracksUseCase
+import com.practicum.playlistmaker.settings.domain.impl.CheckoutSavedAppThemeUseCaseImpl
+import com.practicum.playlistmaker.settings.domain.impl.SaveThemeUseCaseImpl
+import com.practicum.playlistmaker.search.domain.impl.ClearSearchHistoryUseCaseImpl
+import com.practicum.playlistmaker.search.domain.impl.GetSearchHistoryListUseCaseImpl
+import com.practicum.playlistmaker.search.domain.impl.SaveSearchHistoryUseCaseImpl
+import com.practicum.playlistmaker.search.domain.impl.SearchTracksUseCaseImpl
 import com.practicum.playlistmaker.player.data.FavoriteTracksRepositoryImpl
+import com.practicum.playlistmaker.player.data.MediaPlayerControllerImpl
 import com.practicum.playlistmaker.player.domain.api.ChangeFavoriteTracksUseCase
 import com.practicum.playlistmaker.player.domain.api.CheckFavoriteTracksUseCase
+import com.practicum.playlistmaker.player.domain.api.ControlMediaPlayerUseCase
 import com.practicum.playlistmaker.player.domain.api.FavoriteTracksRepository
+import com.practicum.playlistmaker.player.domain.api.MediaPlayerController
 import com.practicum.playlistmaker.player.domain.impl.ChangeFavoriteTracksUseCaseImpl
 import com.practicum.playlistmaker.player.domain.impl.CheckFavoriteTracksUseCaseImpl
+import com.practicum.playlistmaker.player.domain.impl.ControlMediaPlayerUseCaseImpl
+import com.practicum.playlistmaker.sharing.domain.api.ExternalNavigator
+import com.practicum.playlistmaker.sharing.data.impl.ExternalNavigatorImpl
+import com.practicum.playlistmaker.sharing.data.impl.ShareLinkUseCaseImpl
+import com.practicum.playlistmaker.sharing.data.impl.UserAgreementUseCaseImpl
+import com.practicum.playlistmaker.sharing.data.impl.WriteToSupportUseCaseImpl
+import com.practicum.playlistmaker.sharing.domain.api.ShareLinkUseCase
+import com.practicum.playlistmaker.sharing.domain.api.UserAgreementUseCase
+import com.practicum.playlistmaker.sharing.domain.api.WriteToSupportUseCase
 
 object Creator {
 
@@ -44,8 +52,17 @@ object Creator {
     fun setApplication(application: Application) {
         this.application = application
     }
+    fun provideShareLinkUseCase(): ShareLinkUseCase {
+        return ShareLinkUseCaseImpl(getExternalNavigator())
+    }
+    fun  provideWriteToSupportUseCase() : WriteToSupportUseCase {
+        return WriteToSupportUseCaseImpl(getExternalNavigator())
+    }
+    fun provideUserAgreementUseCase() : UserAgreementUseCase {
+        return UserAgreementUseCaseImpl(getExternalNavigator())
+    }
 
-    fun provudeSearchTracksUseCase(): SearchTracksUseCase {
+    fun provideSearchTracksUseCase(): SearchTracksUseCase {
         return SearchTracksUseCaseImpl(getTrackRepository())
     }
 
@@ -57,7 +74,7 @@ object Creator {
         return ChangeFavoriteTracksUseCaseImpl(getFavoriteTracksRepository())
     }
 
-    fun provideCheckFavoriteTracksUseCase() : CheckFavoriteTracksUseCase {
+    fun provideCheckFavoriteTracksUseCase(): CheckFavoriteTracksUseCase {
         return CheckFavoriteTracksUseCaseImpl(getFavoriteTracksRepository())
     }
 
@@ -73,7 +90,7 @@ object Creator {
         return GetSearchHistoryListUseCaseImpl(getSearchHistoryRepository())
     }
 
-    fun provideSaveSearchHistoryUseCase(): com.practicum.playlistmaker.domain.api.useCase.SaveSearchHistoryUseCase {
+    fun provideSaveSearchHistoryUseCase(): SaveSearchHistoryUseCase {
         return SaveSearchHistoryUseCaseImpl(getSearchHistoryRepository())
     }
 
@@ -83,6 +100,9 @@ object Creator {
 
     private fun getTrackRepository(): SearchTrackRepository {
         return SearchTrackRepositoryImpl(getNetworcClient())
+    }
+    private fun getExternalNavigator() : ExternalNavigator {
+        return ExternalNavigatorImpl(application)
     }
 
     private fun getNetworcClient(): NetworkClient {

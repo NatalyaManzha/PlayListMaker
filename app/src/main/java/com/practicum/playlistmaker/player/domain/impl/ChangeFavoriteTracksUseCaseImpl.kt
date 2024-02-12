@@ -3,9 +3,9 @@ package com.practicum.playlistmaker.player.domain.impl
 import com.practicum.playlistmaker.player.domain.api.ChangeFavoriteTracksUseCase
 import com.practicum.playlistmaker.player.domain.api.FavoriteTracksRepository
 
-class ChangeFavoriteTracksUseCaseImpl (
+class ChangeFavoriteTracksUseCaseImpl(
     private val favorites: FavoriteTracksRepository
-): ChangeFavoriteTracksUseCase {
+) : ChangeFavoriteTracksUseCase {
     override fun addToFavorites(trackId: String) {
         favorites.addToFavorites(trackId)
     }

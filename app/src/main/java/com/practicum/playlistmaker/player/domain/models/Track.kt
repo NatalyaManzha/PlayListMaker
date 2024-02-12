@@ -1,8 +1,6 @@
 package com.practicum.playlistmaker.player.domain.models
 
 import java.io.Serializable
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 data class Track(
     val artistName: String,

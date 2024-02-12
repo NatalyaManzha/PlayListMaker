@@ -1,67 +1,42 @@
 package com.practicum.playlistmaker.player.ui
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
-import com.practicum.playlistmaker.domain.TRACK_TO_PLAY
+import com.practicum.playlistmaker.player.domain.models.MediaPlayerState
 import com.practicum.playlistmaker.player.domain.models.Track
+
 
 class PlayerActivity : AppCompatActivity() {
 
     private lateinit var track: Track
     private lateinit var binding: ActivityPlayerBinding
-    private var uiStateOnPlaying = false
     private lateinit var viewModel: PlayerViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        val playerUiUpdater = with(binding) {
-            object : PlayerUiUpdater {
-                override fun onPlayerStatePrepared() {
-                    playControlButton.isEnabled = true
-                    uiStateOnPlaying = false
-                }
-
-                override fun onPlayerStatePlaybackComplete() {
-                    playControlButton.setImageResource(R.drawable.button_play)
-                    trackPlaytimeTV.text = PLAYER_START_TIME
-                    uiStateOnPlaying = false
-                }
-
-                override fun onPlayerStatePlaying() {
-                    playControlButton.setImageResource(R.drawable.button_pause)
-                    uiStateOnPlaying = true
-                }
-
-                override fun onPlayerStatePaused() {
-                    playControlButton.setImageResource(R.drawable.button_play)
-                    uiStateOnPlaying = false
-                }
-
-                override fun onCurrentPositionChange(currentPosition: String) {
-                    binding.trackPlaytimeTV.text = currentPosition
-                }
-
-                override fun getPlayerActivityUiState(): Boolean {
-                    return uiStateOnPlaying
-                }
-
-                override fun setResourseToFavoritesButton(isInFavorites: Boolean) {
-                    val resourse =
-                        if (isInFavorites) R.drawable.remove_from_favorites else R.drawable.add_to_favorites
-                    binding.addToFavoritesButton.setImageResource(resourse)
-                }
-            }
-        }
         track = intent.getSerializableExtra(TRACK_TO_PLAY) as Track
-        viewModel = PlayerViewModel(playerUiUpdater)
-        viewModel.checkFavorites(track.trackId)
-
+        viewModel = ViewModelProvider(this)[PlayerViewModel::class.java]
+        viewModel.run {
+            val owner = this@PlayerActivity
+            observePlayerState().observe(owner) {
+                renderPlayerState(it)
+            }
+            observeCurrentPosition().observe(owner) {
+                renderCurrentPosition(it)
+            }
+            observeFavorites().observe(owner) {
+                renderFavorites(it)
+            }
+            checkFavorites(track.trackId)
+        }
 
         with(binding) {
             backButton.setOnClickListener {
@@ -69,14 +44,13 @@ class PlayerActivity : AppCompatActivity() {
             }
             trackNameTV.text = track.trackName
             artistNameTV.text = track.artistName
-            trackPlaytimeTV.text = PLAYER_START_TIME
             durationTV.text = track.trackTimeMinSec
             albumTV.text = track.collectionName
             yearTV.text = track.releaseYear
             genreTV.text = track.primaryGenreName
             countryTV.text = track.country
             playControlButton.setOnClickListener {
-                viewModel.playbackControl(uiStateOnPlaying)
+                viewModel.playbackControl()
             }
             addToFavoritesButton.setOnClickListener {
                 viewModel.toggleFavorite(track.trackId)
@@ -90,7 +64,12 @@ class PlayerActivity : AppCompatActivity() {
             .transform(RoundedCorners(applicationContext.resources.getDimensionPixelSize(R.dimen.radius_8dp)))
             .into(binding.coverArtwork)
 
-        viewModel.prepareMediaPlayer(track.previewUrl)
+        viewModel.preparePlayer(track.previewUrl)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.onPlayerActivityOnResume()
     }
 
     override fun onPause() {
@@ -98,16 +77,35 @@ class PlayerActivity : AppCompatActivity() {
         viewModel.onPlayerActivityPause()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.onPlayerActivityDestroy()
+    private fun renderPlayerState(state: MediaPlayerState) {
+        with(binding.playControlButton) {
+            when (state) {
+                MediaPlayerState.PREPARED -> isEnabled = true
+                MediaPlayerState.PLAYBACK_COMPLETE,
+                MediaPlayerState.PAUSED,
+                MediaPlayerState.DEFAULT -> setImageResource(R.drawable.button_play)
+
+                MediaPlayerState.PLAYING -> setImageResource(R.drawable.button_pause)
+            }
+        }
     }
 
-    /* private fun chooseResourseToFavoritesButton(isInFavorites: Boolean): Int {
-         return if (isInFavorites) R.drawable.add_to_favorites else R.drawable.remove_from_favorites
-     }*/
+    private fun renderCurrentPosition(currentPosition: String) {
+        binding.trackPlaytimeTV.text = currentPosition
+    }
+
+    private fun renderFavorites(isInFavorites: Boolean) {
+        val resourse =
+            if (isInFavorites) R.drawable.remove_from_favorites else R.drawable.add_to_favorites
+        binding.addToFavoritesButton.setImageResource(resourse)
+    }
 
     companion object {
-        private const val PLAYER_START_TIME = "00:00"
+        private const val TRACK_TO_PLAY = "track_to_play"
+        fun show(context: Context, track: Track) {
+            val intent = Intent(context, PlayerActivity::class.java)
+            intent.putExtra(TRACK_TO_PLAY, track)
+            context.startActivity(intent)
+        }
     }
 }

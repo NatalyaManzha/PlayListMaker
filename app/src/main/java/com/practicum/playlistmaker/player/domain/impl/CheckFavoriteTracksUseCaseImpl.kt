@@ -5,7 +5,7 @@ import com.practicum.playlistmaker.player.domain.api.FavoriteTracksRepository
 
 class CheckFavoriteTracksUseCaseImpl(
     private val favorites: FavoriteTracksRepository
-): CheckFavoriteTracksUseCase {
+) : CheckFavoriteTracksUseCase {
     override fun isInFavorites(trackId: String): Boolean {
         return favorites.checkFavorites(trackId)
     }

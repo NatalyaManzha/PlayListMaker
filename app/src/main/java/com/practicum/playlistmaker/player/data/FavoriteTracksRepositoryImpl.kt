@@ -26,6 +26,7 @@ class FavoriteTracksRepositoryImpl(private val sharedPreferences: SharedPreferen
     private fun getSavedFavorites(): Set<String> {
         return sharedPreferences.getStringSet(FAVORITES_KEY, emptySet()) ?: emptySet()
     }
+
     private companion object {
         const val FAVORITES_KEY = "FAVORITES_KEY"
     }

@@ -9,4 +9,7 @@ interface MediaPlayerController {
     fun start(): MediaPlayerFeedbackData.State
     fun pause(): MediaPlayerFeedbackData.State
     fun release(): MediaPlayerFeedbackData.State
+    interface Consumer {
+        fun consume(info: MediaPlayerFeedbackData)
+    }
 }
