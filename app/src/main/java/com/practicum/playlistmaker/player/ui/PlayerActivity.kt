@@ -3,6 +3,7 @@ package com.practicum.playlistmaker.player.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
@@ -84,10 +85,14 @@ class PlayerActivity : AppCompatActivity() {
                 MediaPlayerState.PLAYBACK_COMPLETE,
                 MediaPlayerState.PAUSED,
                 MediaPlayerState.DEFAULT -> setImageResource(R.drawable.button_play)
-
+                MediaPlayerState.ERROR -> showToast()
                 MediaPlayerState.PLAYING -> setImageResource(R.drawable.button_pause)
             }
         }
+    }
+    private fun showToast() {
+        Toast.makeText(this, getString(R.string.player_error_message), Toast.LENGTH_LONG)
+            .show()
     }
 
     private fun renderCurrentPosition(currentPosition: String) {

@@ -23,8 +23,12 @@ class MediaPlayerControllerImpl : MediaPlayerController {
 
     override fun prepare(url: String): MediaPlayerFeedbackData.State {
         with(mediaPlayer) {
-            setDataSource(url)
-            prepareAsync()
+            try {
+                setDataSource(url)
+                prepareAsync()
+            } catch (error: Throwable) {
+                return MediaPlayerFeedbackData.State(MediaPlayerState.ERROR)
+            }
             setOnPreparedListener {
                 state = MediaPlayerState.PREPARED
             }

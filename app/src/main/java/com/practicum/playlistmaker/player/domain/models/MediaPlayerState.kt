@@ -5,5 +5,6 @@ enum class MediaPlayerState {
     PREPARED,
     PLAYBACK_COMPLETE,
     PLAYING,
-    PAUSED
+    PAUSED,
+    ERROR
 }

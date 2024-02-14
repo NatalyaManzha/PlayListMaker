@@ -52,12 +52,12 @@ class PlayerViewModel: ViewModel() {
     fun preparePlayer(url: String) {
         if (trackPreviewUrl != url) {
             trackPreviewUrl = url
-            prepareMediaPlayer(url)
+            prepareMediaPlayer("url")
         }
     }
 
     fun onPlayerActivityOnResume() {
-        if ((currentPositionLiveData.value != "00:00") && (playerToBeResumed == true))
+        if ((currentPositionLiveData.value != PLAYER_START_TIME) && (playerToBeResumed == true))
             sendCommandToMediaPlayer(MediaPlayerCommand.START)
         handler.post(runnable)
         playerToBeResumed = false
