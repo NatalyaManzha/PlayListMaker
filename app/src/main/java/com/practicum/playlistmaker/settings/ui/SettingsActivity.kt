@@ -4,19 +4,19 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class SettingsActivity : AppCompatActivity() {
-
+    private val viewModel: SettingsViewModel by viewModel()
     private lateinit var binding: ActivitySettingsBinding
-    private lateinit var viewModel: SettingsViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        viewModel = ViewModelProvider(this)[SettingsViewModel::class.java]
+
         viewModel.observeAppTheme().observe(this) {
             turnSwitcher(it)
         }
@@ -39,9 +39,10 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-     private fun turnSwitcher(isChecked: Boolean) {
+    private fun turnSwitcher(isChecked: Boolean) {
         binding.switcher.isChecked = isChecked
     }
+
     companion object {
         fun show(context: Context) {
             val intent = Intent(context, SettingsActivity::class.java)

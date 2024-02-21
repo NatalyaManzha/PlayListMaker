@@ -1,29 +1,36 @@
 package com.practicum.playlistmaker.search.ui
 
 import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.practicum.playlistmaker.player.domain.models.Track
+import com.practicum.playlistmaker.search.domain.api.ClearSearchHistoryUseCase
+import com.practicum.playlistmaker.search.domain.api.GetSearchHistoryListUseCase
+import com.practicum.playlistmaker.search.domain.api.SaveSearchHistoryUseCase
 import com.practicum.playlistmaker.search.domain.api.SearchTracksResultConsumer
+import com.practicum.playlistmaker.search.domain.api.SearchTracksUseCase
 import com.practicum.playlistmaker.search.domain.models.ConvertedResponse
 import com.practicum.playlistmaker.search.domain.models.SearchState
 import com.practicum.playlistmaker.search.ui.models.SingleLiveEvent
 import com.practicum.playlistmaker.search.ui.models.UiState
-import com.practicum.playlistmaker.utils.Creator
 
-class SearchViewModel : ViewModel() {
+class SearchViewModel(
+    private val handler: Handler,
+    private val getSearchHistoryListUseCase: GetSearchHistoryListUseCase,
+    private val clearSearchHistoryUseCase: ClearSearchHistoryUseCase,
+    private val saveSearchHistoryUseCase: SaveSearchHistoryUseCase,
+    private val searchTracksUseCase: SearchTracksUseCase
+) : ViewModel() {
 
     private lateinit var searchRequest: String
     private var uiStateLiveData = MutableLiveData<UiState>()
     private var searchHistoryList: MutableList<Track>
     private var clearTextEnabledLiveData = MutableLiveData<Boolean>()
     private var clearTextLiveData = SingleLiveEvent<Boolean>()
-    private val handler = Handler(Looper.getMainLooper())
 
     init {
-        searchHistoryList = Creator.provideGetSearchHistoryListUseCase().execute()
+        searchHistoryList = getSearchHistoryListUseCase.execute()
         uiStateLiveData.value = UiState.Default
     }
 
@@ -31,7 +38,7 @@ class SearchViewModel : ViewModel() {
     fun observeClearTextEnabled(): LiveData<Boolean> = clearTextEnabledLiveData
     fun observeClearText(): LiveData<Boolean> = clearTextLiveData
     fun clearSearchHistory() {
-        Creator.provideClearSearchHistoryUseCase().execute()
+        clearSearchHistoryUseCase.execute()
         uiStateLiveData.value = UiState.ClearSearchHistory
         searchHistoryList.clear()
     }
@@ -60,24 +67,23 @@ class SearchViewModel : ViewModel() {
     }
 
     fun saveSearchHistory() {
-        Creator.provideSaveSearchHistoryUseCase().execute(searchHistoryList)
+        saveSearchHistoryUseCase.execute(searchHistoryList)
     }
 
     fun startSearch() {
         if (!searchRequest.isNullOrEmpty()) {
             uiStateLiveData.value = UiState.Loading
-            Creator.provideSearchTracksUseCase()
-                .execute(searchRequest, object : SearchTracksResultConsumer {
-                    override fun consume(result: ConvertedResponse) {
-                        val uiState =
-                            when (result.state) {
-                                SearchState.FAILURE -> UiState.Error
-                                SearchState.EMPTY -> UiState.EmptyResult
-                                SearchState.SUCCESS -> UiState.SearchResult(result.results!!)
-                            }
-                        renderUiState(uiState)
-                    }
-                })
+            searchTracksUseCase.execute(searchRequest, object : SearchTracksResultConsumer {
+                override fun consume(result: ConvertedResponse) {
+                    val uiState =
+                        when (result.state) {
+                            SearchState.FAILURE -> UiState.Error
+                            SearchState.EMPTY -> UiState.EmptyResult
+                            SearchState.SUCCESS -> UiState.SearchResult(result.results!!)
+                        }
+                    renderUiState(uiState)
+                }
+            })
         }
     }
 

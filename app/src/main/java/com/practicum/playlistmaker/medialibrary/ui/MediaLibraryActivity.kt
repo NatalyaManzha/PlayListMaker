@@ -11,8 +11,9 @@ class MediaLibraryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_media_library)
     }
+
     companion object {
-        fun show(context: Context){
+        fun show(context: Context) {
             val intent = Intent(context, MediaLibraryActivity::class.java)
             context.startActivity(intent)
         }

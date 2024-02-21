@@ -2,25 +2,38 @@ package com.practicum.playlistmaker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import com.practicum.playlistmaker.utils.Creator
+import com.practicum.playlistmaker.di.dataModule
+import com.practicum.playlistmaker.di.repositoryModule
+import com.practicum.playlistmaker.di.useCaseModule
+import com.practicum.playlistmaker.di.viewModelModule
+import com.practicum.playlistmaker.settings.domain.api.CheckoutSavedAppThemeUseCase
+import com.practicum.playlistmaker.settings.domain.api.SaveThemeUseCase
 import com.practicum.playlistmaker.utils.ResourceProvider
+import org.koin.android.ext.android.inject
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 
 class PlaylistMakerApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Creator.setApplication(this)
-        ResourceProvider.setApplication(this)
+
+        startKoin {
+            androidContext(this@PlaylistMakerApp)
+            modules(dataModule, repositoryModule, useCaseModule, viewModelModule)
+        }
+
         applyAppTheme()
     }
 
     private fun applyAppTheme() {
-        val checkoutSavedAppThemeUseCase = Creator.provideCheckoutSavedAppThemeUseCase()
-        val saveThemeUseCase = Creator.provideSaveThemeUseCase()
-        val defaultStateOfDarkTheme = ResourceProvider.isAppDarkThemeEnabled()
-        val darkTheme = checkoutSavedAppThemeUseCase.execute(defaultStateOfDarkTheme)
-        switchTheme(darkTheme)
-        saveThemeUseCase.execute(darkTheme)
+        val checkoutSavedAppThemeUseCase: CheckoutSavedAppThemeUseCase by inject()
+        val saveThemeUseCase: SaveThemeUseCase by inject()
+        val resourceProvider: ResourceProvider by inject()
+        val defaultStateOfDarkTheme = resourceProvider.isAppDarkThemeEnabled()
+        val darkThemeEnabled = checkoutSavedAppThemeUseCase.execute(defaultStateOfDarkTheme)
+        switchTheme(darkThemeEnabled)
+        saveThemeUseCase.execute(darkThemeEnabled)
     }
 
     companion object {

@@ -18,7 +18,7 @@ class ExternalNavigatorImpl(private val appContext: Context) : ExternalNavigator
 
     override fun openUserAgreement(url: String) {
         Intent().apply {
-            action = android.content.Intent.ACTION_VIEW
+            action = Intent.ACTION_VIEW
             data = android.net.Uri.parse(url)
             startNewTask(this)
         }
@@ -26,16 +26,17 @@ class ExternalNavigatorImpl(private val appContext: Context) : ExternalNavigator
 
     override fun writeToSupport(subject: String, message: String, email: String) {
         Intent().apply {
-            action = android.content.Intent.ACTION_SENDTO
+            action = Intent.ACTION_SENDTO
             data = android.net.Uri.parse("mailto:")
-            putExtra(android.content.Intent.EXTRA_EMAIL, arrayOf(email))
-            putExtra(android.content.Intent.EXTRA_TEXT, message)
-            putExtra(android.content.Intent.EXTRA_SUBJECT, subject)
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
+            putExtra(Intent.EXTRA_TEXT, message)
+            putExtra(Intent.EXTRA_SUBJECT, subject)
             startNewTask(this)
         }
     }
-    private fun startNewTask(intent: Intent){
-        intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+
+    private fun startNewTask(intent: Intent) {
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         appContext.startActivity(intent)
     }
 }
