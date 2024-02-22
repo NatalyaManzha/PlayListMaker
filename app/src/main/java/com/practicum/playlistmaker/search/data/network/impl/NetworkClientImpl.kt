@@ -4,26 +4,19 @@ import com.practicum.playlistmaker.search.data.network.api.ITunesSearchApi
 import com.practicum.playlistmaker.search.data.network.api.NetworkClient
 import com.practicum.playlistmaker.search.data.network.dto.Response
 import com.practicum.playlistmaker.search.data.network.dto.TrackSearchRequest
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.practicum.playlistmaker.search.domain.models.SearchStateCode
 
-class NetworkClientImpl : NetworkClient {
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(ITUNES_BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    private val iTunesService = retrofit.create(ITunesSearchApi::class.java)
+class NetworkClientImpl(
+    private val iTunesService: ITunesSearchApi
+) : NetworkClient {
+
     override fun doRequest(request: TrackSearchRequest): Response {
         return try {
             val response = iTunesService.search(request.expression).execute()
             val networkResponse = response.body() ?: Response()
             networkResponse.apply { stateCode = response.code() }
         } catch (ex: Exception) {
-            Response().apply { stateCode = 400 }
+            Response().apply { stateCode = SearchStateCode.FAILURE }
         }
-    }
-
-    companion object {
-        private const val ITUNES_BASE_URL = "https://itunes.apple.com"
     }
 }

@@ -5,26 +5,26 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerState
 import com.practicum.playlistmaker.player.domain.models.Track
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class PlayerActivity : AppCompatActivity() {
 
     private lateinit var track: Track
     private lateinit var binding: ActivityPlayerBinding
-    private lateinit var viewModel: PlayerViewModel
+    private val viewModel: PlayerViewModel by viewModel()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
         track = intent.getSerializableExtra(TRACK_TO_PLAY) as Track
-        viewModel = ViewModelProvider(this)[PlayerViewModel::class.java]
+
         viewModel.run {
             val owner = this@PlayerActivity
             observePlayerState().observe(owner) {
@@ -85,11 +85,13 @@ class PlayerActivity : AppCompatActivity() {
                 MediaPlayerState.PLAYBACK_COMPLETE,
                 MediaPlayerState.PAUSED,
                 MediaPlayerState.DEFAULT -> setImageResource(R.drawable.button_play)
+
                 MediaPlayerState.ERROR -> showToast()
                 MediaPlayerState.PLAYING -> setImageResource(R.drawable.button_pause)
             }
         }
     }
+
     private fun showToast() {
         Toast.makeText(this, getString(R.string.player_error_message), Toast.LENGTH_LONG)
             .show()

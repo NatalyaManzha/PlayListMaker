@@ -5,10 +5,11 @@ import com.practicum.playlistmaker.player.domain.api.MediaPlayerController
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerFeedbackData
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerState
 
-class MediaPlayerControllerImpl : MediaPlayerController {
+class MediaPlayerControllerImpl(
+    private val mediaPlayer: MediaPlayer
+) : MediaPlayerController {
 
     private lateinit var url: String
-    private val mediaPlayer = MediaPlayer()
     private var state = MediaPlayerState.DEFAULT
 
 
@@ -53,6 +54,7 @@ class MediaPlayerControllerImpl : MediaPlayerController {
 
     override fun release(): MediaPlayerFeedbackData.State {
         mediaPlayer.release()
+
         state = MediaPlayerState.DEFAULT
         return MediaPlayerFeedbackData.State(state)
 

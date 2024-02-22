@@ -1,19 +1,15 @@
 package com.practicum.playlistmaker.utils
 
-import android.app.Application
+import android.content.Context
 import android.content.res.Configuration
 
-object ResourceProvider {
-    private lateinit var application: Application
-
-
-    fun setApplication(application: Application) {
-        ResourceProvider.application = application
-    }
-
+class ResourceProvider(
+    private val appContext: Context
+) {
     fun getString(resId: Int): String {
-        return application.getString(resId)
+        return appContext.getString(resId)
     }
+
     fun isAppDarkThemeEnabled(): Boolean =
-        (application.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES)
-    }
+        (appContext.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES)
+}

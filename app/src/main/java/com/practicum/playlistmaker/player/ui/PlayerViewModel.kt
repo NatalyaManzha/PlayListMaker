@@ -1,23 +1,26 @@
 package com.practicum.playlistmaker.player.ui
 
 import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.practicum.playlistmaker.utils.Creator
+import com.practicum.playlistmaker.player.domain.api.ChangeFavoriteTracksUseCase
+import com.practicum.playlistmaker.player.domain.api.CheckFavoriteTracksUseCase
+import com.practicum.playlistmaker.player.domain.api.ControlMediaPlayerUseCase
 import com.practicum.playlistmaker.player.domain.api.MediaPlayerController
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerCommand
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerControllerCommand
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerFeedbackData
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerState
 
-class PlayerViewModel: ViewModel() {
+class PlayerViewModel(
+    private val checkFavoriteTracksUseCase: CheckFavoriteTracksUseCase,
+    private val changeFavoriteTracksUseCase: ChangeFavoriteTracksUseCase,
+    private val controlMediaPlayerUseCase: ControlMediaPlayerUseCase,
+    private val handler: Handler
+) : ViewModel() {
 
-    private val favoritesChecker by lazy { Creator.provideCheckFavoriteTracksUseCase() }
-    private val favorites by lazy { Creator.provideChangeFavoriteTracksUseCase() }
-    private val mediaPlayerController by lazy { Creator.provideControlMediaPlayerUseCase() }
-    private val handler = Handler(Looper.getMainLooper())
+
     private var runnable = Runnable { updatePlayerData() }
     private var uiStateOnPlaying = false
     private var isInFavoritesLiveData = MutableLiveData<Boolean>()
@@ -37,9 +40,11 @@ class PlayerViewModel: ViewModel() {
                         MediaPlayerState.PREPARED,
                         MediaPlayerState.PLAYBACK_COMPLETE -> currentPositionLiveData.value =
                             PLAYER_START_TIME
+
                         else -> {}
                     }
                 }
+
                 is MediaPlayerFeedbackData.CurrentPosition -> currentPositionLiveData.value =
                     info.currentPosition
             }
@@ -52,7 +57,7 @@ class PlayerViewModel: ViewModel() {
     fun preparePlayer(url: String) {
         if (trackPreviewUrl != url) {
             trackPreviewUrl = url
-            prepareMediaPlayer("url")
+            prepareMediaPlayer(url)
         }
     }
 
@@ -70,12 +75,12 @@ class PlayerViewModel: ViewModel() {
     }
 
     private fun sendCommandToMediaPlayer(command: MediaPlayerCommand) {
-        mediaPlayerController.execute(MediaPlayerControllerCommand(command, null), infoConsumer)
+        controlMediaPlayerUseCase.execute(MediaPlayerControllerCommand(command, null), infoConsumer)
     }
 
     private fun prepareMediaPlayer(previewUrl: String) {
         infoConsumer.consume(MediaPlayerFeedbackData.State(MediaPlayerState.DEFAULT))
-        mediaPlayerController.execute(
+        controlMediaPlayerUseCase.execute(
             MediaPlayerControllerCommand(
                 MediaPlayerCommand.PREPARE,
                 previewUrl
@@ -105,14 +110,16 @@ class PlayerViewModel: ViewModel() {
     }
 
     fun checkFavorites(trackId: Int) {
-        isInFavoritesLiveData.value = favoritesChecker.isInFavorites(trackId.toString())
+        isInFavoritesLiveData.value = checkFavoriteTracksUseCase.isInFavorites(trackId.toString())
     }
 
     fun toggleFavorite(trackId: Int) {
         val id = trackId.toString()
         val isInFavorites = isInFavoritesLiveData.value ?: false
-        if (isInFavorites) favorites.removeFromFavorites(id)
-        else favorites.addToFavorites(id)
+        with(changeFavoriteTracksUseCase) {
+            if (isInFavorites) removeFromFavorites(id)
+            else addToFavorites(id)
+        }
         this.isInFavoritesLiveData.value = !isInFavorites
     }
 
@@ -120,7 +127,6 @@ class PlayerViewModel: ViewModel() {
         handler.removeCallbacksAndMessages(PLAYER_DATA_UPDATE_TOKEN)
         sendCommandToMediaPlayer(MediaPlayerCommand.RELEASE)
     }
-
 
     companion object {
         private const val DELAY_MILLIS = 250L

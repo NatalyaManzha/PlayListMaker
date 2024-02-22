@@ -2,11 +2,13 @@ package com.practicum.playlistmaker.search.data.local.impl
 
 import android.content.SharedPreferences
 import com.google.gson.Gson
-import com.practicum.playlistmaker.search.domain.api.SearchHistoryRepository
 import com.practicum.playlistmaker.player.domain.models.Track
+import com.practicum.playlistmaker.search.domain.api.SearchHistoryRepository
 
-class SearchHistoryRepositoryImpl(private val sharedPreferences: SharedPreferences) :
-    SearchHistoryRepository {
+class SearchHistoryRepositoryImpl(
+    private val sharedPreferences: SharedPreferences,
+    private val gson: Gson
+) : SearchHistoryRepository {
 
     override fun getSearchHistoryList(): List<Track> {
         val json = sharedPreferences.getString(SEARCH_HISTORY, null)
@@ -26,12 +28,12 @@ class SearchHistoryRepositoryImpl(private val sharedPreferences: SharedPreferenc
     }
 
     private fun createTrackListFromJson(json: String): List<Track> {
-        return Gson().fromJson(json, Array<Track>::class.java).asList()
+        return gson.fromJson(json, Array<Track>::class.java).asList()
 
     }
 
     private fun createJsonFromTrackList(tracks: List<Track>): String {
-        return Gson().toJson(tracks)
+        return gson.toJson(tracks)
     }
 
     companion object {
