@@ -8,12 +8,12 @@ import com.google.gson.Gson
 import com.practicum.playlistmaker.player.data.MediaPlayerControllerImpl
 import com.practicum.playlistmaker.player.domain.api.MediaPlayerController
 import com.practicum.playlistmaker.search.data.network.api.ITunesSearchApi
-
 import com.practicum.playlistmaker.search.data.network.api.NetworkClient
 import com.practicum.playlistmaker.search.data.network.impl.NetworkClientImpl
 import com.practicum.playlistmaker.sharing.data.impl.ExternalNavigatorImpl
 import com.practicum.playlistmaker.sharing.domain.api.ExternalNavigator
 import com.practicum.playlistmaker.utils.ResourceProvider
+import com.practicum.playlistmaker.BuildConfig
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -44,7 +44,7 @@ val dataModule = module {
 
     single<ITunesSearchApi> {
         Retrofit.Builder()
-            .baseUrl("https://itunes.apple.com")
+            .baseUrl(BuildConfig.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ITunesSearchApi::class.java)
