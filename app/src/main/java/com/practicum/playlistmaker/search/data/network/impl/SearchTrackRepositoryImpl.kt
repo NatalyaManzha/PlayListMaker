@@ -7,13 +7,14 @@ import com.practicum.playlistmaker.search.data.network.dto.TrackSearchResponse
 import com.practicum.playlistmaker.search.domain.api.SearchTrackRepository
 import com.practicum.playlistmaker.search.domain.models.ConvertedResponse
 import com.practicum.playlistmaker.search.domain.models.SearchState
+import com.practicum.playlistmaker.search.domain.models.SearchStateCode
 
 class SearchTrackRepositoryImpl(
     private val networkClient: NetworkClient
 ) : SearchTrackRepository {
     override fun searchTracks(expression: String): ConvertedResponse {
         val response = networkClient.doRequest(TrackSearchRequest(expression))
-        if (response !is TrackSearchResponse || (response.stateCode != 200)) {
+        if (response !is TrackSearchResponse || (response.stateCode != SearchStateCode.SUCCESS)) {
             return ConvertedResponse(null, SearchState.FAILURE)
         }
         val resultList = response.results

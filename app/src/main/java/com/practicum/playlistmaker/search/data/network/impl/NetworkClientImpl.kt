@@ -4,6 +4,7 @@ import com.practicum.playlistmaker.search.data.network.api.ITunesSearchApi
 import com.practicum.playlistmaker.search.data.network.api.NetworkClient
 import com.practicum.playlistmaker.search.data.network.dto.Response
 import com.practicum.playlistmaker.search.data.network.dto.TrackSearchRequest
+import com.practicum.playlistmaker.search.domain.models.SearchStateCode
 
 class NetworkClientImpl(
     private val iTunesService: ITunesSearchApi
@@ -15,7 +16,7 @@ class NetworkClientImpl(
             val networkResponse = response.body() ?: Response()
             networkResponse.apply { stateCode = response.code() }
         } catch (ex: Exception) {
-            Response().apply { stateCode = 400 }
+            Response().apply { stateCode = SearchStateCode.FAILURE }
         }
     }
 }
