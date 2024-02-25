@@ -90,8 +90,7 @@ class SearchViewModel(
     }
 
     fun renderUiState(uiState: UiState) {
-        if (uiStateLiveData.value is UiState.Loading)
-        uiStateLiveData.postValue(uiState)
+        if (uiStateLiveData.value is UiState.Loading) uiStateLiveData.postValue(uiState)
     }
 
     fun onActivityPause() {
