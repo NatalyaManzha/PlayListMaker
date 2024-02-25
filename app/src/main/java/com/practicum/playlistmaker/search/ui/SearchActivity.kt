@@ -53,7 +53,7 @@ class SearchActivity : AppCompatActivity() {
             renderClear()
         }
         binding.toolbar.setNavigationOnClickListener {
-            onBackPressed()
+            this.onBackPressedDispatcher.onBackPressed() //вместо onBackPressed()
         }
 
         /**
@@ -146,6 +146,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun showSearchResult(trackList: List<Track>) {
         with(binding) {
+            searchHistoryLayout.isVisible = false
             trackListAdapter.trackList = trackList
             tracklistRV.adapter?.notifyDataSetChanged()
             tracklistRV.isVisible = true
