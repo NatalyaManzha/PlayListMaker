@@ -2,7 +2,6 @@
 <resources>
     <dimen name="text_size_smallest">11sp</dimen>
     <dimen name="text_size_small">16sp</dimen>
-    <dimen name="text_size_13">13sp</dimen>
     <dimen name="text_size_14">14sp</dimen>
     <dimen name="text_size_19">19sp</dimen>
     <dimen name="text_size_normal">22sp</dimen>
@@ -15,6 +14,7 @@
     <dimen name="item_size_52">52dp</dimen>
     <dimen name="item_size_90">90dp</dimen>
     <dimen name="item_size_100">100dp</dimen>
+    <dimen name="item_size_154">154dp</dimen>
 
     <dimen name="icon_size_normal">24dp</dimen>
     <dimen name="icon_size_36">36dp</dimen>
@@ -40,8 +40,9 @@
     <dimen name="spacing_24">24dp</dimen>
     <dimen name="spacing_30">30dp</dimen>
     <dimen name="spacing_32">32dp</dimen>
+    <dimen name="spacing_46">46dp</dimen>
     <dimen name="spacing_78">78dp</dimen>
-    <dimen name="spacing_120">120dp</dimen>
+    <dimen name="spacing_106">106dp</dimen>
     <dimen name="spacing_124">124dp</dimen>
     <dimen name="spacing_134">134dp</dimen>
 
