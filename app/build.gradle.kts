@@ -42,6 +42,13 @@ android {
 }
 
 dependencies {
+    implementation("androidx.core:core-ktx:1.9.0")
+    //TabLayout — часть библиотеки Material Design
+    implementation("com.google.android.material:material:1.9.0")
+    //Fragments
+    implementation ("androidx.fragment:fragment-ktx:1.6.2")
+    //ViewPager
+    implementation ("androidx.viewpager2:viewpager2:1.0.0")
     //Koin
     implementation ("io.insert-koin:koin-android:3.3.0")
     //Glide
@@ -51,11 +58,10 @@ dependencies {
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     //для MVVM
-    implementation("androidx.core:core-ktx:1.9.0")
     implementation ("androidx.activity:activity-ktx:1.6.1")
-    //
+    //Обратная совместимость SDK (темы)
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.9.0")
+    //Constraintlayout
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     //Test
     testImplementation("junit:junit:4.13.2")
