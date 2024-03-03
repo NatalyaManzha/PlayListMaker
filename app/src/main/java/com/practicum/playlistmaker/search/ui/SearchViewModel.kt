@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.search.ui
 
 import android.os.Handler
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -71,6 +72,7 @@ class SearchViewModel(
     }
 
     fun startSearch() {
+        handler.removeCallbacksAndMessages(SEARCH_DEBOUNCE_TOKEN)
         if (!searchRequest.isNullOrEmpty()) {
             uiStateLiveData.value = UiState.Loading
             searchTracksUseCase.execute(searchRequest, object : SearchTracksResultConsumer {
@@ -88,7 +90,7 @@ class SearchViewModel(
     }
 
     fun renderUiState(uiState: UiState) {
-        uiStateLiveData.postValue(uiState)
+        if (uiStateLiveData.value is UiState.Loading) uiStateLiveData.postValue(uiState)
     }
 
     fun onActivityPause() {
