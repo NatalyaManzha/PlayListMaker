@@ -14,6 +14,8 @@ import com.practicum.playlistmaker.sharing.data.impl.ExternalNavigatorImpl
 import com.practicum.playlistmaker.sharing.domain.api.ExternalNavigator
 import com.practicum.playlistmaker.utils.ResourceProvider
 import com.practicum.playlistmaker.BuildConfig
+import com.practicum.playlistmaker.search.data.network.api.ConnectivityTest
+import com.practicum.playlistmaker.search.data.network.impl.ConnectivityTestImpl
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -27,7 +29,11 @@ val dataModule = module {
     }
 
     single<NetworkClient> {
-        NetworkClientImpl(get())
+        NetworkClientImpl(get(), get())
+    }
+
+    single<ConnectivityTest> {
+        ConnectivityTestImpl(androidContext())
     }
 
     single<ExternalNavigator> {

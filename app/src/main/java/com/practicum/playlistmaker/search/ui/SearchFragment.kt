@@ -1,41 +1,46 @@
 package com.practicum.playlistmaker.search.ui
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivitySearchBinding
+import com.practicum.playlistmaker.core.ui.BindingFragment
+import com.practicum.playlistmaker.databinding.FragmentSearchBinding
 import com.practicum.playlistmaker.player.domain.models.Track
-import com.practicum.playlistmaker.player.ui.PlayerActivity
+import com.practicum.playlistmaker.player.ui.PlayerFragment
 import com.practicum.playlistmaker.search.ui.models.UiState
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import androidx.navigation.fragment.findNavController
 
-class SearchActivity : AppCompatActivity() {
+class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
-    private lateinit var binding: ActivitySearchBinding
+
     private lateinit var trackListAdapter: TrackListAdapter
     private lateinit var searchHistoryAdapter: TrackListAdapter
     private val viewModel: SearchViewModel by viewModel()
     private val handler = Handler(Looper.getMainLooper())
     private var isClickAllowed = true
+    override fun createBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentSearchBinding {
+        return FragmentSearchBinding.inflate(inflater, container, false)
+    }
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        viewModel.observeState().observe(this) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.observeState().observe(viewLifecycleOwner) {
             when (it) {
                 is UiState.Default -> hideAllViews()
                 is UiState.SearchHistory -> showSearchhistory(it.tracklist)
@@ -46,16 +51,12 @@ class SearchActivity : AppCompatActivity() {
                 is UiState.Error -> showOnFailure()
             }
         }
-        viewModel.observeClearTextEnabled().observe(this) {
+        viewModel.observeClearTextEnabled().observe(viewLifecycleOwner) {
             render(it)
         }
-        viewModel.observeClearText().observe(this) {
+        viewModel.observeClearText().observe(viewLifecycleOwner) {
             renderClear()
         }
-        binding.toolbar.setNavigationOnClickListener {
-            this.onBackPressedDispatcher.onBackPressed() //вместо onBackPressed()
-        }
-
         /**
          * Параметры отображения истории поиска
          * Реализация отклика на нажатие элемента списка истории поиска
@@ -86,7 +87,7 @@ class SearchActivity : AppCompatActivity() {
 
         binding.tracklistRV.apply {
             layoutManager =
-                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             adapter = trackListAdapter
         }
 
@@ -113,6 +114,7 @@ class SearchActivity : AppCompatActivity() {
                     count: Int,
                     after: Int
                 ) {
+                    viewModel.beforeTextChanged(s)
                 }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -141,7 +143,10 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun goToPlayer(track: Track) {
-        PlayerActivity.show(this, track)
+        findNavController().navigate(
+            R.id.action_searchFragment_to_playerFragment,
+            PlayerFragment.createArgs(track)
+        )
     }
 
     private fun showSearchResult(trackList: List<Track>) {
@@ -152,6 +157,7 @@ class SearchActivity : AppCompatActivity() {
             tracklistRV.isVisible = true
             progressBar.isVisible = false
             inputEditText.clearFocus()
+            viewModel.beforeTextChanged(inputEditText.text.toString())
         }
     }
 
@@ -164,6 +170,7 @@ class SearchActivity : AppCompatActivity() {
             progressBar.isVisible = false
             inputEditText.clearFocus()
             updateButton.isVisible = true
+            viewModel.beforeTextChanged(inputEditText.text.toString())
         }
     }
 
@@ -177,6 +184,7 @@ class SearchActivity : AppCompatActivity() {
             updateButton.isVisible = true
             progressBar.isVisible = false
             inputEditText.clearFocus()
+            viewModel.beforeTextChanged(inputEditText.text.toString())
         }
     }
 
@@ -243,17 +251,13 @@ class SearchActivity : AppCompatActivity() {
 
     private fun hideKeyboard(editText: EditText) {
         val inputMethodManager =
-            getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
         inputMethodManager?.hideSoftInputFromWindow(editText.windowToken, 0)
     }
 
     companion object {
         private const val CLICK_DEBOUNCE_DELAY_MILLIS = 1000L
         private const val EDIT_TEXT_DEFAULT = ""
-        fun show(context: Context) {
-            val intent = Intent(context, SearchActivity::class.java)
-            context.startActivity(intent)
-        }
     }
 }
 
