@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import com.practicum.playlistmaker.core.ui.BindingFragment
 import com.practicum.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.practicum.playlistmaker.medialibrary.ui.models.FragmentUiState
 import org.koin.androidx.viewmodel.ext.android.viewModel

@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.search.ui
 
 import android.os.Handler
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -25,6 +24,7 @@ class SearchViewModel(
 ) : ViewModel() {
 
     private lateinit var searchRequest: String
+    private var lastSearchRequest: String? = null
     private var uiStateLiveData = MutableLiveData<UiState>()
     private var searchHistoryList: MutableList<Track>
     private var clearTextEnabledLiveData = MutableLiveData<Boolean>()
@@ -57,6 +57,11 @@ class SearchViewModel(
         }
     }
 
+    fun beforeTextChanged(s: CharSequence?) {
+        val enabled = !s.isNullOrEmpty()
+        clearTextEnabledLiveData.value = enabled
+    }
+
     fun onTextChanged(s: CharSequence?) {
         val enabled = !s.isNullOrEmpty()
         clearTextEnabledLiveData.value = enabled
@@ -72,8 +77,8 @@ class SearchViewModel(
     }
 
     fun startSearch() {
+        if (!searchRequest.isNullOrEmpty()&& (searchRequest!=lastSearchRequest)) {
         handler.removeCallbacksAndMessages(SEARCH_DEBOUNCE_TOKEN)
-        if (!searchRequest.isNullOrEmpty()) {
             uiStateLiveData.value = UiState.Loading
             searchTracksUseCase.execute(searchRequest, object : SearchTracksResultConsumer {
                 override fun consume(result: ConvertedResponse) {
@@ -83,6 +88,7 @@ class SearchViewModel(
                             SearchState.EMPTY -> UiState.EmptyResult
                             SearchState.SUCCESS -> UiState.SearchResult(result.results!!)
                         }
+                    lastSearchRequest = searchRequest
                     renderUiState(uiState)
                 }
             })

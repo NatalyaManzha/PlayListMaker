@@ -1,47 +1,50 @@
 package com.practicum.playlistmaker.player.ui
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
+import com.practicum.playlistmaker.core.ui.BindingFragment
+import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerState
 import com.practicum.playlistmaker.player.domain.models.Track
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class PlayerActivity : AppCompatActivity() {
+class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
     private lateinit var track: Track
-    private lateinit var binding: ActivityPlayerBinding
     private val viewModel: PlayerViewModel by viewModel()
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityPlayerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        track = intent.getSerializableExtra(TRACK_TO_PLAY) as Track
+    override fun createBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentPlayerBinding {
+        return FragmentPlayerBinding.inflate(inflater, container, false)
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        track = requireArguments().getSerializable(TRACK_TO_PLAY) as Track
         viewModel.run {
-            val owner = this@PlayerActivity
-            observePlayerState().observe(owner) {
+            observePlayerState().observe(viewLifecycleOwner) {
                 renderPlayerState(it)
             }
-            observeCurrentPosition().observe(owner) {
+            observeCurrentPosition().observe(viewLifecycleOwner) {
                 renderCurrentPosition(it)
             }
-            observeFavorites().observe(owner) {
+            observeFavorites().observe(viewLifecycleOwner) {
                 renderFavorites(it)
             }
             checkFavorites(track.trackId)
         }
-
         with(binding) {
             backButton.setOnClickListener {
-                finish()
+                requireActivity().onBackPressedDispatcher.onBackPressed()
             }
             trackNameTV.text = track.trackName
             artistNameTV.text = track.artistName
@@ -57,12 +60,11 @@ class PlayerActivity : AppCompatActivity() {
                 viewModel.toggleFavorite(track.trackId)
             }
         }
-
         Glide.with(this)
             .load(track.artworkUrl512)
             .placeholder(R.drawable.placeholder)
             .fitCenter()
-            .transform(RoundedCorners(applicationContext.resources.getDimensionPixelSize(R.dimen.radius_8dp)))
+            .transform(RoundedCorners(requireContext().resources.getDimensionPixelSize(R.dimen.radius_8dp)))
             .into(binding.coverArtwork)
 
         viewModel.preparePlayer(track.previewUrl)
@@ -85,7 +87,6 @@ class PlayerActivity : AppCompatActivity() {
                 MediaPlayerState.PLAYBACK_COMPLETE,
                 MediaPlayerState.PAUSED,
                 MediaPlayerState.DEFAULT -> setImageResource(R.drawable.button_play)
-
                 MediaPlayerState.ERROR -> showToast()
                 MediaPlayerState.PLAYING -> setImageResource(R.drawable.button_pause)
             }
@@ -93,7 +94,11 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun showToast() {
-        Toast.makeText(this, getString(R.string.player_error_message), Toast.LENGTH_LONG)
+        Toast.makeText(
+            requireContext(),
+            getString(R.string.player_error_message),
+            Toast.LENGTH_LONG
+        )
             .show()
     }
 
@@ -109,10 +114,8 @@ class PlayerActivity : AppCompatActivity() {
 
     companion object {
         private const val TRACK_TO_PLAY = "track_to_play"
-        fun show(context: Context, track: Track) {
-            val intent = Intent(context, PlayerActivity::class.java)
-            intent.putExtra(TRACK_TO_PLAY, track)
-            context.startActivity(intent)
-        }
+
+        fun createArgs(track: Track): Bundle =
+            bundleOf(TRACK_TO_PLAY to track)
     }
 }

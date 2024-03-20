@@ -6,11 +6,11 @@
     android:background="?attr/colorPrimary"
     android:orientation="vertical">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/settings_toolbar"
-        style="@style/ToolbarStyle"
-        app:title="@string/settings"
-        app:titleTextAppearance="@style/ToolbarTextStyle"/>
+    <TextView
+        style="@style/HeaderTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_size_64"
+        android:text="@string/settings" />
 
     <LinearLayout
         android:layout_width="match_parent"
