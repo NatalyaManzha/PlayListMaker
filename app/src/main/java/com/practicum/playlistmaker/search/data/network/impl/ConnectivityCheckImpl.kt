@@ -3,11 +3,11 @@ package com.practicum.playlistmaker.search.data.network.impl
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import com.practicum.playlistmaker.search.data.network.api.ConnectivityTest
+import com.practicum.playlistmaker.search.data.network.api.ConnectivityCheck
 
-class ConnectivityTestImpl(
+class ConnectivityCheckImpl(
     private val context: Context
-) : ConnectivityTest {
+) : ConnectivityCheck {
     override fun isConnected(): Boolean {
         val connectivityManager = context.getSystemService(
             Context.CONNECTIVITY_SERVICE

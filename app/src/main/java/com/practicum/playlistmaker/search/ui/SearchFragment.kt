@@ -144,7 +144,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
     private fun goToPlayer(track: Track) {
         findNavController().navigate(
-            R.id.action_searchFragment_to_playerFragment,
+            R.id.actionSearchFragmentToPlayerFragment,
             PlayerFragment.createArgs(track)
         )
     }
