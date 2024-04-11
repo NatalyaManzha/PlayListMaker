@@ -2,8 +2,10 @@ package com.practicum.playlistmaker.player.data
 
 import android.media.MediaPlayer
 import com.practicum.playlistmaker.player.domain.api.MediaPlayerController
-import com.practicum.playlistmaker.player.domain.models.MediaPlayerFeedbackData
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class MediaPlayerControllerImpl(
     private val mediaPlayer: MediaPlayer
@@ -12,23 +14,38 @@ class MediaPlayerControllerImpl(
     private lateinit var url: String
     private var state = MediaPlayerState.DEFAULT
 
-
-    override fun getMediaPlayerState(): MediaPlayerFeedbackData.State {
-        return MediaPlayerFeedbackData.State(state)
+    /** Холодный поток, каждые 0,3 сек проверяющий состояние плеера
+     * Отправляет только новое состояние
+     */
+    override fun updateState(): Flow<MediaPlayerState> = flow {
+        var emitedState: MediaPlayerState? = null
+        while (true) {
+            var stateToEmit = state
+            if (stateToEmit != emitedState) {
+                emit(stateToEmit)
+                emitedState = stateToEmit
+            }
+            delay(DELAY_MILLIS)
+        }
     }
 
-    override fun getCurrentPosition(): MediaPlayerFeedbackData.CurrentPosition {
-        val currentPosition = TimeFormatter.format(mediaPlayer.currentPosition)
-        return MediaPlayerFeedbackData.CurrentPosition(currentPosition)
+    /** Холодный поток, каждые 0,3 сек обновляющий время воспроизведения
+     */
+    override fun updateProgress(): Flow<String> = flow {
+        while (true) {
+            emit(TimeFormatter.format(mediaPlayer.currentPosition))
+            delay(DELAY_MILLIS)
+        }
     }
 
-    override fun prepare(url: String): MediaPlayerFeedbackData.State {
+
+    override fun prepare(url: String) {
         with(mediaPlayer) {
             try {
                 setDataSource(url)
                 prepareAsync()
             } catch (error: Throwable) {
-                return MediaPlayerFeedbackData.State(MediaPlayerState.ERROR)
+                state = MediaPlayerState.ERROR
             }
             setOnPreparedListener {
                 state = MediaPlayerState.PREPARED
@@ -37,28 +54,24 @@ class MediaPlayerControllerImpl(
                 state = MediaPlayerState.PLAYBACK_COMPLETE
             }
         }
-        return MediaPlayerFeedbackData.State(state)
     }
 
-    override fun start(): MediaPlayerFeedbackData.State {
+    override fun start() {
         mediaPlayer.start()
         state = MediaPlayerState.PLAYING
-        return MediaPlayerFeedbackData.State(state)
     }
 
-    override fun pause(): MediaPlayerFeedbackData.State {
+    override fun pause() {
         mediaPlayer.pause()
         state = MediaPlayerState.PAUSED
-        return MediaPlayerFeedbackData.State(state)
     }
 
-    override fun release(): MediaPlayerFeedbackData.State {
+    override fun release() {
         mediaPlayer.release()
-
         state = MediaPlayerState.DEFAULT
-        return MediaPlayerFeedbackData.State(state)
-
     }
 
-
+    companion object {
+        private const val DELAY_MILLIS = 300L
+    }
 }

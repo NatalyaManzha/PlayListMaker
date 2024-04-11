@@ -1,15 +1,13 @@
 package com.practicum.playlistmaker.player.domain.api
 
-import com.practicum.playlistmaker.player.domain.models.MediaPlayerFeedbackData
+import com.practicum.playlistmaker.player.domain.models.MediaPlayerState
+import kotlinx.coroutines.flow.Flow
 
 interface MediaPlayerController {
-    fun getMediaPlayerState(): MediaPlayerFeedbackData.State
-    fun getCurrentPosition(): MediaPlayerFeedbackData.CurrentPosition
-    fun prepare(url: String): MediaPlayerFeedbackData.State
-    fun start(): MediaPlayerFeedbackData.State
-    fun pause(): MediaPlayerFeedbackData.State
-    fun release(): MediaPlayerFeedbackData.State
-    interface Consumer {
-        fun consume(info: MediaPlayerFeedbackData)
-    }
+    fun updateState(): Flow<MediaPlayerState>
+    fun updateProgress(): Flow<String>
+    fun prepare(url: String)
+    fun start()
+    fun pause()
+    fun release()
 }

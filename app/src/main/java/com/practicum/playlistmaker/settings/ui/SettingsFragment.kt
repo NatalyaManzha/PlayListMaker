@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.practicum.playlistmaker.core.ui.BindingFragment
 import com.practicum.playlistmaker.databinding.FragmentSettingsBinding
+import com.practicum.playlistmaker.settings.ui.models.SettingsUiEvent
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -27,16 +28,16 @@ class SettingsFragment : BindingFragment<FragmentSettingsBinding>() {
         }
         with(binding) {
             switcher.setOnCheckedChangeListener { _, checked ->
-                viewModel.applyDarkTheme(checked)
+                viewModel.onUiEvent(SettingsUiEvent.SwitcherChecked(checked))
             }
             shareButton.setOnClickListener {
-                viewModel.shareLink()
+                viewModel.onUiEvent(SettingsUiEvent.ShareButtonClick)
             }
             supportButton.setOnClickListener {
-                viewModel.writeToSupport()
+                viewModel.onUiEvent(SettingsUiEvent.SupportButtonClick)
             }
             userAgreementButton.setOnClickListener {
-                viewModel.goToUserAgreement()
+                viewModel.onUiEvent(SettingsUiEvent.UserAgreementButtonClick)
             }
         }
     }

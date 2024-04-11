@@ -2,10 +2,8 @@ package com.practicum.playlistmaker.di
 
 import com.practicum.playlistmaker.player.domain.api.ChangeFavoriteTracksUseCase
 import com.practicum.playlistmaker.player.domain.api.CheckFavoriteTracksUseCase
-import com.practicum.playlistmaker.player.domain.api.ControlMediaPlayerUseCase
 import com.practicum.playlistmaker.player.domain.impl.ChangeFavoriteTracksUseCaseImpl
 import com.practicum.playlistmaker.player.domain.impl.CheckFavoriteTracksUseCaseImpl
-import com.practicum.playlistmaker.player.domain.impl.ControlMediaPlayerUseCaseImpl
 import com.practicum.playlistmaker.search.domain.api.ClearSearchHistoryUseCase
 import com.practicum.playlistmaker.search.domain.api.GetSearchHistoryListUseCase
 import com.practicum.playlistmaker.search.domain.api.SaveSearchHistoryUseCase
@@ -56,12 +54,8 @@ val useCaseModule = module {
         ChangeFavoriteTracksUseCaseImpl(get())
     }
 
-    factory<ControlMediaPlayerUseCase> {
-        ControlMediaPlayerUseCaseImpl(get())
-    }
-
     single<SearchTracksUseCase> {
-        SearchTracksUseCaseImpl(get(), get())
+        SearchTracksUseCaseImpl(get())
     }
 
     single<UserAgreementUseCase> {

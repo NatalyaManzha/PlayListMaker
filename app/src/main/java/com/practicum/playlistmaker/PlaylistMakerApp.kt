@@ -3,6 +3,7 @@ package com.practicum.playlistmaker
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import com.practicum.playlistmaker.di.dataModule
+import com.practicum.playlistmaker.di.interactorModule
 import com.practicum.playlistmaker.di.repositoryModule
 import com.practicum.playlistmaker.di.useCaseModule
 import com.practicum.playlistmaker.di.viewModelModule
@@ -20,7 +21,7 @@ class PlaylistMakerApp : Application() {
 
         startKoin {
             androidContext(this@PlaylistMakerApp)
-            modules(dataModule, repositoryModule, useCaseModule, viewModelModule)
+            modules(dataModule, repositoryModule, useCaseModule, viewModelModule, interactorModule)
         }
 
         applyAppTheme()

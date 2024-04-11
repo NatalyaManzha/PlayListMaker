@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.practicum.playlistmaker.PlaylistMakerApp
 import com.practicum.playlistmaker.settings.domain.api.CheckoutSavedAppThemeUseCase
 import com.practicum.playlistmaker.settings.domain.api.SaveThemeUseCase
+import com.practicum.playlistmaker.settings.ui.models.SettingsUiEvent
 import com.practicum.playlistmaker.sharing.domain.api.ShareLinkUseCase
 import com.practicum.playlistmaker.sharing.domain.api.UserAgreementUseCase
 import com.practicum.playlistmaker.sharing.domain.api.WriteToSupportUseCase
@@ -26,21 +27,31 @@ class SettingsViewModel(
     }
 
     fun observeAppTheme(): LiveData<Boolean> = darkThemeEnabled
-    fun applyDarkTheme(enable: Boolean) {
+
+    fun onUiEvent(event: SettingsUiEvent) {
+        when (event) {
+            is SettingsUiEvent.SwitcherChecked -> applyDarkTheme(event.checked)
+            is SettingsUiEvent.ShareButtonClick -> shareLink()
+            is SettingsUiEvent.SupportButtonClick -> writeToSupport()
+            is SettingsUiEvent.UserAgreementButtonClick -> goToUserAgreement()
+        }
+    }
+
+    private fun applyDarkTheme(enable: Boolean) {
         PlaylistMakerApp.switchTheme(enable)
         saveThemeUseCase.execute(enable)
         darkThemeEnabled.value = enable
     }
 
-    fun shareLink() {
+    private fun shareLink() {
         shareLinkUseCase.execute()
     }
 
-    fun writeToSupport() {
+    private fun writeToSupport() {
         writeToSupportUseCase.execute()
     }
 
-    fun goToUserAgreement() {
+    private fun goToUserAgreement() {
         userAgreementUseCase.execute()
     }
 }
