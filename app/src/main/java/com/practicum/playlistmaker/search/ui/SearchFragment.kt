@@ -2,8 +2,6 @@ package com.practicum.playlistmaker.search.ui
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -13,24 +11,26 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.core.ui.BindingFragment
 import com.practicum.playlistmaker.databinding.FragmentSearchBinding
 import com.practicum.playlistmaker.player.domain.models.Track
 import com.practicum.playlistmaker.player.ui.PlayerFragment
+import com.practicum.playlistmaker.search.ui.models.UiEvent
 import com.practicum.playlistmaker.search.ui.models.UiState
+import com.practicum.playlistmaker.utils.debounce
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import androidx.navigation.fragment.findNavController
 
 class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
-
     private lateinit var trackListAdapter: TrackListAdapter
     private lateinit var searchHistoryAdapter: TrackListAdapter
+    private lateinit var onTrackClickDebounce: (Pair<Track, Boolean>) -> Unit
     private val viewModel: SearchViewModel by viewModel()
-    private val handler = Handler(Looper.getMainLooper())
-    private var isClickAllowed = true
+
     override fun createBinding(
         inflater: LayoutInflater,
         container: ViewGroup?
@@ -44,7 +44,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
             when (it) {
                 is UiState.Default -> hideAllViews()
                 is UiState.SearchHistory -> showSearchhistory(it.tracklist)
-                is UiState.ClearSearchHistory -> onClearedSearchHistory()
+                is UiState.ClearSearchHistory -> hideAllViews()
                 is UiState.Loading -> showLoading()
                 is UiState.SearchResult -> showSearchResult(it.tracklist)
                 is UiState.EmptyResult -> showEmptyResult()
@@ -57,12 +57,23 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         viewModel.observeClearText().observe(viewLifecycleOwner) {
             renderClear()
         }
-        /**
-         * Параметры отображения истории поиска
-         * Реализация отклика на нажатие элемента списка истории поиска
+
+        /** Реализация отклика на нажатие элемента списка треков
          */
+
+        onTrackClickDebounce = debounce<Pair<Track, Boolean>>(
+            delayMillis = CLICK_DEBOUNCE_DELAY_MILLIS,
+            coroutineScope = viewLifecycleOwner.lifecycleScope,
+            useLastParam = false
+        ) { itemInfo ->
+            onTrackClick(itemInfo)
+        }
+
+        /** Параметры отображения истории поиска
+         */
+
         searchHistoryAdapter = TrackListAdapter { track ->
-            if (clickDebounce()) goToPlayer(track)
+            onTrackClickDebounce(Pair(track, false))
         }.apply {
             trackList = emptyList()
         }
@@ -71,16 +82,11 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
             adapter = searchHistoryAdapter
         }
 
-        /**
-         * Параметры отображения результатов поиска
-         * Реализация отклика на нажатие элемента списка результатов поиска
-         * и обновлениение истории поиска
+        /** Параметры отображения результатов поиска
          */
+
         trackListAdapter = TrackListAdapter { track ->
-            if (clickDebounce()) {
-                viewModel.addTrack(track)
-                goToPlayer(track)
-            }
+            onTrackClickDebounce(Pair(track, true))
         }.apply {
             trackList = emptyList()
         }
@@ -98,11 +104,11 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
          */
         binding.inputEditText.run {
             setOnFocusChangeListener { _, hasFocus ->
-                viewModel.showSearchhistory(hasFocus, binding.inputEditText.text)
+                viewModel.onUiEvent(UiEvent.FocusChanged(hasFocus, this.text))
             }
             setOnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    viewModel.startSearch()
+                    viewModel.onUiEvent(UiEvent.ActionDone(this.text))
                     true
                 }
                 false
@@ -114,32 +120,41 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
                     count: Int,
                     after: Int
                 ) {
-                    viewModel.beforeTextChanged(s)
+                    viewModel.onUiEvent(UiEvent.BeforeTextChanged(s))
                 }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    with(binding) {
-                        viewModel.onTextChanged(s)
-                        viewModel.showSearchhistory(inputEditText.hasFocus(), s)
-                        viewModel.searchDebounce()
-                    }
+                    viewModel.onUiEvent(
+                        UiEvent.OnTextChanged(
+                            binding.inputEditText.hasFocus(),
+                            s
+                        )
+                    )
                 }
 
                 override fun afterTextChanged(s: Editable?) {}
             })
         }
+        with(binding) {
+            updateButton.setOnClickListener {
+                viewModel.onUiEvent(UiEvent.UpdateButtonClick(inputEditText.text))
+            }
 
-        binding.updateButton.setOnClickListener {
-            viewModel.startSearch()
-        }
+            clearButton.setOnClickListener {
+                viewModel.onUiEvent(UiEvent.ClearButtonClick)
+            }
 
-        binding.clearButton.setOnClickListener {
-            viewModel.onTextCleared()
+            clearHistoryButton.setOnClickListener {
+                viewModel.onUiEvent(UiEvent.ClearHistoryButtonClick)
+            }
         }
+    }
 
-        binding.clearHistoryButton.setOnClickListener {
-            viewModel.clearSearchHistory()
-        }
+    private fun onTrackClick(itemInfo: Pair<Track, Boolean>) {
+        val track = itemInfo.first
+        val addTrackToHistory = itemInfo.second
+        if (addTrackToHistory) viewModel.onUiEvent(UiEvent.AddTrack(track))
+        goToPlayer(track)
     }
 
     private fun goToPlayer(track: Track) {
@@ -157,7 +172,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
             tracklistRV.isVisible = true
             progressBar.isVisible = false
             inputEditText.clearFocus()
-            viewModel.beforeTextChanged(inputEditText.text.toString())
+            viewModel.onUiEvent(UiEvent.ShowSearchResult(inputEditText.text))
         }
     }
 
@@ -170,7 +185,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
             progressBar.isVisible = false
             inputEditText.clearFocus()
             updateButton.isVisible = true
-            viewModel.beforeTextChanged(inputEditText.text.toString())
+            viewModel.onUiEvent(UiEvent.ShowSearchResult(inputEditText.text))
         }
     }
 
@@ -184,17 +199,12 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
             updateButton.isVisible = true
             progressBar.isVisible = false
             inputEditText.clearFocus()
-            viewModel.beforeTextChanged(inputEditText.text.toString())
+            viewModel.onUiEvent(UiEvent.ShowSearchResult(inputEditText.text))
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        viewModel.onActivityPause()
-    }
-
     override fun onStop() {
-        viewModel.saveSearchHistory()
+        viewModel.onUiEvent(UiEvent.OnStop)
         super.onStop()
     }
 
@@ -217,24 +227,10 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         binding.searchHistoryRV.smoothScrollToPosition(0)
     }
 
-
-    private fun clickDebounce(): Boolean {
-        val current = isClickAllowed
-        if (isClickAllowed) {
-            isClickAllowed = false
-            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY_MILLIS)
-        }
-        return current
-    }
-
     private fun showLoading() {
         hideAllViews()
         binding.progressBar.isVisible = true
         hideKeyboard(binding.inputEditText)
-    }
-
-    private fun onClearedSearchHistory() {
-        hideAllViews()
     }
 
     private fun hideAllViews() {

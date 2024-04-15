@@ -4,9 +4,9 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityRootBinding
-import androidx.navigation.ui.setupWithNavController
 
 class RootActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRootBinding
@@ -21,11 +21,12 @@ class RootActivity : AppCompatActivity() {
         binding.bottomNavigationView.setupWithNavController(navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            binding.bottomNavigationView.isVisible =
-                when (destination.id) {
-                    R.id.playerFragment -> false
-                    else -> true
-                }
+            val isVisible = when (destination.id) {
+                R.id.playerFragment -> false
+                else -> true
+            }
+            binding.bottomNavigationView.isVisible = isVisible
+            binding.line.isVisible = isVisible
         }
     }
 }

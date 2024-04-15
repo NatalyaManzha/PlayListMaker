@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.player.ui
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import com.practicum.playlistmaker.core.ui.BindingFragment
 import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerState
 import com.practicum.playlistmaker.player.domain.models.Track
+import com.practicum.playlistmaker.player.ui.models.PlayerUiEvent
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -29,7 +31,13 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        track = requireArguments().getSerializable(TRACK_TO_PLAY) as Track
+        track =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                requireArguments().getSerializable(TRACK_TO_PLAY, Track::class.java) as Track
+            } else {
+                requireArguments().getSerializable(TRACK_TO_PLAY) as Track
+            }
+
         viewModel.run {
             observePlayerState().observe(viewLifecycleOwner) {
                 renderPlayerState(it)
@@ -40,7 +48,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
             observeFavorites().observe(viewLifecycleOwner) {
                 renderFavorites(it)
             }
-            checkFavorites(track.trackId)
+            onUiEvent(PlayerUiEvent.OnViewCreated(track.trackId, track.previewUrl))
         }
         with(binding) {
             backButton.setOnClickListener {
@@ -54,10 +62,10 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
             genreTV.text = track.primaryGenreName
             countryTV.text = track.country
             playControlButton.setOnClickListener {
-                viewModel.playbackControl()
+                viewModel.onUiEvent(PlayerUiEvent.PlayControlButtonClick)
             }
             addToFavoritesButton.setOnClickListener {
-                viewModel.toggleFavorite(track.trackId)
+                viewModel.onUiEvent(PlayerUiEvent.AddToFavoritesButtonClick(track.trackId))
             }
         }
         Glide.with(this)
@@ -66,18 +74,16 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
             .fitCenter()
             .transform(RoundedCorners(requireContext().resources.getDimensionPixelSize(R.dimen.radius_8dp)))
             .into(binding.coverArtwork)
-
-        viewModel.preparePlayer(track.previewUrl)
     }
 
     override fun onResume() {
         super.onResume()
-        viewModel.onPlayerActivityOnResume()
+        viewModel.onUiEvent(PlayerUiEvent.OnResume)
     }
 
     override fun onPause() {
         super.onPause()
-        viewModel.onPlayerActivityPause()
+        viewModel.onUiEvent(PlayerUiEvent.OnPause)
     }
 
     private fun renderPlayerState(state: MediaPlayerState) {
@@ -87,6 +93,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
                 MediaPlayerState.PLAYBACK_COMPLETE,
                 MediaPlayerState.PAUSED,
                 MediaPlayerState.DEFAULT -> setImageResource(R.drawable.button_play)
+
                 MediaPlayerState.ERROR -> showToast()
                 MediaPlayerState.PLAYING -> setImageResource(R.drawable.button_pause)
             }

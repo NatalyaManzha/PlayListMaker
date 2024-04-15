@@ -1,119 +1,128 @@
 package com.practicum.playlistmaker.player.ui
 
-import android.os.Handler
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.player.domain.api.ChangeFavoriteTracksUseCase
 import com.practicum.playlistmaker.player.domain.api.CheckFavoriteTracksUseCase
-import com.practicum.playlistmaker.player.domain.api.ControlMediaPlayerUseCase
-import com.practicum.playlistmaker.player.domain.api.MediaPlayerController
+import com.practicum.playlistmaker.player.domain.api.MediaPlayerInteractor
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerCommand
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerControllerCommand
-import com.practicum.playlistmaker.player.domain.models.MediaPlayerFeedbackData
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerState
+import com.practicum.playlistmaker.player.ui.models.PlayerUiEvent
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class PlayerViewModel(
     private val checkFavoriteTracksUseCase: CheckFavoriteTracksUseCase,
     private val changeFavoriteTracksUseCase: ChangeFavoriteTracksUseCase,
-    private val controlMediaPlayerUseCase: ControlMediaPlayerUseCase,
-    private val handler: Handler
+    private val mediaPlayerInteractor: MediaPlayerInteractor
 ) : ViewModel() {
 
 
-    private var runnable = Runnable { updatePlayerData() }
     private var uiStateOnPlaying = false
     private var isInFavoritesLiveData = MutableLiveData<Boolean>()
-    private var playerStateLiveData = MutableLiveData<MediaPlayerState>()
-    private var currentPositionLiveData = MutableLiveData<String>()
+    private var playerStateLiveData = MutableLiveData<MediaPlayerState>(MediaPlayerState.DEFAULT)
+    private var currentPositionLiveData = MutableLiveData<String>(PLAYER_START_TIME)
     private var trackPreviewUrl = ""
     private var playerToBeResumed = false
+    private var updateProgress: Job? = null
 
-    private val infoConsumer = object : MediaPlayerController.Consumer {
-        override fun consume(info: MediaPlayerFeedbackData) {
-            when (info) {
-                is MediaPlayerFeedbackData.State -> {
-                    playerStateLiveData.value = info.state
-                    uiStateOnPlaying = (info.state == MediaPlayerState.PLAYING)
-                    when (info.state) {
-                        MediaPlayerState.DEFAULT,
-                        MediaPlayerState.PREPARED,
-                        MediaPlayerState.PLAYBACK_COMPLETE -> currentPositionLiveData.value =
-                            PLAYER_START_TIME
-
-                        else -> {}
-                    }
-                }
-
-                is MediaPlayerFeedbackData.CurrentPosition -> currentPositionLiveData.value =
-                    info.currentPosition
-            }
-        }
-    }
 
     fun observeFavorites(): LiveData<Boolean> = isInFavoritesLiveData
     fun observePlayerState(): LiveData<MediaPlayerState> = playerStateLiveData
     fun observeCurrentPosition(): LiveData<String> = currentPositionLiveData
-    fun preparePlayer(url: String) {
-        if (trackPreviewUrl != url) {
-            trackPreviewUrl = url
-            prepareMediaPlayer(url)
+
+    fun onUiEvent(event: PlayerUiEvent) {
+        when (event) {
+            is PlayerUiEvent.OnViewCreated -> {
+                checkFavorites(event.trackId)
+                preparePlayer(event.previewUrl)
+            }
+
+            is PlayerUiEvent.PlayControlButtonClick -> playbackControl()
+            is PlayerUiEvent.AddToFavoritesButtonClick -> toggleFavorite(event.trackId)
+            is PlayerUiEvent.OnResume -> onPlayerFragmentOnResume()
+            is PlayerUiEvent.OnPause -> onPlayerFragmentPause()
         }
     }
 
-    fun onPlayerActivityOnResume() {
+    private fun preparePlayer(url: String) {
+        if (trackPreviewUrl != url) {
+            trackPreviewUrl = url
+            mediaPlayerInteractor.execute(
+                MediaPlayerControllerCommand(
+                    MediaPlayerCommand.PREPARE,
+                    trackPreviewUrl
+                )
+            )
+
+            viewModelScope.launch(Dispatchers.IO) {
+                mediaPlayerInteractor.playerStateFlow().collect { state ->
+                    if (state == MediaPlayerState.PLAYBACK_COMPLETE) {
+                        currentPositionLiveData.postValue(FULL_TIME)
+                        updateProgress?.cancel()
+                        delay(DELAY_MILLIS)
+                        uiStateOnPlaying = false
+                        currentPositionLiveData.postValue(PLAYER_START_TIME)
+                    }
+                    playerStateLiveData.postValue(state)
+                }
+            }
+        }
+    }
+
+    private fun onPlayerFragmentOnResume() {
         if ((currentPositionLiveData.value != PLAYER_START_TIME) && (playerToBeResumed == true))
-            sendCommandToMediaPlayer(MediaPlayerCommand.START)
-        handler.post(runnable)
+            startPlayer()
         playerToBeResumed = false
     }
 
-    fun onPlayerActivityPause() {
+    private fun onPlayerFragmentPause() {
         if (playerStateLiveData.value == MediaPlayerState.PLAYING) playerToBeResumed = true
-        sendCommandToMediaPlayer(MediaPlayerCommand.PAUSE)
-        handler.removeCallbacksAndMessages(PLAYER_DATA_UPDATE_TOKEN)
+        pausePlayer()
     }
 
     private fun sendCommandToMediaPlayer(command: MediaPlayerCommand) {
-        controlMediaPlayerUseCase.execute(MediaPlayerControllerCommand(command, null), infoConsumer)
-    }
-
-    private fun prepareMediaPlayer(previewUrl: String) {
-        infoConsumer.consume(MediaPlayerFeedbackData.State(MediaPlayerState.DEFAULT))
-        controlMediaPlayerUseCase.execute(
-            MediaPlayerControllerCommand(
-                MediaPlayerCommand.PREPARE,
-                previewUrl
-            ), infoConsumer
-        )
+        mediaPlayerInteractor.execute(MediaPlayerControllerCommand(command, null))
     }
 
     private fun updatePlayerData() {
-        sendCommandToMediaPlayer(MediaPlayerCommand.GET_CURRENT_POSITION)
-        sendCommandToMediaPlayer(MediaPlayerCommand.GET_STATE)
-        if (uiStateOnPlaying) {
-            handler.postDelayed(
-                runnable,
-                PLAYER_DATA_UPDATE_TOKEN,
-                DELAY_MILLIS
-            )
+        updateProgress = viewModelScope.launch(Dispatchers.IO) {
+            mediaPlayerInteractor.playerCurrentPositionFlow().collect { time ->
+                currentPositionLiveData.postValue(time)
+            }
         }
     }
 
-    fun playbackControl() {
+    private fun startPlayer() {
+        uiStateOnPlaying = true
+        sendCommandToMediaPlayer(MediaPlayerCommand.START)
+        updatePlayerData()
+    }
+
+    private fun pausePlayer() {
+        uiStateOnPlaying = false
+        sendCommandToMediaPlayer(MediaPlayerCommand.PAUSE)
+        updateProgress?.cancel()
+    }
+
+    private fun playbackControl() {
         if (uiStateOnPlaying) {
-            sendCommandToMediaPlayer(MediaPlayerCommand.PAUSE)
+            pausePlayer()
         } else {
-            sendCommandToMediaPlayer(MediaPlayerCommand.START)
-            handler.post(runnable)
+            startPlayer()
         }
     }
 
-    fun checkFavorites(trackId: Int) {
+    private fun checkFavorites(trackId: Int) {
         isInFavoritesLiveData.value = checkFavoriteTracksUseCase.isInFavorites(trackId.toString())
     }
 
-    fun toggleFavorite(trackId: Int) {
+    private fun toggleFavorite(trackId: Int) {
         val id = trackId.toString()
         val isInFavorites = isInFavoritesLiveData.value ?: false
         with(changeFavoriteTracksUseCase) {
@@ -124,13 +133,12 @@ class PlayerViewModel(
     }
 
     override fun onCleared() {
-        handler.removeCallbacksAndMessages(PLAYER_DATA_UPDATE_TOKEN)
         sendCommandToMediaPlayer(MediaPlayerCommand.RELEASE)
     }
 
     companion object {
-        private const val DELAY_MILLIS = 250L
         private const val PLAYER_START_TIME = "00:00"
-        private val PLAYER_DATA_UPDATE_TOKEN = Any()
+        private const val FULL_TIME = "30:00"
+        private const val DELAY_MILLIS = 300L
     }
 }

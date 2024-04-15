@@ -1,29 +1,28 @@
 package com.practicum.playlistmaker.player.domain.impl
 
-import com.practicum.playlistmaker.player.domain.api.ControlMediaPlayerUseCase
 import com.practicum.playlistmaker.player.domain.api.MediaPlayerController
+import com.practicum.playlistmaker.player.domain.api.MediaPlayerInteractor
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerCommand
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerControllerCommand
-import com.practicum.playlistmaker.player.domain.models.MediaPlayerFeedbackData
+import com.practicum.playlistmaker.player.domain.models.MediaPlayerState
+import kotlinx.coroutines.flow.Flow
 
-class ControlMediaPlayerUseCaseImpl(
+class MediaPlayerInteractorImpl(
     private val mediaPlayerController: MediaPlayerController
-) : ControlMediaPlayerUseCase {
-    override fun execute(
-        controllerCommand: MediaPlayerControllerCommand,
-        consumer: MediaPlayerController.Consumer
-    ) {
-        val info: MediaPlayerFeedbackData
+) : MediaPlayerInteractor {
+    override fun execute(controllerCommand: MediaPlayerControllerCommand) {
         with(mediaPlayerController) {
-            info = when (controllerCommand.command) {
+            when (controllerCommand.command) {
                 MediaPlayerCommand.PREPARE -> prepare(controllerCommand.url!!)
                 MediaPlayerCommand.START -> start()
                 MediaPlayerCommand.PAUSE -> pause()
                 MediaPlayerCommand.RELEASE -> release()
-                MediaPlayerCommand.GET_STATE -> getMediaPlayerState()
-                MediaPlayerCommand.GET_CURRENT_POSITION -> getCurrentPosition()
             }
         }
-        consumer.consume(info)
     }
+
+    override fun playerStateFlow(): Flow<MediaPlayerState> = mediaPlayerController.updateState()
+
+    override fun playerCurrentPositionFlow(): Flow<String> = mediaPlayerController.updateProgress()
+
 }
