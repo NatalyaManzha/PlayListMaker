@@ -1,9 +1,11 @@
 package com.practicum.playlistmaker.player.ui.models
 
+import com.practicum.playlistmaker.player.domain.models.Track
+
 sealed interface PlayerUiEvent {
-    data class OnViewCreated(val trackId: Int, val previewUrl: String) : PlayerUiEvent
+    data class OnViewCreated(val track: Track) : PlayerUiEvent
     object PlayControlButtonClick : PlayerUiEvent
-    data class AddToFavoritesButtonClick(val trackId: Int) : PlayerUiEvent
+    object AddToFavoritesButtonClick : PlayerUiEvent
     object OnResume : PlayerUiEvent
     object OnPause : PlayerUiEvent
 }

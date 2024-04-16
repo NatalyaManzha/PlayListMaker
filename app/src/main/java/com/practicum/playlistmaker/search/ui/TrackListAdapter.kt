@@ -7,7 +7,7 @@ import com.practicum.playlistmaker.databinding.TracklistElementBinding
 import com.practicum.playlistmaker.player.domain.models.Track
 
 class TrackListAdapter(
-    var onItemClickListener: ((Track) -> Unit)
+    private var onItemClickListener: ((Track) -> Unit)
 ) : RecyclerView.Adapter<TrackListViewHolder>() {
 
     lateinit var trackList: List<Track>

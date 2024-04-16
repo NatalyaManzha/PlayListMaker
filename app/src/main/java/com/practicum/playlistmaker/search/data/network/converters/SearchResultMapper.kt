@@ -5,7 +5,7 @@ import com.practicum.playlistmaker.search.data.network.dto.TrackDto
 
 object SearchResultMapper {
     fun map(result: List<TrackDto>): List<Track> {
-        return result.map { it ->
+        return result.map {
             TrackDtoToTrackConverter.convert(it)
         }
     }

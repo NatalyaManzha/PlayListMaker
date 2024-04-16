@@ -15,15 +15,15 @@ val viewModelModule = module {
     }
 
     viewModel {
-        SearchViewModel(get(), get(), get(), get())
+        SearchViewModel(get(), get(), get(), get(), get())
     }
 
     viewModel {
-        PlayerViewModel(get(), get(), get())
+        PlayerViewModel(get(), get())
     }
 
     viewModel {
-        FavoritesViewModel()
+        FavoritesViewModel(get())
     }
 
     viewModel {

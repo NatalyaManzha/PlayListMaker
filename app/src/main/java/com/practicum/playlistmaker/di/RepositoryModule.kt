@@ -1,7 +1,7 @@
 package com.practicum.playlistmaker.di
 
-import com.practicum.playlistmaker.player.data.FavoriteTracksRepositoryImpl
-import com.practicum.playlistmaker.player.domain.api.FavoriteTracksRepository
+import com.practicum.playlistmaker.medialibrary.data.api.FavoritesRepository
+import com.practicum.playlistmaker.medialibrary.data.impl.FavoritesRepositoryImpl
 import com.practicum.playlistmaker.search.data.local.impl.SearchHistoryRepositoryImpl
 import com.practicum.playlistmaker.search.data.network.impl.SearchTrackRepositoryImpl
 import com.practicum.playlistmaker.search.domain.api.SearchHistoryRepository
@@ -12,8 +12,8 @@ import org.koin.dsl.module
 
 val repositoryModule = module {
 
-    single<FavoriteTracksRepository> {
-        FavoriteTracksRepositoryImpl(get())
+    single<FavoritesRepository> {
+        FavoritesRepositoryImpl(get())
     }
 
     single<AppThemeRepository> {

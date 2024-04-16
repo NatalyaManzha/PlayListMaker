@@ -16,7 +16,7 @@ class SettingsViewModel(
     private val shareLinkUseCase: ShareLinkUseCase,
     private val writeToSupportUseCase: WriteToSupportUseCase,
     private val userAgreementUseCase: UserAgreementUseCase,
-    private val checkoutSavedAppThemeUseCase: CheckoutSavedAppThemeUseCase
+    checkoutSavedAppThemeUseCase: CheckoutSavedAppThemeUseCase
 ) : ViewModel() {
 
     private var darkThemeEnabled = MutableLiveData<Boolean>()
