@@ -1,7 +1,7 @@
 package com.practicum.playlistmaker.di
 
-import com.practicum.playlistmaker.medialibrary.data.api.FavoritesRepository
 import com.practicum.playlistmaker.medialibrary.data.impl.FavoritesRepositoryImpl
+import com.practicum.playlistmaker.medialibrary.domain.api.FavoritesRepository
 import com.practicum.playlistmaker.search.data.local.impl.SearchHistoryRepositoryImpl
 import com.practicum.playlistmaker.search.data.network.impl.SearchTrackRepositoryImpl
 import com.practicum.playlistmaker.search.domain.api.SearchHistoryRepository
