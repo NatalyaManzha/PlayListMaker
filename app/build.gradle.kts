@@ -1,4 +1,5 @@
 plugins {
+    id("kotlin-kapt")
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
@@ -43,6 +44,12 @@ android {
 
 dependencies {
     implementation("androidx.core:core-ktx:1.9.0")
+
+    //Room
+    val roomVersion = "2.5.1" // текущая стабильная версия
+    implementation("androidx.room:room-runtime:$roomVersion") // библиотека Room
+    kapt("androidx.room:room-compiler:2.6.1") // Kotlin-кодогенератор
+    implementation("androidx.room:room-ktx:$roomVersion") // поддержка корутин
     //Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")

@@ -2,8 +2,10 @@ package com.practicum.playlistmaker.di
 
 import android.content.Context
 import android.media.MediaPlayer
+import androidx.room.Room
 import com.google.gson.Gson
 import com.practicum.playlistmaker.BuildConfig
+import com.practicum.playlistmaker.medialibrary.data.db.FavoritesDatabase
 import com.practicum.playlistmaker.player.data.MediaPlayerControllerImpl
 import com.practicum.playlistmaker.player.domain.api.MediaPlayerController
 import com.practicum.playlistmaker.search.data.network.api.ConnectivityCheck
@@ -20,6 +22,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 val dataModule = module {
+
+    single {
+        Room.databaseBuilder(androidContext(), FavoritesDatabase::class.java, "database.db").build()
+    }
 
     single {
         androidContext().getSharedPreferences("SHARED_PREFERENCES", Context.MODE_PRIVATE)

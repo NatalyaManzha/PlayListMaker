@@ -48,7 +48,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
             observeFavorites().observe(viewLifecycleOwner) {
                 renderFavorites(it)
             }
-            onUiEvent(PlayerUiEvent.OnViewCreated(track.trackId, track.previewUrl))
+            onUiEvent(PlayerUiEvent.OnViewCreated(track))
         }
         with(binding) {
             backButton.setOnClickListener {
@@ -65,7 +65,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
                 viewModel.onUiEvent(PlayerUiEvent.PlayControlButtonClick)
             }
             addToFavoritesButton.setOnClickListener {
-                viewModel.onUiEvent(PlayerUiEvent.AddToFavoritesButtonClick(track.trackId))
+                viewModel.onUiEvent(PlayerUiEvent.AddToFavoritesButtonClick)
             }
         }
         Glide.with(this)

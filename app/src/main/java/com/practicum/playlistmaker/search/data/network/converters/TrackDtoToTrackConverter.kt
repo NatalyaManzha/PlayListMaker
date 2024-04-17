@@ -6,9 +6,9 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 object TrackDtoToTrackConverter {
-    private val NUMBER_OF_CHARS_IN_YEAR = 4
-    private val DEFAULT_STRING_VALUE = ""
-    private val DEFAULT_INT_VALUE = 0
+    private const val NUMBER_OF_CHARS_IN_YEAR = 4
+    private const val DEFAULT_STRING_VALUE = ""
+    private const val DEFAULT_INT_VALUE = 0
     fun convert(item: TrackDto): Track {
         return with(item) {
             Track(
@@ -34,8 +34,7 @@ object TrackDtoToTrackConverter {
     }
 
     private fun getCoverArtwork(artworkUrl100: String?): String {
-        return if (artworkUrl100 == null) DEFAULT_STRING_VALUE
-        else artworkUrl100.replaceAfterLast('/', "512x512bb.jpg")
+        return artworkUrl100?.replaceAfterLast('/', "512x512bb.jpg") ?: DEFAULT_STRING_VALUE
     }
 
 

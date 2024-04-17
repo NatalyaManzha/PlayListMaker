@@ -11,7 +11,6 @@ class MediaPlayerControllerImpl(
     private val mediaPlayer: MediaPlayer
 ) : MediaPlayerController {
 
-    private lateinit var url: String
     private var state = MediaPlayerState.DEFAULT
 
     /** Холодный поток, каждые 0,3 сек проверяющий состояние плеера
@@ -20,7 +19,7 @@ class MediaPlayerControllerImpl(
     override fun updateState(): Flow<MediaPlayerState> = flow {
         var emitedState: MediaPlayerState? = null
         while (true) {
-            var stateToEmit = state
+            val stateToEmit = state
             if (stateToEmit != emitedState) {
                 emit(stateToEmit)
                 emitedState = stateToEmit

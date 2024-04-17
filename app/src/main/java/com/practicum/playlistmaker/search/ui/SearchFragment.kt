@@ -168,8 +168,11 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         with(binding) {
             searchHistoryLayout.isVisible = false
             trackListAdapter.trackList = trackList
-            tracklistRV.adapter?.notifyDataSetChanged()
-            tracklistRV.isVisible = true
+            tracklistRV.apply {
+                adapter?.notifyDataSetChanged()
+                isVisible = true
+                smoothScrollToPosition(0)
+            }
             progressBar.isVisible = false
             inputEditText.clearFocus()
             viewModel.onUiEvent(UiEvent.ShowSearchResult(inputEditText.text))
@@ -184,7 +187,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
             placeholderMessage.setText(R.string.search_failed)
             progressBar.isVisible = false
             inputEditText.clearFocus()
-            updateButton.isVisible = true
+            updateButton.isVisible = false
             viewModel.onUiEvent(UiEvent.ShowSearchResult(inputEditText.text))
         }
     }

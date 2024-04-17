@@ -4,12 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.practicum.playlistmaker.player.domain.api.ChangeFavoriteTracksUseCase
-import com.practicum.playlistmaker.player.domain.api.CheckFavoriteTracksUseCase
+import com.practicum.playlistmaker.medialibrary.domain.api.FavoritesInteractor
 import com.practicum.playlistmaker.player.domain.api.MediaPlayerInteractor
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerCommand
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerControllerCommand
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerState
+import com.practicum.playlistmaker.player.domain.models.Track
 import com.practicum.playlistmaker.player.ui.models.PlayerUiEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -17,19 +17,18 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
-    private val checkFavoriteTracksUseCase: CheckFavoriteTracksUseCase,
-    private val changeFavoriteTracksUseCase: ChangeFavoriteTracksUseCase,
+    private val favoritesInteractor: FavoritesInteractor,
     private val mediaPlayerInteractor: MediaPlayerInteractor
 ) : ViewModel() {
 
 
     private var uiStateOnPlaying = false
     private var isInFavoritesLiveData = MutableLiveData<Boolean>()
-    private var playerStateLiveData = MutableLiveData<MediaPlayerState>(MediaPlayerState.DEFAULT)
-    private var currentPositionLiveData = MutableLiveData<String>(PLAYER_START_TIME)
-    private var trackPreviewUrl = ""
+    private var playerStateLiveData = MutableLiveData(MediaPlayerState.DEFAULT)
+    private var currentPositionLiveData = MutableLiveData(PLAYER_START_TIME)
     private var playerToBeResumed = false
     private var updateProgress: Job? = null
+    private var track: Track? = null
 
 
     fun observeFavorites(): LiveData<Boolean> = isInFavoritesLiveData
@@ -38,45 +37,46 @@ class PlayerViewModel(
 
     fun onUiEvent(event: PlayerUiEvent) {
         when (event) {
-            is PlayerUiEvent.OnViewCreated -> {
-                checkFavorites(event.trackId)
-                preparePlayer(event.previewUrl)
-            }
-
+            is PlayerUiEvent.OnViewCreated -> setTrackToPlay(event)
             is PlayerUiEvent.PlayControlButtonClick -> playbackControl()
-            is PlayerUiEvent.AddToFavoritesButtonClick -> toggleFavorite(event.trackId)
+            is PlayerUiEvent.AddToFavoritesButtonClick -> toggleFavorite()
             is PlayerUiEvent.OnResume -> onPlayerFragmentOnResume()
             is PlayerUiEvent.OnPause -> onPlayerFragmentPause()
         }
     }
 
-    private fun preparePlayer(url: String) {
-        if (trackPreviewUrl != url) {
-            trackPreviewUrl = url
-            mediaPlayerInteractor.execute(
-                MediaPlayerControllerCommand(
-                    MediaPlayerCommand.PREPARE,
-                    trackPreviewUrl
-                )
-            )
+    private fun setTrackToPlay(event: PlayerUiEvent.OnViewCreated) {
+        if (track == null) {
+            isInFavoritesLiveData.value = event.track.inFavorite
+            track = event.track
+            preparePlayer(event.track.previewUrl)
+        }
+    }
 
-            viewModelScope.launch(Dispatchers.IO) {
-                mediaPlayerInteractor.playerStateFlow().collect { state ->
-                    if (state == MediaPlayerState.PLAYBACK_COMPLETE) {
-                        currentPositionLiveData.postValue(FULL_TIME)
-                        updateProgress?.cancel()
-                        delay(DELAY_MILLIS)
-                        uiStateOnPlaying = false
-                        currentPositionLiveData.postValue(PLAYER_START_TIME)
-                    }
-                    playerStateLiveData.postValue(state)
+    private fun preparePlayer(url: String) {
+        mediaPlayerInteractor.execute(
+            MediaPlayerControllerCommand(
+                MediaPlayerCommand.PREPARE,
+                url
+            )
+        )
+
+        viewModelScope.launch(Dispatchers.IO) {
+            mediaPlayerInteractor.playerStateFlow().collect { state ->
+                if (state == MediaPlayerState.PLAYBACK_COMPLETE) {
+                    currentPositionLiveData.postValue(FULL_TIME)
+                    updateProgress?.cancel()
+                    delay(DELAY_MILLIS)
+                    uiStateOnPlaying = false
+                    currentPositionLiveData.postValue(PLAYER_START_TIME)
                 }
+                playerStateLiveData.postValue(state)
             }
         }
     }
 
     private fun onPlayerFragmentOnResume() {
-        if ((currentPositionLiveData.value != PLAYER_START_TIME) && (playerToBeResumed == true))
+        if ((currentPositionLiveData.value != PLAYER_START_TIME) && playerToBeResumed)
             startPlayer()
         playerToBeResumed = false
     }
@@ -118,18 +118,15 @@ class PlayerViewModel(
         }
     }
 
-    private fun checkFavorites(trackId: Int) {
-        isInFavoritesLiveData.value = checkFavoriteTracksUseCase.isInFavorites(trackId.toString())
-    }
-
-    private fun toggleFavorite(trackId: Int) {
-        val id = trackId.toString()
-        val isInFavorites = isInFavoritesLiveData.value ?: false
-        with(changeFavoriteTracksUseCase) {
-            if (isInFavorites) removeFromFavorites(id)
-            else addToFavorites(id)
+    private fun toggleFavorite() {
+        viewModelScope.launch {
+            val isInFavorites = isInFavoritesLiveData.value ?: false
+            with(favoritesInteractor) {
+                if (isInFavorites) deleteFavorite(track!!.trackId)
+                else insertFavorite(track!!)
+            }
+            isInFavoritesLiveData.postValue(!isInFavorites)
         }
-        this.isInFavoritesLiveData.value = !isInFavorites
     }
 
     override fun onCleared() {

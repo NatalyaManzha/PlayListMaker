@@ -15,7 +15,7 @@ class NetworkClientImpl(
 ) : NetworkClient {
 
     override suspend fun doRequest(request: TrackSearchRequest): Response {
-        if (connectivityCheck.isConnected() == false) {
+        if (!connectivityCheck.isConnected()) {
             return Response().apply { stateCode = SearchStateCode.FAILURE }
         }
         return withContext(Dispatchers.IO) {
