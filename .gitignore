@@ -1,3 +1,13 @@
+/shelf/
+/inspectionProfiles/
+/.name
+/compiler.xml
+/workspace.xml
+/deploymentTargetDropDown.xml
+gradle.xml
+kotlinc.xml
+migrations.xml
+misc.xml
 *.iml
 .gradle
 /local.properties
@@ -8,3 +18,10 @@
 .cxx
 local.properties
 .idea
+/.idea/vcs.xml
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
