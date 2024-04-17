@@ -1,10 +1,10 @@
 # Default ignored files
 /shelf/
-/inspectionProfiles
-.name
-compiler.xml
+/inspectionProfiles/
+/.name
+/compiler.xml
 /workspace.xml
-deploymentTargetDropDown.xml
+/deploymentTargetDropDown.xml
 gradle.xml
 kotlinc.xml
 migrations.xml
