@@ -1,16 +1,13 @@
 package com.practicum.playlistmaker.medialibrary.ui
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.practicum.playlistmaker.medialibrary.ui.models.FragmentUiState
+import com.practicum.playlistmaker.medialibrary.ui.models.PlaylistsUiState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class PlaylistsViewModel : ViewModel() {
-    private val stateLiveData = MutableLiveData<FragmentUiState>()
 
-    init {
-        stateLiveData.value = FragmentUiState.Default
-    }
+    private val _uiState = MutableStateFlow<PlaylistsUiState>(PlaylistsUiState.Default)
+    val uiStateFlow = _uiState.asStateFlow()
 
-    fun observeState(): LiveData<FragmentUiState> = stateLiveData
 }

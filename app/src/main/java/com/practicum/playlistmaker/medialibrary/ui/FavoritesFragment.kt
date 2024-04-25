@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.core.ui.BindingFragment
 import com.practicum.playlistmaker.databinding.FragmentFavoritesBinding
@@ -14,6 +14,7 @@ import com.practicum.playlistmaker.medialibrary.ui.models.FavoritesUiState
 import com.practicum.playlistmaker.player.domain.models.Track
 import com.practicum.playlistmaker.player.ui.PlayerFragment
 import com.practicum.playlistmaker.search.ui.TrackListAdapter
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FavoritesFragment : BindingFragment<FragmentFavoritesBinding>() {
@@ -34,14 +35,12 @@ class FavoritesFragment : BindingFragment<FragmentFavoritesBinding>() {
         }.apply {
             trackList = emptyList()
         }
+        binding.favoritesRV.adapter = trackListAdapter
 
-        binding.favoritesRV.apply {
-            layoutManager =
-                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            adapter = trackListAdapter
-        }
-        viewModel.observeState().observe(viewLifecycleOwner) {
-            render(it)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.uiStateFlow.collect {
+                render(it)
+            }
         }
     }
 

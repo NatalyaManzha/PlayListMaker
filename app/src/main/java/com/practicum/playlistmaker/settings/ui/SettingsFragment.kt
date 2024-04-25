@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import com.practicum.playlistmaker.core.ui.BindingFragment
 import com.practicum.playlistmaker.databinding.FragmentSettingsBinding
 import com.practicum.playlistmaker.settings.ui.models.SettingsUiEvent
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -23,8 +25,11 @@ class SettingsFragment : BindingFragment<FragmentSettingsBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.observeAppTheme().observe(viewLifecycleOwner) {
-            turnSwitcher(it)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.darkThemeEnabledFlow.collect {
+                turnSwitcher(it)
+            }
         }
         with(binding) {
             switcher.setOnCheckedChangeListener { _, checked ->

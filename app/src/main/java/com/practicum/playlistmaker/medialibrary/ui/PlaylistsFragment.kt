@@ -5,9 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.practicum.playlistmaker.core.ui.BindingFragment
 import com.practicum.playlistmaker.databinding.FragmentPlaylistsBinding
-import com.practicum.playlistmaker.medialibrary.ui.models.FragmentUiState
+import com.practicum.playlistmaker.medialibrary.ui.models.PlaylistsUiState
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
@@ -21,14 +23,17 @@ class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.observeState().observe(viewLifecycleOwner) {
-            render(it)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.uiStateFlow.collect {
+                render(it)
+            }
         }
     }
 
-    private fun render(state: FragmentUiState) {
+    private fun render(state: PlaylistsUiState) {
         when (state) {
-            is FragmentUiState.Default -> showDefaultState()
+            is PlaylistsUiState.Default -> showDefaultState()
         }
     }
 

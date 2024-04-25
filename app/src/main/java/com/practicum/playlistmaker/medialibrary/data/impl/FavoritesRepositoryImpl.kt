@@ -1,7 +1,8 @@
 package com.practicum.playlistmaker.medialibrary.data.impl
 
-import com.practicum.playlistmaker.medialibrary.data.converters.TrackEntityToTrackConverter
-import com.practicum.playlistmaker.medialibrary.data.converters.TrackToTrackEntityConverter
+
+import com.practicum.playlistmaker.medialibrary.data.converters.converted
+import com.practicum.playlistmaker.medialibrary.data.converters.toTrackEntity
 import com.practicum.playlistmaker.medialibrary.data.db.FavoritesDatabase
 import com.practicum.playlistmaker.medialibrary.domain.api.FavoritesRepository
 import com.practicum.playlistmaker.player.domain.models.Track
@@ -18,14 +19,14 @@ class FavoritesRepositoryImpl(
 
     override suspend fun insertFavorite(track: Track) {
         favoritesDao.insertFavorite(
-            TrackToTrackEntityConverter.convert(track)
+            track.toTrackEntity()
         )
     }
 
     override fun getFavoritesFlow(): Flow<List<Track>> {
         return favoritesDao.getFavoritesFlow()
             .map {
-                TrackEntityToTrackConverter.convert(it)
+                it.converted()
             }
     }
 
