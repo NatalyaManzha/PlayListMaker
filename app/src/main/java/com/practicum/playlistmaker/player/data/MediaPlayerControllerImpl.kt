@@ -13,7 +13,7 @@ class MediaPlayerControllerImpl(
 
     private var state = MediaPlayerState.DEFAULT
 
-    /** Холодный поток, каждые 0,3 сек проверяющий состояние плеера
+    /** Холодный поток, каждые 0,3 сек проверяющий состояние плеера.
      * Отправляет только новое состояние
      */
     override fun updateState(): Flow<MediaPlayerState> = flow {

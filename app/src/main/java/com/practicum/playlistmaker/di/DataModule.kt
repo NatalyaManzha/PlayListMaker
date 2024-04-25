@@ -24,11 +24,15 @@ import retrofit2.converter.gson.GsonConverterFactory
 val dataModule = module {
 
     single {
-        Room.databaseBuilder(androidContext(), FavoritesDatabase::class.java, "database.db").build()
+        Room.databaseBuilder(
+            androidContext(),
+            FavoritesDatabase::class.java,
+            BuildConfig.FAVORITES_DB
+        ).build()
     }
 
     single {
-        androidContext().getSharedPreferences("SHARED_PREFERENCES", Context.MODE_PRIVATE)
+        androidContext().getSharedPreferences(BuildConfig.SHARED_PREFERENCES, Context.MODE_PRIVATE)
     }
 
     single<NetworkClient> {

@@ -13,12 +13,14 @@ import com.practicum.playlistmaker.search.domain.api.SearchTracksUseCase
 import com.practicum.playlistmaker.search.domain.models.ConvertedResponse
 import com.practicum.playlistmaker.search.domain.models.SearchState
 import com.practicum.playlistmaker.search.ui.converters.TracklistMapper
-import com.practicum.playlistmaker.search.ui.models.SingleLiveEvent
 import com.practicum.playlistmaker.search.ui.models.UiEvent
 import com.practicum.playlistmaker.search.ui.models.UiState
+import com.practicum.playlistmaker.utils.SingleLiveEvent
 import com.practicum.playlistmaker.utils.debounce
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
@@ -29,9 +31,11 @@ class SearchViewModel(
     private val favoritesInteractor: FavoritesInteractor
 ) : ViewModel() {
 
+    private val _uiState = MutableStateFlow<UiState>(UiState.Default)
+    val uiStateFlow = _uiState.asStateFlow()
+
     private var lastSearchRequest: String? = null
-    private var uiStateLiveData = MutableLiveData<UiState>(UiState.Default)
-    private var searchHistoryList = getSearchHistoryListUseCase.execute()
+    private var searchHistoryList = mutableListOf<Track>()
     private var favoritesIdList = mutableListOf<Int>()
     private var clearTextEnabledLiveData = MutableLiveData<Boolean>()
     private var clearTextLiveData = SingleLiveEvent<Boolean>()
@@ -51,9 +55,10 @@ class SearchViewModel(
                 onFavoritesChange(it)
             }
         }
+        searchHistoryList = getSearchHistoryListUseCase.execute()
+        updateSearchHistoryList()
     }
 
-    fun observeState(): LiveData<UiState> = uiStateLiveData
     fun observeClearTextEnabled(): LiveData<Boolean> = clearTextEnabledLiveData
     fun observeClearText(): LiveData<Boolean> = clearTextLiveData
 
@@ -86,10 +91,10 @@ class SearchViewModel(
         favoritesIdList.addAll(newFavoritesIdList)
         updateSearchHistoryList()
         updateSearchResult(searchResult)
-        with(uiStateLiveData) {
+        with(_uiState) {
             when (value) {
-                is UiState.SearchResult -> postValue(UiState.SearchResult(searchResult))
-                is UiState.SearchHistory -> postValue(UiState.SearchHistory(searchHistoryList))
+                is UiState.SearchResult -> value = (UiState.SearchResult(searchResult))
+                is UiState.SearchHistory -> value = (UiState.SearchHistory(searchHistoryList))
                 else -> {}
             }
         }
@@ -97,7 +102,7 @@ class SearchViewModel(
 
     private fun clearSearchHistory() {
         clearSearchHistoryUseCase.execute()
-        uiStateLiveData.value = UiState.ClearSearchHistory
+        _uiState.value = UiState.ClearSearchHistory
         searchHistoryList.clear()
     }
 
@@ -108,7 +113,7 @@ class SearchViewModel(
 
     private fun showSearchhistory(hasFocus: Boolean, s: CharSequence?) {
         if (hasFocus && s?.isEmpty() == true && searchHistoryList.size > 0)
-            uiStateLiveData.value = UiState.SearchHistory(searchHistoryList)
+            _uiState.value = UiState.SearchHistory(searchHistoryList)
     }
 
     private fun addTrack(track: Track) {
@@ -135,7 +140,7 @@ class SearchViewModel(
 
     private fun startSearch(searchRequest: String) {
         if (searchRequest.isNotEmpty() && (searchRequest != lastSearchRequest)) {
-            uiStateLiveData.value = UiState.Loading
+            _uiState.value = UiState.Loading
             searchJob?.cancel()
             searchJob = viewModelScope.launch {
                 searchTracksUseCase.execute(searchRequest)
@@ -166,7 +171,7 @@ class SearchViewModel(
     }
 
     private fun renderUiState(uiState: UiState) {
-        if (uiStateLiveData.value is UiState.Loading) uiStateLiveData.postValue(uiState)
+        if (_uiState.value is UiState.Loading) _uiState.value = (uiState)
     }
 
     private fun searchDebounce(searchRequest: String) {

@@ -13,7 +13,6 @@ import android.widget.EditText
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.core.ui.BindingFragment
 import com.practicum.playlistmaker.databinding.FragmentSearchBinding
@@ -22,6 +21,7 @@ import com.practicum.playlistmaker.player.ui.PlayerFragment
 import com.practicum.playlistmaker.search.ui.models.UiEvent
 import com.practicum.playlistmaker.search.ui.models.UiState
 import com.practicum.playlistmaker.utils.debounce
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : BindingFragment<FragmentSearchBinding>() {
@@ -40,17 +40,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.observeState().observe(viewLifecycleOwner) {
-            when (it) {
-                is UiState.Default -> hideAllViews()
-                is UiState.SearchHistory -> showSearchhistory(it.tracklist)
-                is UiState.ClearSearchHistory -> hideAllViews()
-                is UiState.Loading -> showLoading()
-                is UiState.SearchResult -> showSearchResult(it.tracklist)
-                is UiState.EmptyResult -> showEmptyResult()
-                is UiState.Error -> showOnFailure()
-            }
-        }
+
         viewModel.observeClearTextEnabled().observe(viewLifecycleOwner) {
             render(it)
         }
@@ -77,10 +67,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         }.apply {
             trackList = emptyList()
         }
-        binding.searchHistoryRV.apply {
-            layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            adapter = searchHistoryAdapter
-        }
+        binding.searchHistoryRV.adapter = searchHistoryAdapter
 
         /** Параметры отображения результатов поиска
          */
@@ -91,11 +78,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
             trackList = emptyList()
         }
 
-        binding.tracklistRV.apply {
-            layoutManager =
-                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            adapter = trackListAdapter
-        }
+        binding.tracklistRV.adapter = trackListAdapter
 
         /**
          * Реализация взаимодействия с полем ввода запроса поиска
@@ -146,6 +129,20 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
 
             clearHistoryButton.setOnClickListener {
                 viewModel.onUiEvent(UiEvent.ClearHistoryButtonClick)
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.uiStateFlow.collect {
+                when (it) {
+                    is UiState.Default -> hideAllViews()
+                    is UiState.SearchHistory -> showSearchhistory(it.tracklist)
+                    is UiState.ClearSearchHistory -> hideAllViews()
+                    is UiState.Loading -> showLoading()
+                    is UiState.SearchResult -> showSearchResult(it.tracklist)
+                    is UiState.EmptyResult -> showEmptyResult()
+                    is UiState.Error -> showOnFailure()
+                }
             }
         }
     }

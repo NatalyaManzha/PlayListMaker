@@ -68,8 +68,8 @@
             android:layout_width="@dimen/item_size_44"
             android:layout_height="@dimen/item_size_44"
             android:layout_alignParentTop="true"
-            android:layout_gravity="center"
             android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
             android:layout_marginTop="@dimen/spacing_124"
             android:indeterminateTint="@color/brilliant_blue"
             android:visibility="gone"
@@ -79,7 +79,10 @@
             android:id="@+id/tracklist_RV"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:orientation="vertical"
             android:visibility="gone"
+            app:layoutManager="LinearLayoutManager"
+            app:reverseLayout="false"
             tools:itemCount="5"
             tools:listitem="@layout/tracklist_element"
             tools:visibility="invisible" />
@@ -155,6 +158,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
+                    android:orientation="vertical"
+                    app:layoutManager="LinearLayoutManager"
+                    app:reverseLayout="false"
                     tools:itemCount="10"
                     tools:listitem="@layout/tracklist_element" />
 

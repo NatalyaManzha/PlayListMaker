@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.os.bundleOf
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.R
@@ -15,6 +16,7 @@ import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerState
 import com.practicum.playlistmaker.player.domain.models.Track
 import com.practicum.playlistmaker.player.ui.models.PlayerUiEvent
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -38,18 +40,8 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
                 requireArguments().getSerializable(TRACK_TO_PLAY) as Track
             }
 
-        viewModel.run {
-            observePlayerState().observe(viewLifecycleOwner) {
-                renderPlayerState(it)
-            }
-            observeCurrentPosition().observe(viewLifecycleOwner) {
-                renderCurrentPosition(it)
-            }
-            observeFavorites().observe(viewLifecycleOwner) {
-                renderFavorites(it)
-            }
-            onUiEvent(PlayerUiEvent.OnViewCreated(track))
-        }
+        viewModel.onUiEvent(PlayerUiEvent.OnViewCreated(track))
+
         with(binding) {
             backButton.setOnClickListener {
                 requireActivity().onBackPressedDispatcher.onBackPressed()
@@ -74,6 +66,24 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
             .fitCenter()
             .transform(RoundedCorners(requireContext().resources.getDimensionPixelSize(R.dimen.radius_8dp)))
             .into(binding.coverArtwork)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.isInFavoritesFlow.collect {
+                renderFavorites(it)
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.currentPosition.collect {
+                renderCurrentPosition(it)
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.playerStateFlow.collect {
+                renderPlayerState(it)
+            }
+        }
     }
 
     override fun onResume() {
