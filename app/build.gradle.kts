@@ -17,6 +17,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "BASE_URL", "\"https://itunes.apple.com\"")
         buildConfigField("String", "FAVORITES_DB", "\"favorites.db\"")
+        buildConfigField("String", "PLAYLISTS_DB", "\"playlists.db\"")
         buildConfigField("String", "SHARED_PREFERENCES", "\"shared_preferences\"")
     }
 

@@ -32,7 +32,7 @@
             android:fontFamily="@font/ys_display_regular"
             android:maxLines="1"
             android:textColor="?attr/colorOnPrimary"
-            android:textSize="@dimen/text_size_small"
+            android:textSize="@dimen/text_size_16"
             tools:text="Название песни капец какое длииииииииииииииииинное" />
 
         <LinearLayout
@@ -50,7 +50,7 @@
                 android:maxLines="1"
                 android:maxWidth="120dp"
                 android:textColor="?attr/colorButtonNormal"
-                android:textSize="@dimen/text_size_smallest"
+                android:textSize="@dimen/text_size_11"
                 tools:text="Банда рэпперов Бременские музыканты" />
 
             <ImageView
@@ -63,7 +63,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="?attr/colorButtonNormal"
-                android:textSize="@dimen/text_size_smallest"
+                android:textSize="@dimen/text_size_11"
                 tools:text="5:12" />
 
         </LinearLayout>

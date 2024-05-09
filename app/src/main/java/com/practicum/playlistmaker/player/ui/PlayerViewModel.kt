@@ -118,7 +118,7 @@ class PlayerViewModel(
     }
 
     private fun toggleFavorite() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val isInFavorites = _isInFavorites.value
             with(favoritesInteractor) {
                 try {

@@ -6,6 +6,7 @@ import androidx.room.Room
 import com.google.gson.Gson
 import com.practicum.playlistmaker.BuildConfig
 import com.practicum.playlistmaker.medialibrary.data.db.FavoritesDatabase
+import com.practicum.playlistmaker.medialibrary.data.db.PlaylistsDatabase
 import com.practicum.playlistmaker.player.data.MediaPlayerControllerImpl
 import com.practicum.playlistmaker.player.domain.api.MediaPlayerController
 import com.practicum.playlistmaker.search.data.network.api.ConnectivityCheck
@@ -22,6 +23,14 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 val dataModule = module {
+
+    single {
+        Room.databaseBuilder(
+            androidContext(),
+            PlaylistsDatabase::class.java,
+            BuildConfig.PLAYLISTS_DB
+        ).build()
+    }
 
     single {
         Room.databaseBuilder(

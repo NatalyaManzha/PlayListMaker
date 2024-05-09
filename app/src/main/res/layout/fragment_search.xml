@@ -42,7 +42,7 @@
             android:singleLine="true"
             android:textColor="@color/black"
             android:textColorHint="?attr/colorOnSurface"
-            android:textSize="@dimen/text_size_small" />
+            android:textSize="@dimen/text_size_16" />
 
         <ImageView
             android:id="@+id/clearButton"
