@@ -1,10 +1,13 @@
 package com.practicum.playlistmaker.medialibrary.ui
 
+import android.Manifest
+import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,11 +18,10 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
+import com.markodevcic.peko.PermissionRequester
+import com.markodevcic.peko.PermissionResult
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.core.ui.BindingFragment
 import com.practicum.playlistmaker.databinding.FragmentNewPlaylistBinding
@@ -35,12 +37,10 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
         override fun handleOnBackPressed() {
             showDialog()
         }
-    }.also {
-        Log.d("QQQ", "OnBackPressedCallback ${it?.hashCode()}")
     }
-
     private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
     private var dialogEnabled = false
+    val requester = PermissionRequester.instance()
 
     override fun createBinding(
         inflater: LayoutInflater,
@@ -51,19 +51,12 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        activity?.also {
-            Log.d("QQQ", "${this?.hashCode()}")
-        }?.onBackPressedDispatcher?.also {
-            Log.d("QQQ", "${it?.hashCode()}")
-        }?.addCallback(onBackPressedCallback).also {
-            Log.d("QQQ", "колбек добавлен")
-        }
+        activity?.onBackPressedDispatcher?.addCallback(onBackPressedCallback)
         registerPickMedia()
         setOnTextChangedListeners()
         setOnClickListeners()
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiStateFlow.collect {
-                Log.d("QQQ", "$it")
                 render(it)
             }
         }
@@ -75,7 +68,7 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
                 if (uri != null) {
                     viewModel.onUiEvent(NewPlaylistUiEvent.ImageChanged(uri))
                 } else {
-                    showToast()
+                    showToast(getString(R.string.no_image))
                 }
             }
     }
@@ -88,13 +81,10 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
     private fun render(state: NewPlaylistUiState2) {
         if (state.uri != null) setNewImage(state.uri)
         dialogEnabled = state.showDialog
-        Log.d("QQQ", "dialogEnabled = $dialogEnabled")
         saveEnabled(state.saveEnabled)
-
     }
 
     private fun showDialog() {
-        Log.d("QQQ", "showDialog(): dialogEnabled = $dialogEnabled")
         if (dialogEnabled) {
             MaterialAlertDialogBuilder(requireActivity())
                 .setTitle(getString(R.string.dialog_title))
@@ -113,7 +103,7 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
     private fun setOnClickListeners() {
         with(binding) {
             newPlaylistIcon.setOnClickListener {
-                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                checkPermissions()
             }
             createButton.setOnClickListener {
                 viewModel.onUiEvent(NewPlaylistUiEvent.OnCreateButtonClick)
@@ -125,10 +115,40 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
         }
     }
 
-    private fun showToast() {
+    private fun checkPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+        lifecycleScope.launch {
+            requester.request(Manifest.permission.READ_MEDIA_IMAGES).collect { result ->
+                when (result) {
+                    is PermissionResult.Granted -> {
+                        tryToGetImage()
+                    }
+                    is PermissionResult.Denied.DeniedPermanently -> {
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        intent.data= Uri.fromParts("package", requireContext().packageName, null)
+                        activity?.startActivity(intent)
+                    }
+                    is PermissionResult.Denied.NeedsRationale -> {
+                        showToast(getString(R.string.on_permission_deny))
+                    }
+                    is PermissionResult.Cancelled -> {
+                        return@collect
+                    }
+                }
+            }}
+        }
+        else tryToGetImage()
+    }
+
+    private fun tryToGetImage() {
+        pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+    }
+
+    private fun showToast(message:String) {
         Toast.makeText(
             requireContext(),
-            getString(R.string.no_image),
+            message,
             Toast.LENGTH_LONG
         )
             .show()

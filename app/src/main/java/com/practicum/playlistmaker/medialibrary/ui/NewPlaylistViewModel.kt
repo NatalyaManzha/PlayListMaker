@@ -16,7 +16,7 @@ class NewPlaylistViewModel(
     private val playlistsInteractor: PlaylistsInteractor
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<NewPlaylistUiState2>(
+    private val _uiState = MutableStateFlow(
         NewPlaylistUiState2(
             uri = null,
             showDialog = false,

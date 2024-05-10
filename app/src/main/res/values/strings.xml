@@ -36,4 +36,5 @@
     <string name="cansel">Отмена</string>
     <string name="finish">Завершить</string>
     <string name="no_image">Изображение не выбрано</string>
+    <string name="on_permission_deny">Плейлист рискует оказаться без обложки))</string>
 </resources>
