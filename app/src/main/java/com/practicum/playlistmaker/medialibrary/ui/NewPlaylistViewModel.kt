@@ -21,7 +21,9 @@ class NewPlaylistViewModel(
         NewPlaylistUiState2(
             uri = null,
             showDialog = false,
-            saveEnabled = false
+            saveEnabled = false,
+            saveCompletedSuccessfully = null,
+            playlistName = null
         )
     )
     val uiStateFlow = _uiState.asStateFlow()
@@ -78,19 +80,24 @@ class NewPlaylistViewModel(
     }
 
     private fun savePlaylist() {
-        Log.d("QQQ", "VM savePlaylist $iconUri $name $description")
         viewModelScope.launch(Dispatchers.IO) {
-            playlistsInteractor.insertPlaylist(
+            val result = playlistsInteractor.insertPlaylist(
                 NewPlaylist(
                     iconUri = iconUri,
                     name = name,
                     description = description
                 )
             )
+            val saveCompletedSuccessfully = (result != SAVE_FAILURE_CODE)
+            _uiState.value = _uiState.value.copy(
+                saveCompletedSuccessfully = saveCompletedSuccessfully,
+                playlistName = name
+            )
         }
     }
 
     companion object {
         private const val STRING_DEFAULT_VALUE = ""
+        private const val SAVE_FAILURE_CODE = -1L
     }
 }

@@ -41,7 +41,6 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
     }
     private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
     private var dialogEnabled = false
-    private val requester = PermissionRequester.instance()
 
     override fun createBinding(
         inflater: LayoutInflater,
@@ -83,12 +82,15 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
         if (state.uri != null) setNewImage(state.uri)
         dialogEnabled = state.showDialog
         saveEnabled(state.saveEnabled)
+        if (state.saveCompletedSuccessfully!=null && state.playlistName!=null)
+            onSaveComplete( state.saveCompletedSuccessfully, state.playlistName)
     }
 
     private fun showDialog() {
         if (dialogEnabled) {
             MaterialAlertDialogBuilder(requireActivity())
                 .setTitle(getString(R.string.dialog_title))
+                .setMessage(getString(R.string.dialog_message))
                 .setNeutralButton(getString(R.string.cansel)) { dialog, which ->
                     onBackPressedCallback.isEnabled = true
                 }.setPositiveButton(getString(R.string.finish)) { dialog, which ->
@@ -108,8 +110,6 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
             }
             createButton.setOnClickListener {
                 viewModel.onUiEvent(NewPlaylistUiEvent.OnCreateButtonClick)
-                Log.d("QQQ", "createButtonclick ")
-                closeFragment()
             }
             newPlaylistBackButton.setOnClickListener {
                 showDialog()
@@ -119,6 +119,13 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
 
     private fun tryToGetImage() {
         pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+    }
+
+    private fun onSaveComplete(saveResult: Boolean, playlistName:String){
+        val message = if (saveResult) "Плейлист n\"${playlistName}n\" сохранен успешно"
+        else "Ошибка сохранения n\"${playlistName}n\""
+        showToast(message)
+        closeFragment()
     }
 
     private fun showToast(message: String) {

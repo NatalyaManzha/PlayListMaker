@@ -19,7 +19,7 @@ class PlaylistsRepositoryImpl(
 
     private val playlistsDao = playlistsDB.getPlaylistsDao()
 
-    override suspend fun insertPlaylist(playlist: NewPlaylist) {
+    override suspend fun insertPlaylist(playlist: NewPlaylist): Long {
         var iconFileName = STRING_DEFAULT_VALUE
         with(playlist.iconUri) {
             if (this != null) iconFileName = imageStorage.saveImage(this)
@@ -27,11 +27,7 @@ class PlaylistsRepositoryImpl(
         //для теста
         val playlistTest = playlist.toPlaylistEntity(iconFileName)
         Log.d("QQQ", "playlistTest: $playlistTest")
-        playlistsDao.insertPlaylist(playlistTest)
-
-        /*playlistsDao.insertPlaylist(
-            playlist.toPlaylistEntity(iconFileName)
-        )*/
+        return playlistsDao.insertPlaylist(playlistTest)
     }
 
     override suspend fun deletePlaylist(playlistID: Long) {
