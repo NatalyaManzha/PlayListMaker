@@ -104,7 +104,7 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
     private fun setOnClickListeners() {
         with(binding) {
             newPlaylistIcon.setOnClickListener {
-                checkPermissions()
+                tryToGetImage()
             }
             createButton.setOnClickListener {
                 viewModel.onUiEvent(NewPlaylistUiEvent.OnCreateButtonClick)
@@ -115,36 +115,6 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
                 showDialog()
             }
         }
-    }
-
-    private fun checkPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            lifecycleScope.launch {
-                requester.request(Manifest.permission.READ_MEDIA_IMAGES).collect { result ->
-                    when (result) {
-                        is PermissionResult.Granted -> {
-                            tryToGetImage()
-                        }
-
-                        is PermissionResult.Denied.DeniedPermanently -> {
-                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            intent.data =
-                                Uri.fromParts("package", requireContext().packageName, null)
-                            activity?.startActivity(intent)
-                        }
-
-                        is PermissionResult.Denied.NeedsRationale -> {
-                            showToast(getString(R.string.on_permission_deny))
-                        }
-
-                        is PermissionResult.Cancelled -> {
-                            return@collect
-                        }
-                    }
-                }
-            }
-        } else tryToGetImage()
     }
 
     private fun tryToGetImage() {
