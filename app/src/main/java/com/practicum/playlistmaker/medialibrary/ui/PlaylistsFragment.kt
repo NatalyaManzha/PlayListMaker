@@ -17,6 +17,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
 
+    private lateinit var playlistsAdapter: PlaylistsAdapter
     private val viewModel: PlaylistsViewModel by viewModel()
     override fun createBinding(
         inflater: LayoutInflater,
@@ -31,6 +32,9 @@ class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
         binding.addNewPlaylistButton.setOnClickListener {
             findNavController().navigate(R.id.action_mediaLibraryFragment_to_newPlaylistFragment)
         }
+        playlistsAdapter = PlaylistsAdapter { /*клик по обложке*/ }
+            .apply { playlists = emptyList() }
+        binding.playlistsRV.adapter = playlistsAdapter
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.uiStateFlow.collect {
@@ -41,18 +45,31 @@ class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
 
     private fun render(state: PlaylistsUiState) {
         when (state) {
-            is PlaylistsUiState.Default -> showDefaultState()
+            PlaylistsUiState.Default -> showDefaultState()
             is PlaylistsUiState.ShowPlaylists -> showPlaylistsState(state.playlists)
+            PlaylistsUiState.Placeholder -> showPlaceholder()
         }
     }
 
     private fun showPlaylistsState(playlists: List<PlaylistPreview>) {
-        //TODO
+        with(binding) {
+            noPlaylistsPlaceholder.isVisible = false
+            playlistsAdapter.playlists = playlists
+            playlistsRV.apply {
+                adapter?.notifyDataSetChanged()
+                isVisible = true
+            }
+        }
     }
 
     private fun showDefaultState() {
+        binding.noPlaylistsPlaceholder.isVisible = false
+        binding.playlistsRV.isVisible = false
+    }
+
+    private fun showPlaceholder() {
         binding.noPlaylistsPlaceholder.isVisible = true
-        binding.addNewPlaylistButton.isEnabled = true
+        binding.playlistsRV.isVisible = false
     }
 
     companion object {

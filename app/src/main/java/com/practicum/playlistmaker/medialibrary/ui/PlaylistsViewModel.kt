@@ -18,10 +18,10 @@ class PlaylistsViewModel(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            playlistsInteractor.getPlaylistPreviewFlow().collect{ playlists ->
+            playlistsInteractor.getPlaylistPreviewFlow().collect { playlists ->
                 _uiState.value =
-                    if (playlists.isEmpty()) PlaylistsUiState.Default
-                else PlaylistsUiState.ShowPlaylists(playlists)
+                    if (playlists.isEmpty()) PlaylistsUiState.Placeholder
+                    else PlaylistsUiState.ShowPlaylists(playlists)
             }
         }
     }

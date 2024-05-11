@@ -1,10 +1,11 @@
 package com.practicum.playlistmaker.medialibrary.ui
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.medialibrary.domain.api.PlaylistsInteractor
-import com.practicum.playlistmaker.medialibrary.domain.models.Playlist
+import com.practicum.playlistmaker.medialibrary.domain.models.NewPlaylist
 import com.practicum.playlistmaker.medialibrary.ui.models.NewPlaylistUiEvent
 import com.practicum.playlistmaker.medialibrary.ui.models.NewPlaylistUiState2
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +28,6 @@ class NewPlaylistViewModel(
 
     private var name = STRING_DEFAULT_VALUE
     private var description = STRING_DEFAULT_VALUE
-    private val iconUrl = STRING_DEFAULT_VALUE
     private var iconUri: Uri? = null
 
     fun onUiEvent(event: NewPlaylistUiEvent) {
@@ -43,11 +43,6 @@ class NewPlaylistViewModel(
         _uiState.value = _uiState.value.copy(uri = uri, showDialog = true)
     }
 
-    private fun saveImage(uri: Uri) {
-        //сгенерировать имя для файла
-        //сохранение картинки в отдельную папку
-        //получить адрес в хранилище
-    }
 
     private fun saveChanges(flag: Boolean, s: CharSequence?) {
         if (flag) onEditName(s)
@@ -83,14 +78,13 @@ class NewPlaylistViewModel(
     }
 
     private fun savePlaylist() {
+        Log.d("QQQ", "VM savePlaylist $iconUri $name $description")
         viewModelScope.launch(Dispatchers.IO) {
             playlistsInteractor.insertPlaylist(
-                Playlist(
-                    id = null,
-                    iconUrl = iconUrl,
+                NewPlaylist(
+                    iconUri = iconUri,
                     name = name,
-                    description = description,
-                    count = INT_DEFAULT_VALUE
+                    description = description
                 )
             )
         }
@@ -98,6 +92,5 @@ class NewPlaylistViewModel(
 
     companion object {
         private const val STRING_DEFAULT_VALUE = ""
-        private const val INT_DEFAULT_VALUE = 0
     }
 }

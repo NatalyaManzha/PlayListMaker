@@ -1,16 +1,18 @@
 package com.practicum.playlistmaker.medialibrary.data.converters
 
 import com.practicum.playlistmaker.medialibrary.data.db.PlaylistEntity
-import com.practicum.playlistmaker.medialibrary.domain.models.Playlist
+import com.practicum.playlistmaker.medialibrary.domain.models.NewPlaylist
 
-fun Playlist.toPlaylistEntity(): PlaylistEntity {
+const val COUNT_DEFAULT_VALUE_INT = 0
+
+fun NewPlaylist.toPlaylistEntity(iconFileName: String): PlaylistEntity {
     return with(this) {
         PlaylistEntity(
             id = null,
-            iconUrl = iconUrl,
+            iconFileName = iconFileName,
             name = name,
             description = description,
-            count = count
+            count = COUNT_DEFAULT_VALUE_INT
         )
     }
 }

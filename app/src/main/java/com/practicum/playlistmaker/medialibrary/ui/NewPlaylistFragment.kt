@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,7 +41,7 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
     }
     private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
     private var dialogEnabled = false
-    val requester = PermissionRequester.instance()
+    private val requester = PermissionRequester.instance()
 
     override fun createBinding(
         inflater: LayoutInflater,
@@ -51,7 +52,7 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        activity?.onBackPressedDispatcher?.addCallback(onBackPressedCallback)
+        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, onBackPressedCallback)
         registerPickMedia()
         setOnTextChangedListeners()
         setOnClickListeners()
@@ -107,6 +108,7 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
             }
             createButton.setOnClickListener {
                 viewModel.onUiEvent(NewPlaylistUiEvent.OnCreateButtonClick)
+                Log.d("QQQ", "createButtonclick ")
                 closeFragment()
             }
             newPlaylistBackButton.setOnClickListener {
@@ -116,36 +118,40 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
     }
 
     private fun checkPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
-        lifecycleScope.launch {
-            requester.request(Manifest.permission.READ_MEDIA_IMAGES).collect { result ->
-                when (result) {
-                    is PermissionResult.Granted -> {
-                        tryToGetImage()
-                    }
-                    is PermissionResult.Denied.DeniedPermanently -> {
-                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        intent.data= Uri.fromParts("package", requireContext().packageName, null)
-                        activity?.startActivity(intent)
-                    }
-                    is PermissionResult.Denied.NeedsRationale -> {
-                        showToast(getString(R.string.on_permission_deny))
-                    }
-                    is PermissionResult.Cancelled -> {
-                        return@collect
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            lifecycleScope.launch {
+                requester.request(Manifest.permission.READ_MEDIA_IMAGES).collect { result ->
+                    when (result) {
+                        is PermissionResult.Granted -> {
+                            tryToGetImage()
+                        }
+
+                        is PermissionResult.Denied.DeniedPermanently -> {
+                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            intent.data =
+                                Uri.fromParts("package", requireContext().packageName, null)
+                            activity?.startActivity(intent)
+                        }
+
+                        is PermissionResult.Denied.NeedsRationale -> {
+                            showToast(getString(R.string.on_permission_deny))
+                        }
+
+                        is PermissionResult.Cancelled -> {
+                            return@collect
+                        }
                     }
                 }
-            }}
-        }
-        else tryToGetImage()
+            }
+        } else tryToGetImage()
     }
 
     private fun tryToGetImage() {
         pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
 
-    private fun showToast(message:String) {
+    private fun showToast(message: String) {
         Toast.makeText(
             requireContext(),
             message,
@@ -174,11 +180,5 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
     private fun closeFragment() {
         onBackPressedCallback.isEnabled = false
         requireActivity().onBackPressedDispatcher.onBackPressed()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        //это уже даже излишне, ничего не меняется
-        onBackPressedCallback.remove()
     }
 }

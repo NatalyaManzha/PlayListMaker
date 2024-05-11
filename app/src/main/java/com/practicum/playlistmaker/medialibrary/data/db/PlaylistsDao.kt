@@ -15,7 +15,7 @@ interface PlaylistsDao {
     @Query("DELETE FROM playlist_table WHERE id = :playlistID")
     suspend fun deletePlaylist(playlistID: Long)
 
-    @Query("SELECT id, iconUrl, name, count  FROM playlist_table")
+    @Query("SELECT id, iconFileName, name, count  FROM playlist_table")
     fun getPlaylistPreviewFlow(): Flow<List<PlaylistEntity>>
 
     @Query("UPDATE playlist_table SET count = :count WHERE id = :playlistID")
