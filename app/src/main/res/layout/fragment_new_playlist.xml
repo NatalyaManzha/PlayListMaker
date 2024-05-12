@@ -66,6 +66,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/name_edit_text"
             style="@style/TextInputEditTextStyle"
+            android:ellipsize="end"
             android:layout_width="match_parent"
             android:layout_height="@dimen/item_size_56" />
 

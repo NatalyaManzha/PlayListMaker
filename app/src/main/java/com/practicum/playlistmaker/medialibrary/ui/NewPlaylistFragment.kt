@@ -1,14 +1,9 @@
 package com.practicum.playlistmaker.medialibrary.ui
 
-import android.Manifest
-import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,8 +16,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
-import com.markodevcic.peko.PermissionRequester
-import com.markodevcic.peko.PermissionResult
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.core.ui.BindingFragment
 import com.practicum.playlistmaker.databinding.FragmentNewPlaylistBinding
@@ -82,8 +75,8 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
         if (state.uri != null) setNewImage(state.uri)
         dialogEnabled = state.showDialog
         saveEnabled(state.saveEnabled)
-        if (state.saveCompletedSuccessfully!=null && state.playlistName!=null)
-            onSaveComplete( state.saveCompletedSuccessfully, state.playlistName)
+        if (state.saveCompletedSuccessfully != null && state.playlistName != null)
+            onSaveComplete(state.saveCompletedSuccessfully, state.playlistName)
     }
 
     private fun showDialog() {
@@ -121,9 +114,9 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
         pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
 
-    private fun onSaveComplete(saveResult: Boolean, playlistName:String){
-        val message = if (saveResult) "Плейлист n\"${playlistName}n\" сохранен успешно"
-        else "Ошибка сохранения n\"${playlistName}n\""
+    private fun onSaveComplete(saveResult: Boolean, playlistName: String) {
+        val message = if (saveResult) getString(R.string.playlist)+" n\"${playlistName}n\" "+getString(R.string.save_success)
+        else getString(R.string.save_failure)+" n\"${playlistName}n\""
         showToast(message)
         closeFragment()
     }
