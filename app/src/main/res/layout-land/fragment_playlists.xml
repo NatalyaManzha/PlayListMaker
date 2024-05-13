@@ -34,7 +34,7 @@
         app:reverseLayout="false"
         app:spanCount="4"
         tools:itemCount="5"
-        tools:listitem="@layout/playlist_element"
+        tools:listitem="@layout/playlist_preview_element"
         tools:visibility="visible" />
 
 
