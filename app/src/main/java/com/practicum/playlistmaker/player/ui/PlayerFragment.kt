@@ -76,7 +76,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
                 binding.overlay.alpha = slideOffset
             }
         })
-        playlistsAdapter = PlaylistsBSAdapter{ playlist ->
+        playlistsAdapter = PlaylistsBSAdapter { playlist ->
             viewModel.onUiEvent(PlayerUiEvent.AddTrackToPlaylist(playlist.id, playlist.name))
         }.apply {
             playlists = emptyList()
@@ -106,44 +106,33 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
 
     private fun subscribeOnViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.isInFavoritesFlow.collect {
-                renderFavorites(it)
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.currentPosition.collect {
-                renderCurrentPosition(it)
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.playerStateFlow.collect {
-                renderPlayerState(it)
-            }
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.playlists.collect {
-                updatePlaylistsData(it)
-            }
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.saveTrackSuccess.collect {
-                if(it!=null) onAddTrackToPlaylistResult(it)
+            viewModel.uiState.collect {
+                with(it) {
+                    renderFavorites(isInFavorites)
+                    renderCurrentPosition(currentPosition)
+                    renderPlayerState(playerState)
+                    updatePlaylistsData(playlists)
+                    if (saveTrackSuccess != null
+                        && playlistName != null
+                    ) onAddTrackToPlaylistResult(
+                        saveTrackSuccess,
+                        playlistName
+                    )
+                }
             }
         }
     }
 
-    private fun onAddTrackToPlaylistResult(result:Pair<Boolean, String>){
+    private fun onAddTrackToPlaylistResult(isSuccessful: Boolean, playlistName: String) {
         var message = ""
-        if(result.first){
-            message = "${getString(R.string.add_track_to_playlist_success)} ${result.second}"
+        if (isSuccessful) {
+            message = "${getString(R.string.add_track_to_playlist_success)} $playlistName"
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-        }
-        else message = "${getString(R.string.add_track_to_playlist_added_yet)} ${result.second}"
+        } else message = "${getString(R.string.add_track_to_playlist_added_yet)} $playlistName"
         showToast(message)
     }
-    private fun updatePlaylistsData(playlists:List<PlaylistPreview>){
+
+    private fun updatePlaylistsData(playlists: List<PlaylistPreview>) {
         playlistsAdapter.playlists = playlists
         binding.playlistsBottomSheetRW.adapter?.notifyDataSetChanged()
     }

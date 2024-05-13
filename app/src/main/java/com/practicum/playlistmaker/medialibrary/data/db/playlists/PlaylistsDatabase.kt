@@ -9,7 +9,7 @@ import androidx.room.RoomDatabase
         PlaylistEntity::class,
         TrackInPlaylistsEntity::class,
         TrackToPlaylistEntity::class
-               ],
+    ],
     exportSchema = false
 )
 abstract class PlaylistsDatabase : RoomDatabase() {

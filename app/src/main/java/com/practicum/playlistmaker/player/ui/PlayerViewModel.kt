@@ -5,14 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.medialibrary.domain.api.FavoritesInteractor
 import com.practicum.playlistmaker.medialibrary.domain.api.PlaylistsInteractor
-import com.practicum.playlistmaker.medialibrary.domain.models.PlaylistPreview
-import com.practicum.playlistmaker.medialibrary.ui.models.PlaylistsUiState
 import com.practicum.playlistmaker.player.domain.api.MediaPlayerInteractor
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerCommand
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerControllerCommand
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerState
 import com.practicum.playlistmaker.player.domain.models.Track
 import com.practicum.playlistmaker.player.ui.models.PlayerUiEvent
+import com.practicum.playlistmaker.player.ui.models.PlayerUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -26,21 +25,22 @@ class PlayerViewModel(
     private val playlistsInteractor: PlaylistsInteractor
 ) : ViewModel() {
 
-    private val _isInFavorites = MutableStateFlow(false)
-    val isInFavoritesFlow = _isInFavorites.asStateFlow()
-    private val _currentPosition = MutableStateFlow(PLAYER_START_TIME)
-    val currentPosition = _currentPosition.asStateFlow()
-    private val _playerState = MutableStateFlow(MediaPlayerState.DEFAULT)
-    val playerStateFlow = _playerState.asStateFlow()
-    private val _playlists = MutableStateFlow<List<PlaylistPreview>>(emptyList())
-    val playlists = _playlists.asStateFlow()
-    private val _saveTrackSuccess = MutableStateFlow<Pair<Boolean, String>?>(null)
-    val saveTrackSuccess = _saveTrackSuccess.asStateFlow()
+    private val _uiState = MutableStateFlow(
+        PlayerUiState(
+            isInFavorites = false,
+            currentPosition = PLAYER_START_TIME,
+            playerState = MediaPlayerState.DEFAULT,
+            playlists = emptyList(),
+            saveTrackSuccess = null,
+            playlistName = null
+        )
+    )
+    val uiState = _uiState.asStateFlow()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
             playlistsInteractor.getPlaylistPreviewFlow().collect { playlists ->
-                _playlists.value = playlists
+                _uiState.value = _uiState.value.copy(playlists = playlists)
             }
         }
     }
@@ -57,22 +57,27 @@ class PlayerViewModel(
             is PlayerUiEvent.AddToFavoritesButtonClick -> toggleFavorite()
             is PlayerUiEvent.OnResume -> onPlayerFragmentOnResume()
             is PlayerUiEvent.OnPause -> onPlayerFragmentPause()
-            is PlayerUiEvent.AddTrackToPlaylist -> addTrackToPlaylist(event.playlistID, event.playlistName)
+            is PlayerUiEvent.AddTrackToPlaylist -> addTrackToPlaylist(
+                event.playlistID,
+                event.playlistName
+            )
         }
     }
 
-    private fun addTrackToPlaylist(playlistID: Long, playlistName:String){
+    private fun addTrackToPlaylist(playlistID: Long, playlistName: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            _saveTrackSuccess.value = Pair(
-                playlistsInteractor.addTrackToPlaylist(playlistID, track!!),
-                playlistName
+            _uiState.value = _uiState.value.copy(
+                saveTrackSuccess = playlistsInteractor.addTrackToPlaylist(playlistID, track!!),
+                playlistName = playlistName
             )
         }
     }
 
     private fun setTrackToPlay(event: PlayerUiEvent.OnViewCreated) {
         if (track == null) {
-            _isInFavorites.value = event.track.inFavorite
+            _uiState.value = _uiState.value.copy(
+                isInFavorites = event.track.inFavorite
+            )
             track = event.track
             preparePlayer(event.track.previewUrl)
         }
@@ -89,25 +94,31 @@ class PlayerViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             mediaPlayerInteractor.playerStateFlow().collect { state ->
                 if (state == MediaPlayerState.PLAYBACK_COMPLETE) {
-                    _currentPosition.value = FULL_TIME
+                    _uiState.value = _uiState.value.copy(
+                        currentPosition = FULL_TIME
+                    )
                     updateProgress?.cancel()
                     delay(DELAY_MILLIS)
                     uiStateOnPlaying = false
-                    _currentPosition.value = PLAYER_START_TIME
+                    _uiState.value = _uiState.value.copy(
+                        currentPosition = PLAYER_START_TIME
+                    )
                 }
-                _playerState.value = state
+                _uiState.value = _uiState.value.copy(
+                    playerState = state
+                )
             }
         }
     }
 
     private fun onPlayerFragmentOnResume() {
-        if ((_currentPosition.value != PLAYER_START_TIME) && playerToBeResumed)
+        if ((_uiState.value.currentPosition != PLAYER_START_TIME) && playerToBeResumed)
             startPlayer()
         playerToBeResumed = false
     }
 
     private fun onPlayerFragmentPause() {
-        if (_playerState.value == MediaPlayerState.PLAYING) playerToBeResumed = true
+        if (_uiState.value.playerState == MediaPlayerState.PLAYING) playerToBeResumed = true
         pausePlayer()
     }
 
@@ -118,7 +129,9 @@ class PlayerViewModel(
     private fun updatePlayerData() {
         updateProgress = viewModelScope.launch(Dispatchers.IO) {
             mediaPlayerInteractor.playerCurrentPositionFlow().collect { time ->
-                _currentPosition.value = time
+                _uiState.value = _uiState.value.copy(
+                    currentPosition = time
+                )
             }
         }
     }
@@ -145,7 +158,7 @@ class PlayerViewModel(
 
     private fun toggleFavorite() {
         viewModelScope.launch(Dispatchers.IO) {
-            val isInFavorites = _isInFavorites.value
+            val isInFavorites = _uiState.value.isInFavorites
             with(favoritesInteractor) {
                 try {
                     if (isInFavorites) deleteFavorite(track!!.trackId)
@@ -154,7 +167,9 @@ class PlayerViewModel(
                     Log.e("BD", "Ошибка выполнения запроса в БД ${e.message}")
                 }
             }
-            _isInFavorites.value = !isInFavorites
+            _uiState.value = _uiState.value.copy(
+                isInFavorites = !isInFavorites
+            )
         }
     }
 

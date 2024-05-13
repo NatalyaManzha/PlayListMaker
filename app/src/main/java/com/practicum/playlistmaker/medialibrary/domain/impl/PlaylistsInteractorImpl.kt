@@ -27,6 +27,6 @@ class PlaylistsInteractorImpl(
     }
 
     override suspend fun addTrackToPlaylist(playlistID: Long, track: Track): Boolean {
-       return playlistsRepository.addTrackToPlaylist(playlistID, track)
+        return playlistsRepository.addTrackToPlaylist(playlistID, track)
     }
 }

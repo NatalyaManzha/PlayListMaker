@@ -34,14 +34,14 @@ class ImageStorageImpl(
             BitmapFactory
                 .decodeStream(inputStream)
                 .compress(Bitmap.CompressFormat.JPEG, 30, outputStream)
-        } catch(e:Exception){
+        } catch (e: Exception) {
             Log.d("QQQ", "saveImage(): ${e.message}")
         }
         return imageFileName
     }
 
     override suspend fun uriByFileName(fileName: String): Uri? {
-        return if(fileName.isEmpty()) null
+        return if (fileName.isEmpty()) null
         else File(filePath, fileName).toUri()
     }
 
