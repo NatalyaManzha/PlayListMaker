@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.medialibrary.ui
+package com.practicum.playlistmaker.medialibrary.ui.newplaylist
 
 import android.net.Uri
 import android.os.Bundle
@@ -20,7 +20,7 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.core.ui.BindingFragment
 import com.practicum.playlistmaker.databinding.FragmentNewPlaylistBinding
 import com.practicum.playlistmaker.medialibrary.ui.models.NewPlaylistUiEvent
-import com.practicum.playlistmaker.medialibrary.ui.models.NewPlaylistUiState2
+import com.practicum.playlistmaker.medialibrary.ui.models.NewPlaylistUiState
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -71,7 +71,7 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
         binding.newPlaylistIcon.setImageURI(uri)
     }
 
-    private fun render(state: NewPlaylistUiState2) {
+    private fun render(state: NewPlaylistUiState) {
         if (state.uri != null) setNewImage(state.uri)
         dialogEnabled = state.showDialog
         saveEnabled(state.saveEnabled)

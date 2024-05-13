@@ -1,13 +1,12 @@
 package com.practicum.playlistmaker.medialibrary.data.converters
 
-import com.practicum.playlistmaker.medialibrary.data.db.favorites.TrackEntity
+import com.practicum.playlistmaker.medialibrary.data.db.playlists.TrackInPlaylistsEntity
 import com.practicum.playlistmaker.player.domain.models.Track
 
-fun Track.toTrackEntity(): TrackEntity {
+
+fun Track.toTrackInPlaylistsEntity(): TrackInPlaylistsEntity {
     return with(this) {
-        TrackEntity(
-            id = null,
-            trackId = trackId,
+        TrackInPlaylistsEntity(
             artistName = artistName,
             artworkUrl100 = artworkUrl100,
             artworkUrl512 = artworkUrl512,
@@ -16,6 +15,7 @@ fun Track.toTrackEntity(): TrackEntity {
             previewUrl = previewUrl,
             primaryGenreName = primaryGenreName,
             releaseYear = releaseYear,
+            trackId = trackId,
             trackName = trackName,
             trackTimeMinSec = trackTimeMinSec
         )

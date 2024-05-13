@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.medialibrary.ui
+package com.practicum.playlistmaker.medialibrary.ui.playlists
 
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
@@ -11,11 +11,11 @@ class PlaylistsViewHolder(private val binding: PlaylistPreviewElementBinding) :
 
     fun bind(playlist: PlaylistPreview) {
         with(binding) {
-            elementPlaylistName.text = playlist.name
-            elementPlaylistCount.text = playlist.count
+            playlistName.text = playlist.name
+            playlistCount.text = playlist.count
             if (playlist.iconUri == null)
-                elementPlaylistIcon.setImageResource(R.drawable.placeholder)
-            else elementPlaylistIcon.setImageURI(playlist.iconUri)
+                playlistIcon.setImageResource(R.drawable.placeholder)
+            else playlistIcon.setImageURI(playlist.iconUri)
         }
     }
 }

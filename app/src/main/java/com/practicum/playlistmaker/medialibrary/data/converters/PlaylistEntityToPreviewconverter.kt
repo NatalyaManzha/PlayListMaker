@@ -1,8 +1,7 @@
 package com.practicum.playlistmaker.medialibrary.data.converters
 
 import android.net.Uri
-import androidx.core.net.toUri
-import com.practicum.playlistmaker.medialibrary.data.db.PlaylistEntity
+import com.practicum.playlistmaker.medialibrary.data.db.playlists.PlaylistEntity
 import com.practicum.playlistmaker.medialibrary.domain.models.PlaylistPreview
 
 fun PlaylistEntity.toPreview(uri: Uri?): PlaylistPreview {

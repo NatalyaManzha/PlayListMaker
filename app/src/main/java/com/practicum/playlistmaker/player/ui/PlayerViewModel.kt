@@ -4,6 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.medialibrary.domain.api.FavoritesInteractor
+import com.practicum.playlistmaker.medialibrary.domain.api.PlaylistsInteractor
+import com.practicum.playlistmaker.medialibrary.domain.models.PlaylistPreview
+import com.practicum.playlistmaker.medialibrary.ui.models.PlaylistsUiState
 import com.practicum.playlistmaker.player.domain.api.MediaPlayerInteractor
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerCommand
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerControllerCommand
@@ -19,7 +22,8 @@ import kotlinx.coroutines.launch
 
 class PlayerViewModel(
     private val favoritesInteractor: FavoritesInteractor,
-    private val mediaPlayerInteractor: MediaPlayerInteractor
+    private val mediaPlayerInteractor: MediaPlayerInteractor,
+    private val playlistsInteractor: PlaylistsInteractor
 ) : ViewModel() {
 
     private val _isInFavorites = MutableStateFlow(false)
@@ -28,6 +32,18 @@ class PlayerViewModel(
     val currentPosition = _currentPosition.asStateFlow()
     private val _playerState = MutableStateFlow(MediaPlayerState.DEFAULT)
     val playerStateFlow = _playerState.asStateFlow()
+    private val _playlists = MutableStateFlow<List<PlaylistPreview>>(emptyList())
+    val playlists = _playlists.asStateFlow()
+    private val _saveTrackSuccess = MutableStateFlow<Pair<Boolean, String>?>(null)
+    val saveTrackSuccess = _saveTrackSuccess.asStateFlow()
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            playlistsInteractor.getPlaylistPreviewFlow().collect { playlists ->
+                _playlists.value = playlists
+            }
+        }
+    }
 
     private var uiStateOnPlaying = false
     private var playerToBeResumed = false
@@ -41,6 +57,16 @@ class PlayerViewModel(
             is PlayerUiEvent.AddToFavoritesButtonClick -> toggleFavorite()
             is PlayerUiEvent.OnResume -> onPlayerFragmentOnResume()
             is PlayerUiEvent.OnPause -> onPlayerFragmentPause()
+            is PlayerUiEvent.AddTrackToPlaylist -> addTrackToPlaylist(event.playlistID, event.playlistName)
+        }
+    }
+
+    private fun addTrackToPlaylist(playlistID: Long, playlistName:String){
+        viewModelScope.launch(Dispatchers.IO) {
+            _saveTrackSuccess.value = Pair(
+                playlistsInteractor.addTrackToPlaylist(playlistID, track!!),
+                playlistName
+            )
         }
     }
 

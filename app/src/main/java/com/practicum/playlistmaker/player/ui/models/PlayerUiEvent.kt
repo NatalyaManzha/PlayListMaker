@@ -8,4 +8,5 @@ sealed interface PlayerUiEvent {
     object AddToFavoritesButtonClick : PlayerUiEvent
     object OnResume : PlayerUiEvent
     object OnPause : PlayerUiEvent
+    data class AddTrackToPlaylist(val playlistID: Long, val playlistName: String): PlayerUiEvent
 }

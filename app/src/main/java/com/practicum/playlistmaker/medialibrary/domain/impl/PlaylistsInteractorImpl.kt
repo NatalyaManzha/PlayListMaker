@@ -4,6 +4,7 @@ import com.practicum.playlistmaker.medialibrary.domain.api.PlaylistsInteractor
 import com.practicum.playlistmaker.medialibrary.domain.api.PlaylistsRepository
 import com.practicum.playlistmaker.medialibrary.domain.models.NewPlaylist
 import com.practicum.playlistmaker.medialibrary.domain.models.PlaylistPreview
+import com.practicum.playlistmaker.player.domain.models.Track
 import kotlinx.coroutines.flow.Flow
 
 class PlaylistsInteractorImpl(
@@ -23,5 +24,9 @@ class PlaylistsInteractorImpl(
 
     override suspend fun updatePlaylist(playlistID: Long, count: Int) {
         playlistsRepository.updatePlaylist(playlistID, count)
+    }
+
+    override suspend fun addTrackToPlaylist(playlistID: Long, track: Track): Boolean {
+       return playlistsRepository.addTrackToPlaylist(playlistID, track)
     }
 }

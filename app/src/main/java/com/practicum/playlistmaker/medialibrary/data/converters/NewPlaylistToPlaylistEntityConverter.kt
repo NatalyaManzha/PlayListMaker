@@ -1,6 +1,6 @@
 package com.practicum.playlistmaker.medialibrary.data.converters
 
-import com.practicum.playlistmaker.medialibrary.data.db.PlaylistEntity
+import com.practicum.playlistmaker.medialibrary.data.db.playlists.PlaylistEntity
 import com.practicum.playlistmaker.medialibrary.domain.models.NewPlaylist
 
 const val COUNT_DEFAULT_VALUE_INT = 0

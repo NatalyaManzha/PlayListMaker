@@ -16,6 +16,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.core.ui.BindingFragment
 import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
+import com.practicum.playlistmaker.medialibrary.domain.models.PlaylistPreview
 import com.practicum.playlistmaker.player.domain.models.MediaPlayerState
 import com.practicum.playlistmaker.player.domain.models.Track
 import com.practicum.playlistmaker.player.ui.models.PlayerUiEvent
@@ -28,6 +29,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
     private lateinit var track: Track
     private val viewModel: PlayerViewModel by viewModel()
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
+    private lateinit var playlistsAdapter: PlaylistsBSAdapter
 
     override fun createBinding(
         inflater: LayoutInflater,
@@ -42,24 +44,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
         viewModel.onUiEvent(PlayerUiEvent.OnViewCreated(track))
         setOnClickListeners()
         setBottomSheetBehavior()
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.isInFavoritesFlow.collect {
-                renderFavorites(it)
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.currentPosition.collect {
-                renderCurrentPosition(it)
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.playerStateFlow.collect {
-                renderPlayerState(it)
-            }
-        }
+        subscribeOnViewModel()
     }
 
     override fun onResume() {
@@ -91,89 +76,139 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
                 binding.overlay.alpha = slideOffset
             }
         })
+        playlistsAdapter = PlaylistsBSAdapter{ playlist ->
+            viewModel.onUiEvent(PlayerUiEvent.AddTrackToPlaylist(playlist.id, playlist.name))
+        }.apply {
+            playlists = emptyList()
+        }
+        binding.playlistsBottomSheetRW.adapter = playlistsAdapter
     }
 
-private fun setOnClickListeners() {
-    with(binding) {
-        backButton.setOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-        }
-        playControlButton.setOnClickListener {
-            viewModel.onUiEvent(PlayerUiEvent.PlayControlButtonClick)
-        }
-        addToFavoritesButton.setOnClickListener {
-            viewModel.onUiEvent(PlayerUiEvent.AddToFavoritesButtonClick)
-        }
-        addToPlaylistButton.setOnClickListener {
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
-        }
-        newPlaylistButton.setOnClickListener {
-            findNavController().navigate(R.id.action_playerFragment_to_newPlaylistFragment)
-        }
-    }
-}
-
-private fun renderInitialValues() {
-    track =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requireArguments().getSerializable(TRACK_TO_PLAY, Track::class.java) as Track
-        } else {
-            requireArguments().getSerializable(TRACK_TO_PLAY) as Track
-        }
-    with(binding) {
-        trackNameTV.text = track.trackName
-        artistNameTV.text = track.artistName
-        durationTV.text = track.trackTimeMinSec
-        albumTV.text = track.collectionName
-        yearTV.text = track.releaseYear
-        genreTV.text = track.primaryGenreName
-        countryTV.text = track.country
-    }
-    Glide.with(this)
-        .load(track.artworkUrl512)
-        .placeholder(R.drawable.placeholder)
-        .fitCenter()
-        .transform(RoundedCorners(requireContext().resources.getDimensionPixelSize(R.dimen.radius_8dp)))
-        .into(binding.coverArtwork)
-}
-
-private fun renderPlayerState(state: MediaPlayerState) {
-    with(binding.playControlButton) {
-        when (state) {
-            MediaPlayerState.PREPARED -> isEnabled = true
-            MediaPlayerState.PLAYBACK_COMPLETE,
-            MediaPlayerState.PAUSED,
-            MediaPlayerState.DEFAULT -> setImageResource(R.drawable.button_play)
-
-            MediaPlayerState.ERROR -> showToast()
-            MediaPlayerState.PLAYING -> setImageResource(R.drawable.button_pause)
+    private fun setOnClickListeners() {
+        with(binding) {
+            backButton.setOnClickListener {
+                requireActivity().onBackPressedDispatcher.onBackPressed()
+            }
+            playControlButton.setOnClickListener {
+                viewModel.onUiEvent(PlayerUiEvent.PlayControlButtonClick)
+            }
+            addToFavoritesButton.setOnClickListener {
+                viewModel.onUiEvent(PlayerUiEvent.AddToFavoritesButtonClick)
+            }
+            addToPlaylistButton.setOnClickListener {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+            }
+            newPlaylistButton.setOnClickListener {
+                findNavController().navigate(R.id.action_playerFragment_to_newPlaylistFragment)
+            }
         }
     }
-}
 
-private fun showToast() {
-    Toast.makeText(
-        requireContext(),
-        getString(R.string.player_error_message),
-        Toast.LENGTH_LONG
-    )
-        .show()
-}
+    private fun subscribeOnViewModel() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.isInFavoritesFlow.collect {
+                renderFavorites(it)
+            }
+        }
 
-private fun renderCurrentPosition(currentPosition: String) {
-    binding.trackPlaytimeTV.text = currentPosition
-}
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.currentPosition.collect {
+                renderCurrentPosition(it)
+            }
+        }
 
-private fun renderFavorites(isInFavorites: Boolean) {
-    val resourse =
-        if (isInFavorites) R.drawable.remove_from_favorites else R.drawable.add_to_favorites
-    binding.addToFavoritesButton.setImageResource(resourse)
-}
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.playerStateFlow.collect {
+                renderPlayerState(it)
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.playlists.collect {
+                updatePlaylistsData(it)
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.saveTrackSuccess.collect {
+                if(it!=null) onAddTrackToPlaylistResult(it)
+            }
+        }
+    }
 
-companion object {
-    private const val TRACK_TO_PLAY = "track_to_play"
+    private fun onAddTrackToPlaylistResult(result:Pair<Boolean, String>){
+        var message = ""
+        if(result.first){
+            message = "${getString(R.string.add_track_to_playlist_success)} ${result.second}"
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        }
+        else message = "${getString(R.string.add_track_to_playlist_added_yet)} ${result.second}"
+        showToast(message)
+    }
+    private fun updatePlaylistsData(playlists:List<PlaylistPreview>){
+        playlistsAdapter.playlists = playlists
+        binding.playlistsBottomSheetRW.adapter?.notifyDataSetChanged()
+    }
 
-    fun createArgs(track: Track): Bundle =
-        bundleOf(TRACK_TO_PLAY to track)
-}
+    private fun renderInitialValues() {
+        track =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                requireArguments().getSerializable(TRACK_TO_PLAY, Track::class.java) as Track
+            } else {
+                requireArguments().getSerializable(TRACK_TO_PLAY) as Track
+            }
+        with(binding) {
+            trackNameTV.text = track.trackName
+            artistNameTV.text = track.artistName
+            durationTV.text = track.trackTimeMinSec
+            albumTV.text = track.collectionName
+            yearTV.text = track.releaseYear
+            genreTV.text = track.primaryGenreName
+            countryTV.text = track.country
+        }
+        Glide.with(this)
+            .load(track.artworkUrl512)
+            .placeholder(R.drawable.placeholder)
+            .fitCenter()
+            .transform(RoundedCorners(requireContext().resources.getDimensionPixelSize(R.dimen.radius_8dp)))
+            .into(binding.coverArtwork)
+    }
+
+    private fun renderPlayerState(state: MediaPlayerState) {
+        with(binding.playControlButton) {
+            when (state) {
+                MediaPlayerState.PREPARED -> isEnabled = true
+                MediaPlayerState.PLAYBACK_COMPLETE,
+                MediaPlayerState.PAUSED,
+                MediaPlayerState.DEFAULT -> setImageResource(R.drawable.button_play)
+
+                MediaPlayerState.ERROR -> showToast(getString(R.string.player_error_message))
+                MediaPlayerState.PLAYING -> setImageResource(R.drawable.button_pause)
+            }
+        }
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(
+            requireContext(),
+            message,
+            Toast.LENGTH_LONG
+        )
+            .show()
+    }
+
+    private fun renderCurrentPosition(currentPosition: String) {
+        binding.trackPlaytimeTV.text = currentPosition
+    }
+
+    private fun renderFavorites(isInFavorites: Boolean) {
+        val resource =
+            if (isInFavorites) R.drawable.remove_from_favorites else R.drawable.add_to_favorites
+        binding.addToFavoritesButton.setImageResource(resource)
+    }
+
+    companion object {
+        private const val TRACK_TO_PLAY = "track_to_play"
+
+        fun createArgs(track: Track): Bundle =
+            bundleOf(TRACK_TO_PLAY to track)
+    }
 }

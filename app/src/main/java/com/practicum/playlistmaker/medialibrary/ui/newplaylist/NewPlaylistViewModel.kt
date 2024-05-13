@@ -1,13 +1,12 @@
-package com.practicum.playlistmaker.medialibrary.ui
+package com.practicum.playlistmaker.medialibrary.ui.newplaylist
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.medialibrary.domain.api.PlaylistsInteractor
 import com.practicum.playlistmaker.medialibrary.domain.models.NewPlaylist
 import com.practicum.playlistmaker.medialibrary.ui.models.NewPlaylistUiEvent
-import com.practicum.playlistmaker.medialibrary.ui.models.NewPlaylistUiState2
+import com.practicum.playlistmaker.medialibrary.ui.models.NewPlaylistUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +17,7 @@ class NewPlaylistViewModel(
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
-        NewPlaylistUiState2(
+        NewPlaylistUiState(
             uri = null,
             showDialog = false,
             saveEnabled = false,

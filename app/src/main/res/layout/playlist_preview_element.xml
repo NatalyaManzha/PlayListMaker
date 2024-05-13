@@ -10,7 +10,7 @@
 
 
         <ImageView
-            android:id="@+id/element_playlist_icon"
+            android:id="@+id/playlist_icon"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@drawable/shape_playlist_preview_icon"
@@ -24,22 +24,22 @@
              />
 
     <TextView
-        android:id="@+id/element_playlist_name"
+        android:id="@+id/playlist_name"
         style="@style/PlaylistPreviewTextStyle"
         android:layout_width="match_parent"
         android:layout_height="@dimen/item_size_16"
         android:layout_marginTop="@dimen/spacing_4"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/element_playlist_icon"
+        app:layout_constraintTop_toBottomOf="@id/playlist_icon"
         tools:text="Сборник самолучших плясовых Хоббитона - самое оно для похода на Изенгард" />
 
     <TextView
-        android:id="@+id/element_playlist_count"
+        android:id="@+id/playlist_count"
         style="@style/PlaylistPreviewTextStyle"
         android:layout_width="match_parent"
         android:layout_height="@dimen/item_size_16"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/element_playlist_name"
+        app:layout_constraintTop_toBottomOf="@id/playlist_name"
         tools:text="100500 треков" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
