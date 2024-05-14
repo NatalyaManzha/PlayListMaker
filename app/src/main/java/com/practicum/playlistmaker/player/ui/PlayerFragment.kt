@@ -73,7 +73,8 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                binding.overlay.alpha = slideOffset
+                val alpha = if (slideOffset < 0.5F) slideOffset + 0.5F else 1F
+                binding.overlay.alpha = alpha
             }
         })
         playlistsAdapter = PlaylistsBSAdapter { playlist ->

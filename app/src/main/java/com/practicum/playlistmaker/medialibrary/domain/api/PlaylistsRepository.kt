@@ -11,8 +11,4 @@ interface PlaylistsRepository {
     fun getPlaylistPreviewFlow(): Flow<List<PlaylistPreview>>
     suspend fun addTrackToPlaylist(playlistId: Long, track: Track): Boolean
 
-
-    suspend fun deletePlaylist(playlistID: Long)
-
-    suspend fun updatePlaylist(playlistID: Long, count: Int)
 }

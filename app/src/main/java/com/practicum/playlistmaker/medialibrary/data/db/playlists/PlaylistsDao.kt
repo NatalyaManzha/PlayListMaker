@@ -16,18 +16,20 @@ interface PlaylistsDao {
     @Query("SELECT id, iconFileName, name, count  FROM playlist_table")
     fun getPlaylistPreviewFlow(): Flow<List<PlaylistEntity>>
 
-    //добавление трека в
-// 1. добавить трек в таблицу треков, занесенных в плейлисты
+
+    //ДОБАВЛЕНИЕ ТРЕКА В ПЛЕЙЛИСТ
+    //1. проверить, есть ли такой трек в плейлисте
+    @Query("SELECT * FROM playlist_track_table WHERE playlistId = :playlistId AND trackId = :trackId")
+    suspend fun checkTrackInPlaylist(playlistId: Long, trackId: Int): List<TrackToPlaylistEntity>
+
+    // 2. добавить трек в таблицу треков, занесенных в плейлисты, если такого еще нет
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTrack(track: TrackInPlaylistsEntity)
 
-    // 2. добавить запись соотнесения трек-плейлист
+    // 3. добавить запись соотнесения трек-плейлист
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addTrackToPlaylist(trackToPlaylist: TrackToPlaylistEntity)
 
-    //проверить, есть ли такой трек в плейлисте
-    @Query("SELECT * FROM playlist_track_table WHERE playlistId = :playlistId AND trackId = :trackId")
-    suspend fun checkTrackInPlaylist(playlistId: Long, trackId: Int): List<TrackToPlaylistEntity>
 
     //получить список ID треков, записанных в плейлист
     @Query("SELECT * FROM playlist_track_table WHERE playlistId = :playlistId")
@@ -38,11 +40,12 @@ interface PlaylistsDao {
     @Query("SELECT * FROM playlist_table WHERE id = :playlistID")
     suspend fun getPlaylistByID(playlistID: Long): PlaylistEntity
 
+    // обновить данные о количестве треков в плейлисте
+    @Query("UPDATE playlist_table SET count = :count WHERE id = :playlistID")
+    suspend fun updatePlaylist(playlistID: Long, count: Int)
 
     @Query("DELETE FROM playlist_table WHERE id = :playlistID")
     suspend fun deletePlaylist(playlistID: Long)
-
-
-    @Query("UPDATE playlist_table SET count = :count WHERE id = :playlistID")
-    suspend fun updatePlaylist(playlistID: Long, count: Int)
 }
+
+

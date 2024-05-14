@@ -9,10 +9,6 @@ interface PlaylistsInteractor {
     suspend fun insertPlaylist(playlist: NewPlaylist): Long
     fun getPlaylistPreviewFlow(): Flow<List<PlaylistPreview>>
 
-
-    suspend fun deletePlaylist(playlistID: Long)
-
-    suspend fun updatePlaylist(playlistID: Long, count: Int)
     suspend fun addTrackToPlaylist(playlistID: Long, track: Track): Boolean
 
 }

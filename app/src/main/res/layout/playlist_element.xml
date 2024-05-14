@@ -41,7 +41,7 @@
     <TextView
         android:id="@+id/element_playlist_count"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/item_size_12"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacing_8"
         android:textColor="?attr/colorButtonNormal"
         android:textSize="@dimen/text_size_11"

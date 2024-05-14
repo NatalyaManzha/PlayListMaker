@@ -14,16 +14,8 @@ class PlaylistsInteractorImpl(
         return playlistsRepository.insertPlaylist(playlist)
     }
 
-    override suspend fun deletePlaylist(playlistID: Long) {
-        playlistsRepository.deletePlaylist(playlistID)
-    }
-
     override fun getPlaylistPreviewFlow(): Flow<List<PlaylistPreview>> {
         return playlistsRepository.getPlaylistPreviewFlow()
-    }
-
-    override suspend fun updatePlaylist(playlistID: Long, count: Int) {
-        playlistsRepository.updatePlaylist(playlistID, count)
     }
 
     override suspend fun addTrackToPlaylist(playlistID: Long, track: Track): Boolean {

@@ -107,7 +107,6 @@
         android:layout_height="@dimen/item_size_44"
         android:layout_marginStart="@dimen/spacing_320"
         android:layout_marginEnd="@dimen/spacing_16"
-        android:layout_marginBottom="@dimen/spacing_32"
         android:background="@drawable/button_shape"
         android:elevation="0dp"
         android:enabled="false"
@@ -117,7 +116,7 @@
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="@dimen/text_size_16"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/card"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

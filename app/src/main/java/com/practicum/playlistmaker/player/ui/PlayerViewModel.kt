@@ -65,10 +65,17 @@ class PlayerViewModel(
     }
 
     private fun addTrackToPlaylist(playlistID: Long, playlistName: String) {
+        Log.d("QQQ", "P VM addTrackToPlaylist")
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.value = _uiState.value.copy(
                 saveTrackSuccess = playlistsInteractor.addTrackToPlaylist(playlistID, track!!),
                 playlistName = playlistName
+            )
+            Log.d("QQQ", "P VM addTrackToPlaylist(result) ${_uiState.value.saveTrackSuccess}")
+            delay(COPY_STATE_DELAY_MILLIS)
+            _uiState.value = _uiState.value.copy(
+                saveTrackSuccess = null,
+                playlistName = null
             )
         }
     }
@@ -98,7 +105,7 @@ class PlayerViewModel(
                         currentPosition = FULL_TIME
                     )
                     updateProgress?.cancel()
-                    delay(DELAY_MILLIS)
+                    delay(UPDATE_DELAY_MILLIS)
                     uiStateOnPlaying = false
                     _uiState.value = _uiState.value.copy(
                         currentPosition = PLAYER_START_TIME
@@ -180,6 +187,7 @@ class PlayerViewModel(
     companion object {
         private const val PLAYER_START_TIME = "00:00"
         private const val FULL_TIME = "30:00"
-        private const val DELAY_MILLIS = 300L
+        private const val UPDATE_DELAY_MILLIS = 300L
+        private const val COPY_STATE_DELAY_MILLIS = 1L
     }
 }

@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class PlaylistsRepositoryImpl(
-    private val playlistsDB: PlaylistsDatabase,
+    playlistsDB: PlaylistsDatabase,
     private val imageStorage: ImageStorage
 ) : PlaylistsRepository {
 
@@ -42,25 +42,17 @@ class PlaylistsRepositoryImpl(
     }
 
     override suspend fun addTrackToPlaylist(playlistId: Long, track: Track): Boolean {
-
         val tracks = playlistsDao.checkTrackInPlaylist(playlistId, track.trackId)
         if (tracks.isNotEmpty()) return false
         else {
-            playlistsDao.addTrackToPlaylist(TrackToPlaylistEntity(null, playlistId, track.trackId))
-            playlistsDao.insertTrack(track.toTrackInPlaylistsEntity())
-            val count = playlistsDao.getTrackIdList(playlistId).size
-            playlistsDao.updatePlaylist(playlistId, count)
+            with(playlistsDao) {
+                addTrackToPlaylist(TrackToPlaylistEntity(null, playlistId, track.trackId))
+                insertTrack(track.toTrackInPlaylistsEntity())
+                val count = getTrackIdList(playlistId).size
+                updatePlaylist(playlistId, count)
+            }
             return true
         }
-    }
-
-
-    override suspend fun deletePlaylist(playlistID: Long) {
-        playlistsDao.deletePlaylist(playlistID)
-    }
-
-    override suspend fun updatePlaylist(playlistID: Long, count: Int) {
-        playlistsDao.updatePlaylist(playlistID, count)
     }
 
     companion object {
