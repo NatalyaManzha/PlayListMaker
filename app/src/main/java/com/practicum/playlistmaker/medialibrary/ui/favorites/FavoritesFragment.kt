@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.medialibrary.ui
+package com.practicum.playlistmaker.medialibrary.ui.favorites
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -46,17 +46,23 @@ class FavoritesFragment : BindingFragment<FragmentFavoritesBinding>() {
 
     private fun render(state: FavoritesUiState) {
         when (state) {
-            is FavoritesUiState.Default -> showDefaultState()
-            is FavoritesUiState.ShowFavorites -> showFavoritesState(state.tracklist)
+            FavoritesUiState.Default -> showDefaultState()
+            is FavoritesUiState.ShowFavorites -> showFavorites(state.tracklist)
+            FavoritesUiState.Placeholder -> showPlaceholder()
         }
     }
 
-    private fun showDefaultState() {
+    private fun showPlaceholder() {
         binding.noFavoritesPlaceholder.isVisible = true
         binding.favoritesRV.isVisible = false
     }
 
-    private fun showFavoritesState(trackList: List<Track>) {
+    private fun showDefaultState() {
+        binding.noFavoritesPlaceholder.isVisible = false
+        binding.favoritesRV.isVisible = false
+    }
+
+    private fun showFavorites(trackList: List<Track>) {
         with(binding) {
             noFavoritesPlaceholder.isVisible = false
             trackListAdapter.trackList = trackList

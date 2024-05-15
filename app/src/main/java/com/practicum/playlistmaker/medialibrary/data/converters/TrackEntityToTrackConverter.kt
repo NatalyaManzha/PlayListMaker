@@ -1,6 +1,6 @@
 package com.practicum.playlistmaker.medialibrary.data.converters
 
-import com.practicum.playlistmaker.medialibrary.data.db.TrackEntity
+import com.practicum.playlistmaker.medialibrary.data.db.favorites.TrackEntity
 import com.practicum.playlistmaker.player.domain.models.Track
 
 fun List<TrackEntity>.converted(): List<Track> {

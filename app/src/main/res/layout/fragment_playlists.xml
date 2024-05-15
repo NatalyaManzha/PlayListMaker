@@ -1,23 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/add_new_playlist_button"
+        style="@style/UpdateButtonStyle"
+        android:layout_width="@dimen/item_size_154"
+        android:layout_height="@dimen/item_size_36"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/spacing_24"
+        android:enabled="true"
+        android:layout_marginBottom="24dp"
+        android:text="@string/new_playlist"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/playlists_RV"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="@dimen/spacing_12"
+        android:layout_marginTop="@dimen/spacing_76"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:reverseLayout="false"
+        app:spanCount="2"
+        tools:itemCount="5"
+        tools:listitem="@layout/playlist_preview_element"
+        tools:visibility="visible" />
+
 
     <LinearLayout
         android:id="@+id/no_playlists_placeholder"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/add_new_playlist_button"
+        tools:visibility="invisible">
 
-        <Button
-            android:id="@+id/add_new_playlist_button"
-            style="@style/UpdateButtonStyle"
-            android:layout_width="@dimen/item_size_154"
-            android:layout_height="@dimen/item_size_36"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/spacing_24"
-            android:text="@string/new_playlist" />
 
         <ImageView
             android:layout_width="@dimen/icon_size_120"
@@ -36,8 +67,6 @@
             android:text="@string/no_playlists"
             android:textColor="?attr/colorOnPrimary"
             android:textSize="@dimen/text_size_19" />
-
-
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="text_size_smallest">11sp</dimen>
-    <dimen name="text_size_small">16sp</dimen>
+
+    <dimen name="text_size_11">11sp</dimen>
+    <dimen name="text_size_12">12sp</dimen>
     <dimen name="text_size_14">14sp</dimen>
+    <dimen name="text_size_16">16sp</dimen>
     <dimen name="text_size_19">19sp</dimen>
-    <dimen name="text_size_normal">22sp</dimen>
+    <dimen name="text_size_22">22sp</dimen>
 
     <dimen name="item_size_1">1dp</dimen>
+    <dimen name="item_size_4">4dp</dimen>
+    <dimen name="item_size_12">12dp</dimen>
+    <dimen name="item_size_16">16dp</dimen>
     <dimen name="item_size_20">20dp</dimen>
     <dimen name="item_size_32">32dp</dimen>
     <dimen name="item_size_36">36dp</dimen>
@@ -26,9 +31,12 @@
     <dimen name="track_icon_size_normal">44dp</dimen>
 
     <dimen name="radius_2dp">2dp</dimen>
+    <dimen name="radius_4dp">4dp</dimen>
     <dimen name="radius_8dp">8dp</dimen>
     <dimen name="radius_16dp">16dp</dimen>
     <dimen name="radius_54dp">54dp</dimen>
+
+    <dimen name="stroke_1dp">1dp</dimen>
 
     <dimen name="heading_height">56dp</dimen>
     <dimen name="menu_item_height">60dp</dimen>
@@ -44,9 +52,11 @@
     <dimen name="spacing_30">30dp</dimen>
     <dimen name="spacing_32">32dp</dimen>
     <dimen name="spacing_46">46dp</dimen>
+    <dimen name="spacing_76">76dp</dimen>
     <dimen name="spacing_78">78dp</dimen>
     <dimen name="spacing_106">106dp</dimen>
     <dimen name="spacing_124">124dp</dimen>
     <dimen name="spacing_134">134dp</dimen>
+    <dimen name="spacing_320">320dp</dimen>
 
 </resources>

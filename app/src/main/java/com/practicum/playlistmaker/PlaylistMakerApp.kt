@@ -2,6 +2,7 @@ package com.practicum.playlistmaker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import com.markodevcic.peko.PermissionRequester
 import com.practicum.playlistmaker.di.dataModule
 import com.practicum.playlistmaker.di.interactorModule
 import com.practicum.playlistmaker.di.repositoryModule
@@ -23,7 +24,7 @@ class PlaylistMakerApp : Application() {
             androidContext(this@PlaylistMakerApp)
             modules(dataModule, repositoryModule, useCaseModule, viewModelModule, interactorModule)
         }
-
+        PermissionRequester.initialize(applicationContext)
         applyAppTheme()
     }
 

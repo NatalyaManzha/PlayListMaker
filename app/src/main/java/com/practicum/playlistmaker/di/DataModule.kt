@@ -5,7 +5,10 @@ import android.media.MediaPlayer
 import androidx.room.Room
 import com.google.gson.Gson
 import com.practicum.playlistmaker.BuildConfig
-import com.practicum.playlistmaker.medialibrary.data.db.FavoritesDatabase
+import com.practicum.playlistmaker.medialibrary.data.api.ImageStorage
+import com.practicum.playlistmaker.medialibrary.data.db.favorites.FavoritesDatabase
+import com.practicum.playlistmaker.medialibrary.data.db.playlists.PlaylistsDatabase
+import com.practicum.playlistmaker.medialibrary.data.impl.ImageStorageImpl
 import com.practicum.playlistmaker.player.data.MediaPlayerControllerImpl
 import com.practicum.playlistmaker.player.domain.api.MediaPlayerController
 import com.practicum.playlistmaker.search.data.network.api.ConnectivityCheck
@@ -26,6 +29,14 @@ val dataModule = module {
     single {
         Room.databaseBuilder(
             androidContext(),
+            PlaylistsDatabase::class.java,
+            BuildConfig.PLAYLISTS_DB
+        ).build()
+    }
+
+    single {
+        Room.databaseBuilder(
+            androidContext(),
             FavoritesDatabase::class.java,
             BuildConfig.FAVORITES_DB
         ).build()
@@ -33,6 +44,10 @@ val dataModule = module {
 
     single {
         androidContext().getSharedPreferences(BuildConfig.SHARED_PREFERENCES, Context.MODE_PRIVATE)
+    }
+
+    single<ImageStorage> {
+        ImageStorageImpl(androidContext())
     }
 
     single<NetworkClient> {

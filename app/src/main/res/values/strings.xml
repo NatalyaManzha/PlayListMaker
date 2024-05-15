@@ -29,4 +29,19 @@
     <string name="new_playlist">Новый плейлист</string>
     <string name="favorites">Избранные треки</string>
     <string name="playlists">Плейлисты</string>
+    <string name="name_edit_text_hint">Название*</string>
+    <string name="description_edit_text_hint">Описание</string>
+    <string name="create">Создать</string>
+    <string name="dialog_title">Завершить создание плейлиста?</string>
+    <string name="cansel">Отмена</string>
+    <string name="finish">Завершить</string>
+    <string name="no_image">Изображение не выбрано</string>
+    <string name="on_permission_deny">Плейлист рискует оказаться без обложки))</string>
+    <string name="dialog_message">Все несохраненные данные будут потеряны</string>
+    <string name="save_failure">Ошибка сохранения плейлиста</string>
+    <string name="save_success">создан</string>
+    <string name="playlist">Плейлист</string>
+    <string name="add_to_playlist">Добавить в плейлист</string>
+    <string name="add_track_to_playlist_success">Добавлено в плейлист</string>
+    <string name="add_track_to_playlist_added_yet">Трек уже добавлен в плейлист</string>
 </resources>

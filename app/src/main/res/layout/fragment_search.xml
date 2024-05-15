@@ -19,7 +19,7 @@
         android:layout_height="@dimen/item_size_36"
         android:layout_marginHorizontal="@dimen/spacing_16"
         android:layout_marginVertical="@dimen/spacing_8"
-        android:background="@drawable/shape"
+        android:background="@drawable/shape_edit_text"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingStart="@dimen/spacing_12"
@@ -42,7 +42,7 @@
             android:singleLine="true"
             android:textColor="@color/black"
             android:textColorHint="?attr/colorOnSurface"
-            android:textSize="@dimen/text_size_small" />
+            android:textSize="@dimen/text_size_16" />
 
         <ImageView
             android:id="@+id/clearButton"

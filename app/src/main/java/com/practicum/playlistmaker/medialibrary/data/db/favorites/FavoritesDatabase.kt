@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.medialibrary.data.db
+package com.practicum.playlistmaker.medialibrary.data.db.favorites
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

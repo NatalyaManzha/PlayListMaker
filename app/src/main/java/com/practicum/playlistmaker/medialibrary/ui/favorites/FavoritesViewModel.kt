@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.medialibrary.ui
+package com.practicum.playlistmaker.medialibrary.ui.favorites
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,7 +20,7 @@ class FavoritesViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             favoritesInteractor.getFavoritesFlow().collect { trackList ->
                 _uiState.value =
-                    if (trackList.isEmpty()) FavoritesUiState.Default
+                    if (trackList.isEmpty()) FavoritesUiState.Placeholder
                     else FavoritesUiState.ShowFavorites(trackList)
             }
         }
