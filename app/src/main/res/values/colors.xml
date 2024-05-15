@@ -9,4 +9,5 @@
     <color name="grey">#AEAFB4</color>
     <color name="grey_light">#E6E8EB</color>
     <color name="item_color">@color/bottom_nav_color</color>
+    <color name="brilliant_blue_light1">#B3C8F6</color>
 </resources>
