@@ -128,7 +128,7 @@
     </style>
 
     <style name="DialogButtonBar" parent="Widget.AppCompat.ButtonBar">
-        <item name="android:paddingStart">160dp</item>
+        <item name="android:paddingStart">@dimen/spacing_160</item>
     </style>
 
 </resources>
