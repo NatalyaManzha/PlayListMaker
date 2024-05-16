@@ -28,8 +28,9 @@
         <item name="tint">?attr/colorOnPrimary</item>
     </style>
 
-    <style name="DayNightAlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
-        <item name="android:dialogCornerRadius">@dimen/radius_16dp</item>
-        <item name="android:background">@color/brilliant_blue_light</item>
+    <style name="DayNightAlertDialog" parent="Theme.MaterialComponents.Light.Dialog.Alert">
+        <item name="android:dialogCornerRadius">@dimen/radius_4dp</item>
+        <item name="colorPrimary">@color/brilliant_blue</item>
+        <item name="buttonBarStyle">@style/DialogButtonBar</item>
     </style>
 </resources>

@@ -127,4 +127,8 @@
         <item name="itemIconTint">?attr/colorOnPrimary</item>
     </style>
 
+    <style name="DialogButtonBar" parent="Widget.AppCompat.ButtonBar">
+        <item name="android:paddingStart">160dp</item>
+    </style>
+
 </resources>
