@@ -1,19 +1,25 @@
 package com.practicum.playlistmaker.medialibrary.ui.newplaylist
 
+import android.icu.text.ListFormatter.Width
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
+import androidx.transition.Visibility
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.practicum.playlistmaker.R
@@ -81,14 +87,24 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
 
     private fun showDialog() {
         if (dialogEnabled) {
-            MaterialAlertDialogBuilder(requireActivity())
+            val dialog =MaterialAlertDialogBuilder(requireActivity())
                 .setTitle(getString(R.string.dialog_title))
                 .setMessage(getString(R.string.dialog_message))
                 .setNeutralButton(getString(R.string.cansel)) { dialog, which ->
                     onBackPressedCallback.isEnabled = true
                 }.setPositiveButton(getString(R.string.finish)) { dialog, which ->
                     closeFragment()
-                }.show()
+                }.create()
+            dialog.show()
+
+            Log.d("QQQ", "Диалог открыт")
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.let{ button ->
+                val params = button.layoutParams as LinearLayout.LayoutParams
+                Log.d("QQQ", "${params.gravity}") // здесь уже = 8388613 = Gravity.END
+               /* params.gravity = Gravity.END
+                button.setLayoutParams(params)
+                Log.d("QQQ", "${(button.layoutParams as LinearLayout.LayoutParams).gravity}")*/
+            }
         } else closeFragment()
     }
 

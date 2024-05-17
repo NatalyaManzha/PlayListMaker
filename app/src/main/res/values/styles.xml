@@ -127,8 +127,23 @@
         <item name="itemIconTint">?attr/colorOnPrimary</item>
     </style>
 
+    <style name="AlertDialogStyle" parent="Theme.MaterialComponents.Light.Dialog.Alert">
+        <item name="android:dialogCornerRadius">@dimen/radius_4dp</item>
+        <item name="colorPrimary">@color/brilliant_blue</item>
+        <item name="buttonBarStyle">@style/DialogButtonBar</item>
+        <item name="buttonBarPositiveButtonStyle">@style/DialogButtonStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/DialogButtonStyle</item>
+        <item name="buttonBarNeutralButtonStyle">@style/DialogButtonStyle</item>
+    </style>
+
     <style name="DialogButtonBar" parent="Widget.AppCompat.ButtonBar">
         <item name="android:paddingStart">@dimen/spacing_160</item>
+        <item name="android:gravity">end</item>
+    </style>
+
+    <style name="DialogButtonStyle" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:layout_gravity">end</item>
+        <item name="android:layout_marginStart">0dp</item>
     </style>
 
 </resources>
