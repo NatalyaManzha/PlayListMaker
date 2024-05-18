@@ -52,12 +52,12 @@ class PlaylistFIFragment : BindingFragment<FragmentPlaylistFullInfoBinding>() {
     }
 
     private fun renderState(state: PlaylistFIUiState) {
-            setImage(state.iconUri)
-            with(binding) {
-    playlistFIName.text = state.name
-                playlistFIDescription.text = state.description
-                playlistFICount.text = state.count
-                playlistFIMinutes.text = state.duration
+        setImage(state.iconUri)
+        with(binding) {
+            playlistFIName.text = state.name
+            playlistFIDescription.text = state.description
+            playlistFICount.text = state.count
+            playlistFIMinutes.text = state.duration
 
         }
     }

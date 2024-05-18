@@ -24,7 +24,7 @@ class PlaylistsInteractorImpl(
     }
 
     override fun getPlaylistInfoFlow(playlistID: Long): Flow<PlaylistInfo> {
-       return playlistsRepository.getPlaylistInfoFlow(playlistID)
+        return playlistsRepository.getPlaylistInfoFlow(playlistID)
     }
 
     override fun getTrackIdListFlow(playlistId: Long): Flow<List<Int>> {

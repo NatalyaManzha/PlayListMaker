@@ -2,8 +2,8 @@ package com.practicum.playlistmaker.medialibrary.data.impl
 
 
 import com.practicum.playlistmaker.medialibrary.data.api.ImageStorage
-import com.practicum.playlistmaker.medialibrary.data.converters.toPlaylistInfo
 import com.practicum.playlistmaker.medialibrary.data.converters.toPlaylistEntity
+import com.practicum.playlistmaker.medialibrary.data.converters.toPlaylistInfo
 import com.practicum.playlistmaker.medialibrary.data.converters.toPreview
 import com.practicum.playlistmaker.medialibrary.data.converters.toTrack
 import com.practicum.playlistmaker.medialibrary.data.converters.toTrackInPlaylistsEntity
@@ -46,7 +46,7 @@ class PlaylistsRepositoryImpl(
 
     override suspend fun addTrackToPlaylist(playlistId: Long, track: Track): Boolean {
         val tracks = playlistsDao.checkTrackInPlaylist(playlistId, track.trackId)
-        if (tracks.isNotEmpty()) return false
+        return if (tracks.isNotEmpty()) false
         else {
             with(playlistsDao) {
                 addTrackToPlaylist(TrackToPlaylistEntity(null, playlistId, track.trackId))
@@ -54,15 +54,15 @@ class PlaylistsRepositoryImpl(
                 val count = getTrackIdList(playlistId).size
                 updatePlaylistCount(playlistId, count)
             }
-            return true
+            true
         }
     }
 
     override fun getPlaylistInfoFlow(playlistID: Long): Flow<PlaylistInfo> {
-        return playlistsDao.getPlaylistInfoFlow(playlistID).map{ playlistEntity ->
+        return playlistsDao.getPlaylistInfoFlow(playlistID).map { playlistEntity ->
             playlistEntity.toPlaylistInfo(
-                    imageStorage.uriByFileName(playlistEntity.iconFileName)
-                )
+                imageStorage.uriByFileName(playlistEntity.iconFileName)
+            )
         }
     }
 

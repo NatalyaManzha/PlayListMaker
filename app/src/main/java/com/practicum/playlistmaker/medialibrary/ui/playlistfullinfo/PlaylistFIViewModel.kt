@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.medialibrary.ui.playlistfullinfo
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.R
@@ -59,7 +58,7 @@ class PlaylistFIViewModel(
                     )
                     else {
                         val trackList = mutableListOf<Track>()
-                        idList.forEach {trackID ->
+                        idList.forEach { trackID ->
                             trackList.add(playlistsInteractor.getTrackByID(trackID))
                         }
                         _uiState.value = _uiState.value.copy(

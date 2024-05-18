@@ -16,7 +16,7 @@ fun countDuration(trackList: List<Track>): String {
 }
 
 fun chooseCaseMinutes(minutes: Int): String {
-    var str =
+    val str =
         if ((minutes % 100) in (11..14)) "минут"
         else when (minutes % 10) {
             1 -> "минута"

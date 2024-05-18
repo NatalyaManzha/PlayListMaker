@@ -1,27 +1,20 @@
 package com.practicum.playlistmaker.medialibrary.ui.newplaylist
 
-import android.icu.text.ListFormatter.Width
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.Space
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.ButtonBarLayout
 import androidx.lifecycle.lifecycleScope
-import androidx.transition.Visibility
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.practicum.playlistmaker.R
@@ -89,7 +82,7 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
 
     private fun showDialog() {
         if (dialogEnabled) {
-           val dialog = MaterialAlertDialogBuilder(requireActivity())
+            val dialog = MaterialAlertDialogBuilder(requireActivity())
                 .setTitle(getString(R.string.dialog_title))
                 .setMessage(getString(R.string.dialog_message))
                 .setNeutralButton(getString(R.string.cansel)) { dialog, which ->
@@ -98,7 +91,8 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
                     closeFragment()
                 }.create()
             dialog.show()
-            dialog.requireViewById<Space>(com.google.android.material.R.id.spacer).visibility = View.GONE
+            dialog.requireViewById<Space>(com.google.android.material.R.id.spacer).visibility =
+                View.GONE
         } else closeFragment()
     }
 

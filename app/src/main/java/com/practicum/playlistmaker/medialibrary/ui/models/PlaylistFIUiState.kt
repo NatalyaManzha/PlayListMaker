@@ -10,4 +10,4 @@ data class PlaylistFIUiState(
     val count: String,
     val duration: String,
     val tracklist: List<Track>?
-    )
+)
