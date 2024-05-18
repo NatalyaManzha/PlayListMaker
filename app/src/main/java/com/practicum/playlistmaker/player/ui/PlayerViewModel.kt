@@ -25,6 +25,10 @@ class PlayerViewModel(
     private val playlistsInteractor: PlaylistsInteractor
 ) : ViewModel() {
 
+    private var uiStateOnPlaying = false
+    private var playerToBeResumed = false
+    private var updateProgress: Job? = null
+    private var track: Track? = null
     private val _uiState = MutableStateFlow(
         PlayerUiState(
             isInFavorites = false,
@@ -45,11 +49,6 @@ class PlayerViewModel(
         }
     }
 
-    private var uiStateOnPlaying = false
-    private var playerToBeResumed = false
-    private var updateProgress: Job? = null
-    private var track: Track? = null
-
     fun onUiEvent(event: PlayerUiEvent) {
         when (event) {
             is PlayerUiEvent.OnViewCreated -> setTrackToPlay(event)
@@ -65,13 +64,11 @@ class PlayerViewModel(
     }
 
     private fun addTrackToPlaylist(playlistID: Long, playlistName: String) {
-        Log.d("QQQ", "P VM addTrackToPlaylist")
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.value = _uiState.value.copy(
                 saveTrackSuccess = playlistsInteractor.addTrackToPlaylist(playlistID, track!!),
                 playlistName = playlistName
             )
-            Log.d("QQQ", "P VM addTrackToPlaylist(result) ${_uiState.value.saveTrackSuccess}")
             delay(COPY_STATE_DELAY_MILLIS)
             _uiState.value = _uiState.value.copy(
                 saveTrackSuccess = null,

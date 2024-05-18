@@ -35,14 +35,23 @@ interface PlaylistsDao {
     @Query("SELECT * FROM playlist_track_table WHERE playlistId = :playlistId")
     suspend fun getTrackIdList(playlistId: Long): List<TrackToPlaylistEntity>
 
+    //получать список ID треков, записанных в плейлист, в виде потока
+    @Query("SELECT trackId FROM playlist_track_table WHERE playlistId = :playlistId")
+    fun getTrackIdListFlow(playlistId: Long): Flow<List<Int>>
 
-    //получить сам плейлист по ID
-    @Query("SELECT * FROM playlist_table WHERE id = :playlistID")
-    suspend fun getPlaylistByID(playlistID: Long): PlaylistEntity
+
+    //получить трек по ID
+    @Query("SELECT * FROM track_table WHERE trackId = :trackId")
+    suspend fun getTrackByID(trackId: Int): TrackInPlaylistsEntity
 
     // обновить данные о количестве треков в плейлисте
     @Query("UPDATE playlist_table SET count = :count WHERE id = :playlistID")
-    suspend fun updatePlaylist(playlistID: Long, count: Int)
+    suspend fun updatePlaylistCount(playlistID: Long, count: Int)
+
+    //получать в виде потока описание плейлиста
+    @Query("SELECT * FROM playlist_table WHERE id = :playlistID")
+    fun getPlaylistInfoFlow(playlistID: Long): Flow<PlaylistEntity>
+
 
     @Query("DELETE FROM playlist_table WHERE id = :playlistID")
     suspend fun deletePlaylist(playlistID: Long)

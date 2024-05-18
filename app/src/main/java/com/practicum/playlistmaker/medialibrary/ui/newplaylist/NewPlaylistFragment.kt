@@ -12,12 +12,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.Space
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.ButtonBarLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.Visibility
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -87,7 +89,7 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
 
     private fun showDialog() {
         if (dialogEnabled) {
-            val dialog =MaterialAlertDialogBuilder(requireActivity())
+           val dialog = MaterialAlertDialogBuilder(requireActivity())
                 .setTitle(getString(R.string.dialog_title))
                 .setMessage(getString(R.string.dialog_message))
                 .setNeutralButton(getString(R.string.cansel)) { dialog, which ->
@@ -96,15 +98,7 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
                     closeFragment()
                 }.create()
             dialog.show()
-
-            Log.d("QQQ", "Диалог открыт")
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.let{ button ->
-                val params = button.layoutParams as LinearLayout.LayoutParams
-                Log.d("QQQ", "${params.gravity}") // здесь уже = 8388613 = Gravity.END
-               /* params.gravity = Gravity.END
-                button.setLayoutParams(params)
-                Log.d("QQQ", "${(button.layoutParams as LinearLayout.LayoutParams).gravity}")*/
-            }
+            dialog.requireViewById<Space>(com.google.android.material.R.id.spacer).visibility = View.GONE
         } else closeFragment()
     }
 

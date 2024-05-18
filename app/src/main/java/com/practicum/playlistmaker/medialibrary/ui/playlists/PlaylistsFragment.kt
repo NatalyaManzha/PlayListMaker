@@ -12,6 +12,7 @@ import com.practicum.playlistmaker.core.ui.BindingFragment
 import com.practicum.playlistmaker.databinding.FragmentPlaylistsBinding
 import com.practicum.playlistmaker.medialibrary.domain.models.PlaylistPreview
 import com.practicum.playlistmaker.medialibrary.ui.models.PlaylistsUiState
+import com.practicum.playlistmaker.medialibrary.ui.playlistfullinfo.PlaylistFIFragment
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -32,7 +33,9 @@ class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
         binding.addNewPlaylistButton.setOnClickListener {
             findNavController().navigate(R.id.action_mediaLibraryFragment_to_newPlaylistFragment)
         }
-        playlistsAdapter = PlaylistsAdapter { /*клик по обложке*/ }
+        playlistsAdapter = PlaylistsAdapter {
+            toPlaylistFullInfo(it.id)
+        }
             .apply { playlists = emptyList() }
         binding.playlistsRV.adapter = playlistsAdapter
 
@@ -41,6 +44,13 @@ class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
                 render(it)
             }
         }
+    }
+
+    private fun toPlaylistFullInfo(playlistID: Long) {
+        findNavController().navigate(
+            R.id.action_mediaLibraryFragment_to_playlistFullInfoFragment,
+            PlaylistFIFragment.createArgs(playlistID)
+        )
     }
 
     private fun render(state: PlaylistsUiState) {
