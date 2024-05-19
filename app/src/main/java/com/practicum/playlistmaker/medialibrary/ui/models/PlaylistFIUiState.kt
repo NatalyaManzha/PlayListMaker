@@ -9,5 +9,7 @@ data class PlaylistFIUiState(
     val description: String,
     val count: String,
     val duration: String,
-    val tracklist: List<Track>?
+    val tracklist: List<Track>?,
+    val isInFavorites: Boolean?,
+    val playlistDeleted: Boolean?
 )

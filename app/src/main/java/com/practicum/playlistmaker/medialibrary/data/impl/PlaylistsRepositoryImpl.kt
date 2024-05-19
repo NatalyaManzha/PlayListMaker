@@ -45,13 +45,12 @@ class PlaylistsRepositoryImpl(
     }
 
     override suspend fun addTrackToPlaylist(playlistId: Long, track: Track): Boolean {
-        val tracks = playlistsDao.checkTrackInPlaylist(playlistId, track.trackId)
-        return if (tracks.isNotEmpty()) false
+        return if (playlistsDao.checkTrackInPlaylist(playlistId, track.trackId) > 0) false
         else {
             with(playlistsDao) {
                 addTrackToPlaylist(TrackToPlaylistEntity(null, playlistId, track.trackId))
                 insertTrack(track.toTrackInPlaylistsEntity())
-                val count = getTrackIdList(playlistId).size
+                val count = getTracksCount(playlistId)
                 updatePlaylistCount(playlistId, count)
             }
             true
@@ -72,6 +71,28 @@ class PlaylistsRepositoryImpl(
 
     override suspend fun getTrackByID(trackId: Int): Track {
         return playlistsDao.getTrackByID(trackId).toTrack()
+    }
+
+    override suspend fun deleteTrackFromPlaylist(playlistId: Long, trackId: Int) {
+        with(playlistsDao){
+            if (checkPlaylistsCount(trackId) == 1){
+                deleteTrack(trackId)
+            }
+            deleteTrackFromPlaylist(playlistId, trackId)
+            val count =  getTracksCount(playlistId)
+            updatePlaylistCount(playlistId, count)
+        }
+    }
+
+    override suspend fun deletePlaylist(playlistId: Long): Boolean {
+        playlistsDao.getTrackIdList(playlistId).forEach { trackID ->
+            deleteTrackFromPlaylist(playlistId, trackID)
+        }
+        playlistsDao.deletePlaylist(playlistId)
+        return (
+            playlistsDao.getTracksCount(playlistId)==0
+            && playlistsDao.checkPlaylistDeleted(playlistId)==0
+        )
     }
 
     companion object {

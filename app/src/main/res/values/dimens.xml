@@ -21,6 +21,7 @@
     <dimen name="item_size_48">48dp</dimen>
     <dimen name="item_size_52">52dp</dimen>
     <dimen name="item_size_56">56dp</dimen>
+    <dimen name="item_size_60">60dp</dimen>
     <dimen name="item_size_64">64dp</dimen>
     <dimen name="item_size_90">90dp</dimen>
     <dimen name="item_size_100">100dp</dimen>
@@ -61,5 +62,8 @@
     <dimen name="spacing_134">134dp</dimen>
     <dimen name="spacing_160">160dp</dimen>
     <dimen name="spacing_320">320dp</dimen>
+
+    <dimen name="bottom_sheet_height_240">240dp</dimen>
+    <dimen name="bottom_sheet_height_280">280dp</dimen>
 
 </resources>

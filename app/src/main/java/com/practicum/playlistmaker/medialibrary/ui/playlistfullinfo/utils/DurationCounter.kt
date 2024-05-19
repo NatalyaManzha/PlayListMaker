@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.medialibrary.ui.playlistfullinfo
+package com.practicum.playlistmaker.medialibrary.ui.playlistfullinfo.utils
 
 import com.practicum.playlistmaker.player.domain.models.Track
 
@@ -6,9 +6,9 @@ fun countDuration(trackList: List<Track>): String {
     var totalMinutes: Int
     val totalSeconds = trackList.sumOf { track ->
         val (minutes, seconds) = track.trackTimeMinSec.split(":".toRegex())
-        val minutesAsInt = minutes.toInt()
-        val secondsAsInt = seconds.toInt()
-        minutesAsInt * 60 + secondsAsInt
+        val minutesCount = minutes.toInt()
+        val secondsCount = seconds.toInt()
+        minutesCount * 60 + secondsCount
     }
     totalMinutes = totalSeconds / 60
     if (totalSeconds % 60 > 30) totalMinutes += 1

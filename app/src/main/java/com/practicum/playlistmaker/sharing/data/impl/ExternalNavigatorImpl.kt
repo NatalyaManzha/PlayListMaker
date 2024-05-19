@@ -5,11 +5,11 @@ import android.content.Intent
 import com.practicum.playlistmaker.sharing.domain.api.ExternalNavigator
 
 class ExternalNavigatorImpl(private val appContext: Context) : ExternalNavigator {
-    override fun shareLink(url: String) {
+    override fun shareData(data: String) {
         val intent = Intent()
         intent.apply {
             action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, url)
+            putExtra(Intent.EXTRA_TEXT, data)
             type = "text/plain"
         }
         val intentWrapper = Intent.createChooser(intent, null)

@@ -71,5 +71,13 @@
         android:id="@+id/playlistFullInfoFragment"
         android:name="com.practicum.playlistmaker.medialibrary.ui.playlistfullinfo.PlaylistFIFragment"
         android:label="PlaylistFullInfoFragment"
-        tools:layout="@layout/fragment_playlist_full_info" />
+        tools:layout="@layout/fragment_playlist_full_info" >
+        <action
+            android:id="@+id/actionPlaylistFullInfoFragmentToPlayerFragment"
+            app:destination="@id/playerFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
 </navigation>

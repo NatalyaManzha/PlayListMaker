@@ -133,13 +133,13 @@
         android:visibility="gone" />
 
     <LinearLayout
-        android:id="@+id/playlistFI_bottom_sheet"
+        android:id="@+id/playlistFI_bottom_sheet_tracks"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/shape_bottom_sheet"
         android:orientation="vertical"
         app:behavior_hideable="false"
-        app:behavior_peekHeight="240dp"
+        app:behavior_peekHeight="@dimen/bottom_sheet_height_240"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <View
@@ -147,7 +147,7 @@
             android:layout_height="@dimen/item_size_4"
             android:layout_gravity="center_horizontal"
             android:layout_marginVertical="@dimen/spacing_8"
-            android:background="@drawable/shape_rectange_rounded" />
+            android:background="@drawable/shape_rectangle_rounded" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/playlistFI_bottom_sheet_RW"
@@ -158,6 +158,49 @@
             app:reverseLayout="false"
             tools:itemCount="10"
             tools:listitem="@layout/tracklist_element" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/playlistFI_bottom_sheet_menu"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/shape_bottom_sheet"
+        android:orientation="vertical"
+        app:behavior_hideable="true"
+        app:behavior_peekHeight="@dimen/bottom_sheet_height_280"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <View
+            android:layout_width="@dimen/item_size_52"
+            android:layout_height="@dimen/item_size_4"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginVertical="@dimen/spacing_8"
+            android:background="@drawable/shape_rectangle_rounded" />
+
+        <include layout="@layout/playlist_element" />
+
+        <TextView
+            android:id="@+id/menu_share"
+            style="@style/PlaylistMenuTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/item_size_60"
+            android:layout_marginTop="@dimen/spacing_8"
+            android:text="@string/share" />
+
+        <TextView
+            android:id="@+id/menu_edit"
+            style="@style/PlaylistMenuTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/item_size_60"
+            android:text="@string/edit" />
+
+        <TextView
+            android:id="@+id/menu_delete"
+            style="@style/PlaylistMenuTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/item_size_60"
+            android:text="@string/delete_playlist" />
 
     </LinearLayout>
 
