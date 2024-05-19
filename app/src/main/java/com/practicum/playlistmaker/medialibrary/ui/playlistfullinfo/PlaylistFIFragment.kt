@@ -43,6 +43,7 @@ class PlaylistFIFragment : BindingFragment<FragmentPlaylistFullInfoBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         subscribeOnViewModel()
+        setOnClickListeners()
     }
 
     private fun subscribeOnViewModel() {
@@ -51,6 +52,12 @@ class PlaylistFIFragment : BindingFragment<FragmentPlaylistFullInfoBinding>() {
         }
     }
 
+    private fun setOnClickListeners() {
+        with(binding) {
+            playlistFIBackButton.setOnClickListener {
+                requireActivity().onBackPressedDispatcher.onBackPressed()
+            }}}
+
     private fun renderState(state: PlaylistFIUiState) {
         setImage(state.iconUri)
         with(binding) {
@@ -58,7 +65,6 @@ class PlaylistFIFragment : BindingFragment<FragmentPlaylistFullInfoBinding>() {
             playlistFIDescription.text = state.description
             playlistFICount.text = state.count
             playlistFIMinutes.text = state.duration
-
         }
     }
 

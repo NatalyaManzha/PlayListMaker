@@ -31,7 +31,7 @@ class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.addNewPlaylistButton.setOnClickListener {
-            findNavController().navigate(R.id.action_mediaLibraryFragment_to_newPlaylistFragment)
+            findNavController().navigate(R.id.actionMediaLibraryFragmentToNewPlaylistFragment)
         }
         playlistsAdapter = PlaylistsAdapter {
             toPlaylistFullInfo(it.id)
@@ -48,7 +48,7 @@ class PlaylistsFragment : BindingFragment<FragmentPlaylistsBinding>() {
 
     private fun toPlaylistFullInfo(playlistID: Long) {
         findNavController().navigate(
-            R.id.action_mediaLibraryFragment_to_playlistFullInfoFragment,
+            R.id.actionMediaLibraryFragmentToPlaylistFullInfoFragment,
             PlaylistFIFragment.createArgs(playlistID)
         )
     }

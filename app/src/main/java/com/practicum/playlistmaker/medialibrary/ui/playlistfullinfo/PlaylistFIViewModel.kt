@@ -29,6 +29,7 @@ class PlaylistFIViewModel(
         )
     )
     val uiState = _uiState.asStateFlow()
+
     fun onUiEvent(event: PlaylistFIUiEvent) {
         when (event) {
             is PlaylistFIUiEvent.OnCreateView -> subscribeOnData(event.playlistID)
