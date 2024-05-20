@@ -62,7 +62,9 @@
     <dimen name="spacing_134">134dp</dimen>
     <dimen name="spacing_160">160dp</dimen>
     <dimen name="spacing_320">320dp</dimen>
+    <dimen name="spacing_336">336dp</dimen>
 
+    <dimen name="bottom_sheet_height_200">200dp</dimen>
     <dimen name="bottom_sheet_height_240">240dp</dimen>
     <dimen name="bottom_sheet_height_280">280dp</dimen>
 
