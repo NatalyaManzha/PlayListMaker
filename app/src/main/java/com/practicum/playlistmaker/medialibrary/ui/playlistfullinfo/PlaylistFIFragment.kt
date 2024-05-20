@@ -93,6 +93,7 @@ class PlaylistFIFragment : BindingFragment<FragmentPlaylistFullInfoBinding>() {
     }
 
     private fun showPlaylistDeleteDialog() {
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         val dialog = MaterialAlertDialogBuilder(requireActivity())
             .setTitle(getString(R.string.delete_playlist))
             .setMessage(getString(R.string.delete_playlist_message))
@@ -131,10 +132,11 @@ class PlaylistFIFragment : BindingFragment<FragmentPlaylistFullInfoBinding>() {
     }
 
     private fun onShareClick() {
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         if (trackListBSAdapter.trackList.isEmpty()) {
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
             showToast(getString(R.string.empty_playlist))
         } else viewModel.onUiEvent(PlaylistFIUiEvent.SharePlaylist)
+
     }
 
     private fun renderState(state: PlaylistFIUiState) {
@@ -144,8 +146,10 @@ class PlaylistFIFragment : BindingFragment<FragmentPlaylistFullInfoBinding>() {
         state.playlistDeleted?.let { onPlaylistDeletion(it) }
         with(binding) {
             playlistFIName.text = state.name
+            playlistFIBottomSheetPlaylistName.text = state.name
             playlistFIDescription.text = state.description
             playlistFICount.text = state.count
+            playlistFIBottomSheetPlaylistCount.text = state.count
             playlistFIMinutes.text = state.duration
         }
     }
@@ -176,6 +180,7 @@ class PlaylistFIFragment : BindingFragment<FragmentPlaylistFullInfoBinding>() {
             scaleType = ImageView.ScaleType.CENTER_CROP
             setImageURI(uri)
         }
+        binding.playlistFIBottomSheetPlaylistIcon.setImageURI(uri)
     }
 
     private fun goToPlaylistEditor() {
