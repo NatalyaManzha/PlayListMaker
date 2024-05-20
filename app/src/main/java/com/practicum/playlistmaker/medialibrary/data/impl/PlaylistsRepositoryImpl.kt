@@ -10,6 +10,7 @@ import com.practicum.playlistmaker.medialibrary.data.converters.toTrackInPlaylis
 import com.practicum.playlistmaker.medialibrary.data.db.playlists.PlaylistsDatabase
 import com.practicum.playlistmaker.medialibrary.data.db.playlists.TrackToPlaylistEntity
 import com.practicum.playlistmaker.medialibrary.domain.api.PlaylistsRepository
+import com.practicum.playlistmaker.medialibrary.domain.models.EditPlaylist
 import com.practicum.playlistmaker.medialibrary.domain.models.NewPlaylist
 import com.practicum.playlistmaker.medialibrary.domain.models.PlaylistInfo
 import com.practicum.playlistmaker.medialibrary.domain.models.PlaylistPreview
@@ -31,6 +32,19 @@ class PlaylistsRepositoryImpl(
         }
         return playlistsDao.insertPlaylist(
             playlist.toPlaylistEntity(iconFileName)
+        )
+    }
+
+    override suspend fun updatePlaylist(playlistInfo: EditPlaylist) {
+        var iconFileName = STRING_DEFAULT_VALUE
+        with(playlistInfo.iconUri) {
+            if (this != null) iconFileName = imageStorage.saveImage(this)
+        }
+        playlistsDao.updatePlaylist(
+            playlistID = playlistInfo.id,
+            iconFileName = iconFileName,
+            name = playlistInfo.name,
+            description = playlistInfo.description
         )
     }
 
@@ -74,12 +88,12 @@ class PlaylistsRepositoryImpl(
     }
 
     override suspend fun deleteTrackFromPlaylist(playlistId: Long, trackId: Int) {
-        with(playlistsDao){
-            if (checkPlaylistsCount(trackId) == 1){
+        with(playlistsDao) {
+            if (checkPlaylistsCount(trackId) == 1) {
                 deleteTrack(trackId)
             }
             deleteTrackFromPlaylist(playlistId, trackId)
-            val count =  getTracksCount(playlistId)
+            val count = getTracksCount(playlistId)
             updatePlaylistCount(playlistId, count)
         }
     }
@@ -90,9 +104,9 @@ class PlaylistsRepositoryImpl(
         }
         playlistsDao.deletePlaylist(playlistId)
         return (
-            playlistsDao.getTracksCount(playlistId)==0
-            && playlistsDao.checkPlaylistDeleted(playlistId)==0
-        )
+                playlistsDao.getTracksCount(playlistId) == 0
+                        && playlistsDao.checkPlaylistDeleted(playlistId) == 0
+                )
     }
 
     companion object {

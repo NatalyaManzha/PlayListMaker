@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.medialibrary.ui.playlistfullinfo
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.R
@@ -56,7 +55,7 @@ class PlaylistFIViewModel(
 
     private fun sharePlaylist() {
         val message =
-           with (_uiState.value){
+            with(_uiState.value) {
                 formMessage(
                     playlistInfo = listOf(name, description, count),
                     tracklist = tracklist!!
@@ -71,10 +70,6 @@ class PlaylistFIViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             val result = playlistsInteractor.deletePlaylist(playlistID!!)
             _uiState.value = _uiState.value.copy(playlistDeleted = result)
-            if (!result) {
-                delay(COPY_STATE_DELAY_MILLIS)
-                _uiState.value = _uiState.value.copy(playlistDeleted = null)
-            }
         }
     }
 

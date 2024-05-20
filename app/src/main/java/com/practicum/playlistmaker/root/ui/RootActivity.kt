@@ -22,7 +22,11 @@ class RootActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             val isVisible = when (destination.id) {
-                R.id.playerFragment, R.id.newPlaylistFragment, R.id.playlistFullInfoFragment -> false
+                R.id.playerFragment,
+                R.id.newPlaylistFragment,
+                R.id.playlistFullInfoFragment,
+                R.id.editPlaylistFragment -> false
+
                 else -> true
             }
             binding.bottomNavigationView.isVisible = isVisible

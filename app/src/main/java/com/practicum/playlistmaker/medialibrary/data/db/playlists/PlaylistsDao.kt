@@ -28,6 +28,15 @@ interface PlaylistsDao {
     @Query("UPDATE playlist_table SET count = :count WHERE id = :playlistID")
     suspend fun updatePlaylistCount(playlistID: Long, count: Int)
 
+    // обновить плейлист после редактирования
+    @Query("UPDATE playlist_table SET iconFileName = :iconFileName, name = :name, description = :description WHERE id = :playlistID")
+    suspend fun updatePlaylist(
+        playlistID: Long,
+        iconFileName: String,
+        name: String,
+        description: String
+    )
+
     //получать в виде потока описание плейлиста
     @Query("SELECT * FROM playlist_table WHERE id = :playlistID")
     fun getPlaylistInfoFlow(playlistID: Long): Flow<PlaylistEntity>
@@ -72,6 +81,7 @@ interface PlaylistsDao {
     // 2. удаление самого плейлиста
     @Query("DELETE FROM playlist_table WHERE id = :playlistID")
     suspend fun deletePlaylist(playlistID: Long)
+
     //проверка удаления
     @Query("SELECT COUNT(*) FROM playlist_table WHERE id = :playlistId")
     suspend fun checkPlaylistDeleted(playlistId: Long): Int

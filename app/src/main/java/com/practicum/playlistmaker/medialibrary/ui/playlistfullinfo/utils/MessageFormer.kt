@@ -5,11 +5,11 @@ import com.practicum.playlistmaker.player.domain.models.Track
 fun formMessage(
     playlistInfo: List<String>,
     tracklist: List<Track>
-): String{
+): String {
     val lines = mutableListOf<String>()
     lines.addAll(playlistInfo)
     tracklist.forEachIndexed { index, track ->
-        lines.add("${index+1}. ${track.artistName} - ${track.trackName} (${track.trackTimeMinSec})")
+        lines.add("${index + 1}. ${track.artistName} - ${track.trackName} (${track.trackTimeMinSec})")
     }
     return lines.joinToString("\n")
 }

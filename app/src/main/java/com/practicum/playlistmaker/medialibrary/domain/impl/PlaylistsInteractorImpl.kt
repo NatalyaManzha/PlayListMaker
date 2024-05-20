@@ -2,6 +2,7 @@ package com.practicum.playlistmaker.medialibrary.domain.impl
 
 import com.practicum.playlistmaker.medialibrary.domain.api.PlaylistsInteractor
 import com.practicum.playlistmaker.medialibrary.domain.api.PlaylistsRepository
+import com.practicum.playlistmaker.medialibrary.domain.models.EditPlaylist
 import com.practicum.playlistmaker.medialibrary.domain.models.NewPlaylist
 import com.practicum.playlistmaker.medialibrary.domain.models.PlaylistInfo
 import com.practicum.playlistmaker.medialibrary.domain.models.PlaylistPreview
@@ -40,6 +41,10 @@ class PlaylistsInteractorImpl(
     }
 
     override suspend fun deletePlaylist(playlistId: Long): Boolean {
-       return playlistsRepository.deletePlaylist(playlistId)
+        return playlistsRepository.deletePlaylist(playlistId)
+    }
+
+    override suspend fun updatePlaylist(playlistInfo: EditPlaylist) {
+        playlistsRepository.updatePlaylist(playlistInfo)
     }
 }

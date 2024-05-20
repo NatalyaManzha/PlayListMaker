@@ -18,6 +18,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.core.ui.BindingFragment
 import com.practicum.playlistmaker.databinding.FragmentPlaylistFullInfoBinding
+import com.practicum.playlistmaker.medialibrary.domain.models.EditPlaylist
+import com.practicum.playlistmaker.medialibrary.ui.editplaylist.EditPlaylistFragment
 import com.practicum.playlistmaker.medialibrary.ui.models.PlaylistFIUiEvent
 import com.practicum.playlistmaker.medialibrary.ui.models.PlaylistFIUiState
 import com.practicum.playlistmaker.player.domain.models.Track
@@ -30,6 +32,7 @@ class PlaylistFIFragment : BindingFragment<FragmentPlaylistFullInfoBinding>() {
 
     private val viewModel: PlaylistFIViewModel by viewModel()
     private var playlistID by Delegates.notNull<Long>()
+    private var iconUri: Uri? = null
     private lateinit var trackListBSAdapter: TrackListBSAdapter
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     private var track: Track? = null
@@ -119,7 +122,7 @@ class PlaylistFIFragment : BindingFragment<FragmentPlaylistFullInfoBinding>() {
             }
             menuShare.setOnClickListener { onShareClick() }
             menuEdit.setOnClickListener {
-                //редактировать плейлист
+                goToPlaylistEditor()
             }
             menuDelete.setOnClickListener {
                 showPlaylistDeleteDialog()
@@ -131,8 +134,7 @@ class PlaylistFIFragment : BindingFragment<FragmentPlaylistFullInfoBinding>() {
         if (trackListBSAdapter.trackList.isEmpty()) {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
             showToast(getString(R.string.empty_playlist))
-        }
-        else viewModel.onUiEvent(PlaylistFIUiEvent.SharePlaylist)
+        } else viewModel.onUiEvent(PlaylistFIUiEvent.SharePlaylist)
     }
 
     private fun renderState(state: PlaylistFIUiState) {
@@ -148,8 +150,8 @@ class PlaylistFIFragment : BindingFragment<FragmentPlaylistFullInfoBinding>() {
         }
     }
 
-    private fun onPlaylistDeletion(result: Boolean){
-        if (!result) showToast("Произошла ошибка удаления")
+    private fun onPlaylistDeletion(result: Boolean) {
+        if (!result) showToast(getString(R.string.delete_failure))
         requireActivity().onBackPressedDispatcher.onBackPressed()
     }
 
@@ -168,11 +170,26 @@ class PlaylistFIFragment : BindingFragment<FragmentPlaylistFullInfoBinding>() {
     }
 
     private fun setImage(uri: Uri) {
+        iconUri = uri
         with(binding.playlistFIIcon) {
             setPadding(0)
             scaleType = ImageView.ScaleType.CENTER_CROP
             setImageURI(uri)
         }
+    }
+
+    private fun goToPlaylistEditor() {
+        findNavController().navigate(
+            R.id.actionPlaylistFullInfoFragmentToEditPlaylistFragment,
+            EditPlaylistFragment.createArgs(
+                EditPlaylist(
+                    id = playlistID,
+                    iconUri = iconUri,
+                    name = binding.playlistFIName.text.toString(),
+                    description = binding.playlistFIDescription.text.toString()
+                )
+            )
+        )
     }
 
     private fun goToPlayer(isInFavorites: Boolean) {

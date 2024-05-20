@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker.medialibrary.domain.api
 
+import com.practicum.playlistmaker.medialibrary.domain.models.EditPlaylist
 import com.practicum.playlistmaker.medialibrary.domain.models.NewPlaylist
 import com.practicum.playlistmaker.medialibrary.domain.models.PlaylistInfo
 import com.practicum.playlistmaker.medialibrary.domain.models.PlaylistPreview
@@ -16,5 +17,6 @@ interface PlaylistsRepository {
     suspend fun getTrackByID(trackId: Int): Track
     suspend fun deleteTrackFromPlaylist(playlistId: Long, trackId: Int)
     suspend fun deletePlaylist(playlistId: Long): Boolean
+    suspend fun updatePlaylist(playlistInfo: EditPlaylist)
 
 }

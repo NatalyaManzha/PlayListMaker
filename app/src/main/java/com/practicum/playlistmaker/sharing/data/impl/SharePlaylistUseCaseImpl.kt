@@ -4,8 +4,8 @@ import com.practicum.playlistmaker.sharing.domain.api.ExternalNavigator
 import com.practicum.playlistmaker.sharing.domain.api.SharePlaylistUseCase
 
 class SharePlaylistUseCaseImpl(
-    private val externalNavigator:ExternalNavigator
-): SharePlaylistUseCase {
+    private val externalNavigator: ExternalNavigator
+) : SharePlaylistUseCase {
     override fun execute(playlistInfo: String) {
         externalNavigator.shareData(playlistInfo)
     }
