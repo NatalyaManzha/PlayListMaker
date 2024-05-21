@@ -149,6 +149,18 @@
             android:layout_marginVertical="@dimen/spacing_8"
             android:background="@drawable/shape_rectangle_rounded" />
 
+        <TextView
+            android:id="@+id/playlistFI_bottom_sheet_placeholder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_46"
+            android:fontFamily="@font/ys_display_medium"
+            android:gravity="center_horizontal"
+            android:visibility="gone"
+            android:text="@string/no_tracks"
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="@dimen/text_size_16" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/playlistFI_bottom_sheet_RW"
             android:layout_width="match_parent"
@@ -169,7 +181,8 @@
         android:orientation="vertical"
         app:behavior_hideable="true"
         app:behavior_peekHeight="@dimen/bottom_sheet_height_280"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        tools:visibility="gone">
 
         <View
             android:layout_width="@dimen/item_size_52"

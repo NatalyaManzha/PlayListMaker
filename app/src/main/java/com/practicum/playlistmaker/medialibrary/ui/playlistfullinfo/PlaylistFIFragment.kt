@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.Space
 import android.widget.Toast
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.core.view.setPadding
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -141,7 +142,6 @@ class PlaylistFIFragment : BindingFragment<FragmentPlaylistFullInfoBinding>() {
 
     private fun renderState(state: PlaylistFIUiState) {
         state.iconUri?.let { setImage(it) }
-        state.tracklist?.let { updateTracksData(it) }
         state.isInFavorites?.let { goToPlayer(it) }
         state.playlistDeleted?.let { onPlaylistDeletion(it) }
         with(binding) {
@@ -152,6 +152,7 @@ class PlaylistFIFragment : BindingFragment<FragmentPlaylistFullInfoBinding>() {
             playlistFIBottomSheetPlaylistCount.text = state.count
             playlistFIMinutes.text = state.duration
         }
+        updateTracksData(state.tracklist)
     }
 
     private fun onPlaylistDeletion(result: Boolean) {
@@ -168,9 +169,15 @@ class PlaylistFIFragment : BindingFragment<FragmentPlaylistFullInfoBinding>() {
             .show()
     }
 
-    private fun updateTracksData(trackList: List<Track>) {
-        trackListBSAdapter.trackList = trackList
-        binding.playlistFIBottomSheetRW.adapter?.notifyDataSetChanged()
+    private fun updateTracksData(trackList: List<Track>?) {
+        with(binding){
+            if (trackList==null) playlistFIBottomSheetPlaceholder.isVisible = true
+            else {
+                playlistFIBottomSheetPlaceholder.isVisible = false
+                trackListBSAdapter.trackList = trackList
+                playlistFIBottomSheetRW.adapter?.notifyDataSetChanged()
+            }
+        }
     }
 
     private fun setImage(uri: Uri) {
