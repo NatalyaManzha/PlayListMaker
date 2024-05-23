@@ -12,7 +12,7 @@
         <item name="colorOnTertiary">@color/white</item>
         <item name="android:statusBarColor">@color/night_dark</item>
         <item name="colorOnSurfaceInverse">@color/black_2</item>
-        <item name="materialAlertDialogTheme">@style/DayNightAlertDialog</item>
+        <item name="materialAlertDialogTheme">@style/AlertDialogStyle</item>
     </style>
 
     <style name="Theme.PlaylistMaker" parent="Base.Theme.PlaylistMaker">
@@ -28,8 +28,4 @@
         <item name="tint">?attr/colorOnPrimary</item>
     </style>
 
-    <style name="DayNightAlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
-        <item name="android:dialogCornerRadius">@dimen/radius_16dp</item>
-        <item name="android:background">@color/brilliant_blue_light</item>
-    </style>
 </resources>

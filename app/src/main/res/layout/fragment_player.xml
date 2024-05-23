@@ -265,7 +265,7 @@
         android:background="@drawable/shape_bottom_sheet"
         android:orientation="vertical"
         app:behavior_hideable="true"
-        app:behavior_peekHeight="240dp"
+        app:behavior_peekHeight="@dimen/bottom_sheet_height_240"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <View
@@ -273,7 +273,7 @@
             android:layout_height="@dimen/item_size_4"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/spacing_8"
-            android:background="@drawable/shape_rectange_rounded"/>
+            android:background="@drawable/shape_rectangle_rounded"/>
 
         <TextView
             android:layout_width="wrap_content"

@@ -47,6 +47,7 @@ android {
 
 dependencies {
     implementation("androidx.core:core-ktx:1.9.0")
+
     //Peco - Runtime Permissions
     implementation("com.markodevcic:peko:3.0.5")
     //Room

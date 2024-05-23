@@ -23,4 +23,8 @@ class FavoritesInteractorImpl(
     override suspend fun deleteFavorite(trackId: Int) {
         favoritesRepository.deleteFavorite(trackId)
     }
+
+    override suspend fun checkTrackInFavorites(trackId: Int): Boolean {
+        return favoritesRepository.checkTrackInFavorites(trackId)
+    }
 }

@@ -33,4 +33,8 @@ class FavoritesRepositoryImpl(
     override suspend fun deleteFavorite(trackId: Int) {
         favoritesDao.deleteFavorite(trackId)
     }
+
+    override suspend fun checkTrackInFavorites(trackId: Int): Boolean {
+        return favoritesDao.checkTrackInFavorites(trackId) > 0
+    }
 }

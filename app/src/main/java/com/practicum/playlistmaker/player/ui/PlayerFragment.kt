@@ -100,7 +100,7 @@ class PlayerFragment : BindingFragment<FragmentPlayerBinding>() {
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
             }
             newPlaylistButton.setOnClickListener {
-                findNavController().navigate(R.id.action_playerFragment_to_newPlaylistFragment)
+                findNavController().navigate(R.id.actionPlayerFragmentToNewPlaylistFragment)
             }
         }
     }

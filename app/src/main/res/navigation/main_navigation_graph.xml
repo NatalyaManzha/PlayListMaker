@@ -17,21 +17,32 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
         <action
-            android:id="@+id/action_mediaLibraryFragment_to_newPlaylistFragment"
-            app:destination="@id/newPlaylistFragment" />
+            android:id="@+id/actionMediaLibraryFragmentToNewPlaylistFragment"
+            app:destination="@id/newPlaylistFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/actionMediaLibraryFragmentToPlaylistFullInfoFragment"
+            app:destination="@id/playlistFullInfoFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.practicum.playlistmaker.search.ui.SearchFragment"
         android:label="fragment_search"
-        tools:layout="@layout/fragment_search" >
+        tools:layout="@layout/fragment_search">
         <action
             android:id="@+id/actionSearchFragmentToPlayerFragment"
             app:destination="@id/playerFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"/>
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
@@ -44,21 +55,40 @@
         android:label="PlayerFragment"
         tools:layout="@layout/fragment_player">
         <action
-            android:id="@+id/action_playerFragment_to_newPlaylistFragment"
+            android:id="@+id/actionPlayerFragmentToNewPlaylistFragment"
             app:destination="@id/newPlaylistFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/newPlaylistFragment"
+        android:name="com.practicum.playlistmaker.medialibrary.ui.newplaylist.NewPlaylistFragment"
+        android:label="NewPlaylistFragment"
+        tools:layout="@layout/fragment_new_playlist" />
+    <fragment
+        android:id="@+id/playlistFullInfoFragment"
+        android:name="com.practicum.playlistmaker.medialibrary.ui.playlistfullinfo.PlaylistFIFragment"
+        android:label="PlaylistFullInfoFragment"
+        tools:layout="@layout/fragment_playlist_full_info" >
+        <action
+            android:id="@+id/actionPlaylistFullInfoFragmentToPlayerFragment"
+            app:destination="@id/playerFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/actionPlaylistFullInfoFragmentToEditPlaylistFragment"
+            app:destination="@id/editPlaylistFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
-        android:id="@+id/favoritesFragment"
-        android:name="com.practicum.playlistmaker.medialibrary.ui.favorites.FavoritesFragment"
-        android:label="FavoritesFragment"
-        tools:layout="@layout/fragment_favorites"/>
-    <fragment
-        android:id="@+id/newPlaylistFragment"
-        android:name="com.practicum.playlistmaker.medialibrary.ui.newplaylist.NewPlaylistFragment"
-        android:label="NewPlaylistFragment"
-        tools:layout="@layout/fragment_new_playlist"/>
+        android:id="@+id/editPlaylistFragment"
+        android:name="com.practicum.playlistmaker.medialibrary.ui.editplaylist.EditPlaylistFragment"
+        android:label="EditPlaylistFragment" />
 </navigation>

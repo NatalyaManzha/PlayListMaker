@@ -136,7 +136,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
             viewModel.uiStateFlow.collect {
                 when (it) {
                     is UiState.Default -> hideAllViews()
-                    is UiState.SearchHistory -> showSearchhistory(it.tracklist)
+                    is UiState.SearchHistory -> showSearchHistory(it.tracklist)
                     is UiState.ClearSearchHistory -> hideAllViews()
                     is UiState.Loading -> showLoading()
                     is UiState.SearchResult -> showSearchResult(it.tracklist)
@@ -219,7 +219,7 @@ class SearchFragment : BindingFragment<FragmentSearchBinding>() {
         hideKeyboard(binding.inputEditText)
     }
 
-    private fun showSearchhistory(trackList: List<Track>) {
+    private fun showSearchHistory(trackList: List<Track>) {
         hideAllViews()
         searchHistoryAdapter.trackList = trackList
         binding.searchHistoryRV.adapter?.notifyDataSetChanged()

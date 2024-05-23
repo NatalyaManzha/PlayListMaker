@@ -13,14 +13,20 @@ import com.practicum.playlistmaker.settings.domain.api.SaveThemeUseCase
 import com.practicum.playlistmaker.settings.domain.impl.CheckoutSavedAppThemeUseCaseImpl
 import com.practicum.playlistmaker.settings.domain.impl.SaveThemeUseCaseImpl
 import com.practicum.playlistmaker.sharing.data.impl.ShareLinkUseCaseImpl
+import com.practicum.playlistmaker.sharing.data.impl.SharePlaylistUseCaseImpl
 import com.practicum.playlistmaker.sharing.data.impl.UserAgreementUseCaseImpl
 import com.practicum.playlistmaker.sharing.data.impl.WriteToSupportUseCaseImpl
 import com.practicum.playlistmaker.sharing.domain.api.ShareLinkUseCase
+import com.practicum.playlistmaker.sharing.domain.api.SharePlaylistUseCase
 import com.practicum.playlistmaker.sharing.domain.api.UserAgreementUseCase
 import com.practicum.playlistmaker.sharing.domain.api.WriteToSupportUseCase
 import org.koin.dsl.module
 
 val useCaseModule = module {
+
+    single<SharePlaylistUseCase> {
+        SharePlaylistUseCaseImpl(get())
+    }
 
     single<ClearSearchHistoryUseCase> {
         ClearSearchHistoryUseCaseImpl(get())

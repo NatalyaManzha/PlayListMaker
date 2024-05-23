@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Space
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
@@ -81,14 +82,17 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
 
     private fun showDialog() {
         if (dialogEnabled) {
-            MaterialAlertDialogBuilder(requireActivity())
+            val dialog = MaterialAlertDialogBuilder(requireActivity())
                 .setTitle(getString(R.string.dialog_title))
                 .setMessage(getString(R.string.dialog_message))
                 .setNeutralButton(getString(R.string.cansel)) { dialog, which ->
                     onBackPressedCallback.isEnabled = true
                 }.setPositiveButton(getString(R.string.finish)) { dialog, which ->
                     closeFragment()
-                }.show()
+                }.create()
+            dialog.show()
+            dialog.requireViewById<Space>(com.google.android.material.R.id.spacer).visibility =
+                View.GONE
         } else closeFragment()
     }
 
@@ -116,8 +120,8 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
 
     private fun onSaveComplete(saveResult: Boolean, playlistName: String) {
         val message =
-            if (saveResult) getString(R.string.playlist) + " n\"${playlistName}n\" " + getString(R.string.save_success)
-            else getString(R.string.save_failure) + " n\"${playlistName}n\""
+            if (saveResult) getString(R.string.playlist) + " \"$playlistName\" " + getString(R.string.save_success)
+            else getString(R.string.save_failure) + " \"${playlistName}\""
         showToast(message)
         closeFragment()
     }

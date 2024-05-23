@@ -11,6 +11,6 @@ class ShareLinkUseCaseImpl(
 ) : ShareLinkUseCase {
     override fun execute() {
         val url = resourceProvider.getString(R.string.android_developer_course_link)
-        externalNavigator.shareLink(url)
+        externalNavigator.shareData(url)
     }
 }

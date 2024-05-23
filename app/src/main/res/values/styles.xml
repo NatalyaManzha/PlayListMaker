@@ -93,7 +93,7 @@
         <item name="android:textColor">@color/grey</item>
     </style>
 
-    <style name="PlayerInfoValueTextStyle" parent = "PlayerInfoNameTextStyle">
+    <style name="PlayerInfoValueTextStyle" parent="PlayerInfoNameTextStyle">
         <item name="android:textColor">?attr/colorOnTertiary</item>
     </style>
 
@@ -119,12 +119,41 @@
         <item name="itemTextColor">@color/brilliant_blue</item>
     </style>
 
-    <style name="ItemActiveIndicatorStyle" >
+    <style name="ItemActiveIndicatorStyle">
         <item name="itemIconTint">@color/brilliant_blue</item>
     </style>
 
     <style name="ItemInactiveIndicatorStyle">
         <item name="itemIconTint">?attr/colorOnPrimary</item>
+    </style>
+
+    <style name="AlertDialogStyle" parent="Theme.MaterialComponents.Light.Dialog.Alert">
+        <item name="android:dialogCornerRadius">@dimen/radius_4dp</item>
+        <item name="colorPrimary">@color/brilliant_blue</item>
+        <item name="buttonBarStyle">@style/DialogButtonBar</item>
+        <item name="buttonBarPositiveButtonStyle">@style/DialogButtonStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/DialogButtonStyle</item>
+        <item name="buttonBarNeutralButtonStyle">@style/DialogButtonStyle</item>
+    </style>
+
+    <style name="DialogButtonBar" parent="Widget.AppCompat.ButtonBar">
+        <item name="android:paddingStart">@dimen/spacing_160</item>
+        <item name="android:gravity">end</item>
+    </style>
+
+    <style name="DialogButtonStyle" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:layout_gravity">end</item>
+        <item name="android:layout_marginStart">0dp</item>
+        <item name="android:layout_width">wrap_content</item>
+    </style>
+
+    <style name="PlaylistMenuTextStyle">
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">@dimen/spacing_16</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="android:textSize">@dimen/text_size_16</item>
+        <item name="android:clickable">true</item>
     </style>
 
 </resources>

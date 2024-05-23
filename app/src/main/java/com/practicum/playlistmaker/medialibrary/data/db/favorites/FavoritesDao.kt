@@ -19,4 +19,7 @@ interface FavoritesDao {
 
     @Query("SELECT trackId FROM favorites_table")
     fun getFavoritesIdList(): Flow<List<Int>>
+
+    @Query("SELECT COUNT(*) FROM favorites_table WHERE trackId = :trackId")
+    suspend fun checkTrackInFavorites(trackId: Int): Int
 }

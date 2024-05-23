@@ -16,7 +16,7 @@ fun PlaylistEntity.toPreview(uri: Uri?): PlaylistPreview {
 }
 
 fun chooseCase(count: Int): String {
-    var str =
+    val str =
         if ((count % 100) in (11..14)) "треков"
         else when (count % 10) {
             1 -> "трек"
