@@ -120,8 +120,8 @@ class NewPlaylistFragment : BindingFragment<FragmentNewPlaylistBinding>() {
 
     private fun onSaveComplete(saveResult: Boolean, playlistName: String) {
         val message =
-            if (saveResult) getString(R.string.playlist) + " n\"${playlistName}n\" " + getString(R.string.save_success)
-            else getString(R.string.save_failure) + " n\"${playlistName}n\""
+            if (saveResult) getString(R.string.playlist) + " \"$playlistName\" " + getString(R.string.save_success)
+            else getString(R.string.save_failure) + " \"${playlistName}\""
         showToast(message)
         closeFragment()
     }
