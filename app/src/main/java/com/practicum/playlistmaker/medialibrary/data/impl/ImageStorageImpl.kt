@@ -9,6 +9,8 @@ import android.os.Environment
 import android.util.Log
 import androidx.core.net.toUri
 import com.practicum.playlistmaker.medialibrary.data.api.ImageStorage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.util.Date
@@ -26,18 +28,27 @@ class ImageStorageImpl(
     }
 
     override suspend fun saveImage(uri: Uri): String {
-        val imageFileName = generateFileName()
-        val file = File(filePath, imageFileName)
-        try {
-            val inputStream = appContext.contentResolver.openInputStream(uri)
-            val outputStream = FileOutputStream(file)
-            BitmapFactory
-                .decodeStream(inputStream)
-                .compress(Bitmap.CompressFormat.JPEG, 30, outputStream)
-        } catch (e: Exception) {
-            Log.d("QQQ", "saveImage(): ${e.message}")
+        val currentFileName = uri.lastPathSegment
+        val newFileName: String
+        if (!File(filePath, currentFileName!!).exists()) {
+            newFileName = generateFileName()
+            val file = File(filePath, newFileName)
+            try {
+                val inputStream = appContext.contentResolver.openInputStream(uri)
+                val outputStream =
+                    withContext(Dispatchers.IO) {
+                        FileOutputStream(file)
+                    }
+                BitmapFactory
+                    .decodeStream(inputStream)
+                    .compress(Bitmap.CompressFormat.JPEG, 30, outputStream)
+            } catch (e: Exception) {
+                Log.d("QQQ", "saveImage(): ${e.message}")
+            }
+        } else {
+            newFileName = currentFileName
         }
-        return imageFileName
+        return newFileName
     }
 
     override suspend fun uriByFileName(fileName: String): Uri? {
